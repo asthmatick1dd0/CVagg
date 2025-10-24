@@ -1,14 +1,38 @@
 version: '3'
 services:
   backend:
+    container_name: cvagg-backend
     build: ./backend
     ports:
       - "8080:8080"
+    depends_on:
+      - database
+
     
 
   nginx:
+    container_name: cvagg-nginx
     build: ./frontend
     ports:
       - "80:80"
     depends_on:
       - backend
+    volumes:
+      - ./frontend:/usr/share/nginx/html
+
+  database:
+    container_name: cvagg-postgres
+    image: postgres:alpine
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB_NAME}
+    ports:
+      - ${POSTGRES_DB_PORT}:5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    env_file:
+      - .env
+
+volumes:
+  postgres_data:
