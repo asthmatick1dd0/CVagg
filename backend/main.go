@@ -1,15 +1,14 @@
 package main
 
 import (
+	"github.com/asthmatick1dd0/CVagg/internal/routes"
 	"github.com/gofiber/fiber/v2"
 )
 
 func main() {
 	app := fiber.New()
 
-	app.Get("/api/hello", func(c *fiber.Ctx) error {
-		return c.SendString("Hello ПД!")
-	})
+	routes.SetupRoutes(app)
 
 	app.Listen(":8080")
 }
