@@ -8,6 +8,8 @@ import (
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+
+	"github.com/asthmatick1dd0/CVagg/internal/models"
 )
 
 func ConnectDB() (*gorm.DB, error) {
@@ -21,11 +23,11 @@ func ConnectDB() (*gorm.DB, error) {
 	}
 	pass := os.Getenv("POSTGRES_PASSWORD")
 	if pass == "" {
-		pass = "postgres"
+		pass = "your_password"
 	}
-	dbname := os.Getenv("POSTGRES_DB_NAME")
+	dbname := os.Getenv("POSTGRES_DB")
 	if dbname == "" {
-		dbname = "postgres"
+		dbname = "your_database"
 	}
 	port := os.Getenv("POSTGRES_DB_PORT")
 	if port == "" {
@@ -57,6 +59,19 @@ func ConnectDB() (*gorm.DB, error) {
 	// Простая проверка ping с retry
 	for i := 0; i < 5; i++ {
 		if err = sqlDB.Ping(); err == nil {
+			// Connected — perform auto-migration then return
+			if migrateErr := db.AutoMigrate(
+				&models.User{},
+				&models.Resume{},
+				&models.ResumeItem{},
+				&models.About{},
+				&models.Education{},
+				&models.HardSkill{},
+				&models.HardSkillsCatalog{},
+				&models.JobExperience{},
+			); migrateErr != nil {
+				return nil, fmt.Errorf("auto migrate failed: %w", migrateErr)
+			}
 			return db, nil
 		}
 		log.Printf("db ping failed (attempt %d): %v", i+1, err)

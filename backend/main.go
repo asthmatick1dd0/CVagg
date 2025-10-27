@@ -1,15 +1,25 @@
 package main
 
 import (
+	"log"
+
+	"github.com/asthmatick1dd0/CVagg/internal/database"
 	"github.com/gofiber/fiber/v2"
 )
 
 func main() {
+	// Connect to DB (this will also run AutoMigrate in ConnectDB)
+	if _, err := database.ConnectDB(); err != nil {
+		log.Fatalf("failed to connect to DB: %v", err)
+	}
+
 	app := fiber.New()
 
 	app.Get("/api/hello", func(c *fiber.Ctx) error {
 		return c.SendString("Hello ПД!")
 	})
 
-	app.Listen(":8080")
+	if err := app.Listen(":8080"); err != nil {
+		log.Fatalf("server error: %v", err)
+	}
 }
