@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/asthmatick1dd0/CVagg/internal/database"
+	"github.com/asthmatick1dd0/CVagg/internal/routes"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -15,9 +16,7 @@ func main() {
 
 	app := fiber.New()
 
-	app.Get("/api/hello", func(c *fiber.Ctx) error {
-		return c.SendString("Hello ПД!")
-	})
+	routes.SetupRoutes(app)
 
 	if err := app.Listen(":8080"); err != nil {
 		log.Fatalf("server error: %v", err)
