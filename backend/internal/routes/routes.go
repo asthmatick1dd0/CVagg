@@ -66,4 +66,12 @@ func ProfileRoutes(app *fiber.App) {
 	settings.Post("/save-changes", func(c *fiber.Ctx) error {
 		return c.SendString("Save changes")
 	})
+
+	auth := v1.Group("/auth")
+
+	// TODO: Implement handler that receives JWT and not raw username and password
+	auth.Post("/signin", func(c *fiber.Ctx) error {
+
+		return c.SendString("User not found")
+	})
 }
