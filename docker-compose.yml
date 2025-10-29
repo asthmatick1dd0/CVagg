@@ -9,6 +9,8 @@ services:
       - .env
     depends_on:
       - database
+    volumes:
+      - ./backend:/app
 
     
 
