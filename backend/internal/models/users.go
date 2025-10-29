@@ -9,5 +9,5 @@ type User struct {
 	Username     string   `gorm:"uniqueIndex;size:100" json:"username"`
 	Email        string   `gorm:"uniqueIndex;size:100" json:"email"`
 	PasswordHash string   `json:"-"`
-	Resume       []Resume `gorm:"foreignKey:UserId" json:"resumes"`
+	Resumes      []Resume `gorm:"foreignKey:UserId" json:"resumes"`
 }

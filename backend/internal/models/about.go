@@ -6,7 +6,11 @@ import (
 
 type About struct {
 	gorm.Model
-	ResumeId uint   `json:"resume_id"`
-	Field    string `json:"field"`
-	About    string `json:"about"`
+	About string `json:"about"`
+
+	ResumeId uint   `gorm:"not null;index" json:"resume_id"`
+	Resume   Resume `json:"resume"`
+
+	UserId uint `gorm:"not null;index" json:"user_id"`
+	User   User `json:"user"`
 }
