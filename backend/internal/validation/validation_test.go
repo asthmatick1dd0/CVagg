@@ -4,11 +4,11 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/asthmatick1dd0/CVagg/internal/models"
+	"github.com/asthmatick1dd0/CVagg/internal/transport"
 )
 
 func TestValidateStruct(t *testing.T) {
-	var payload *models.SignInInputEmail
+	var payload *transport.SignInInputEmail
 	json.Unmarshal([]byte("{\"email\":\"aaa\"}"), &payload)
 	errors := ValidateStruct(payload)
 	if errors == nil {
