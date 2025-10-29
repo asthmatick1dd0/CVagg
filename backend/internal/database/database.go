@@ -15,7 +15,7 @@ import (
 func ConnectDB() (*gorm.DB, error) {
 	host := os.Getenv("POSTGRES_HOST")
 	if host == "" {
-		host = "localhost"
+		host = "database"
 	}
 	user := os.Getenv("POSTGRES_USER")
 	if user == "" {

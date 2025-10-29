@@ -6,8 +6,9 @@ import (
 
 type ResumeItem struct {
 	gorm.Model
-	FieldId   uint   `json:"field_id"`
-	FieldType string `json:"field_type"`
-	ResumeId  uint   `json:"resume_id"`
-	Resume    Resume `json:"resume"`
+	ItemId   uint   `gorm:"not null;index" json:"item_id"`
+	ItemType string `json:"item_type"`
+
+	ResumeId uint   `gorm:"not null;index" json:"resume_id"`
+	Resume   Resume `json:"resume"`
 }

@@ -8,8 +8,6 @@ import (
 
 type Education struct {
 	gorm.Model
-	ResumeId   uint       `gorm:"not null;foreignKey:ResumeId" json:"resume_id"`
-	Type       string     `json:"type"`
 	University string     `gorm:"type:varchar(100)" json:"university"`
 	Faculty    string     `gorm:"type:varchar(100)" json:"faculty"`
 	Degree     string     `gorm:"type:varchar(100)" json:"degree"`
@@ -17,4 +15,10 @@ type Education struct {
 	StartDate  time.Time  `gorm:"not null" json:"start_date"`
 	EndDate    *time.Time `gorm:"not null" json:"end_date"`
 	Finished   bool       `gorm:"not null" json:"finished"`
+
+	ResumeId uint   `gorm:"not null;index" json:"resume_id"`
+	Resume   Resume `json:"resume"`
+
+	UserId uint `gorm:"not null;index" json:"user_id"`
+	User   User `json:"user"`
 }

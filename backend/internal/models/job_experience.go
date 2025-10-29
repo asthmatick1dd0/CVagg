@@ -10,8 +10,10 @@ type JobExperience struct {
 	Position  string `json:"position"`
 	StartDate uint   `json:"start_date"`
 	EndDate   uint   `json:"end_date"`
-	ResumeId  uint   `json:"resume_id"`
-	Resume    Resume `json:"resume"`
-	UserId    uint   `json:"user_id"`
-	User      User   `json:"user"`
+
+	ResumeId uint   `gorm:"not null; index" json:"resume_id"`
+	Resume   Resume `json:"resume"`
+
+	UserId uint `gorm:"not null;index" json:"user_id"`
+	User   User `json:"user"`
 }

@@ -6,8 +6,11 @@ import (
 
 type HardSkill struct {
 	gorm.Model
-	ResumeId uint   `json:"resume_id"`
+	SkillId uint `json:"skill_id"`
+
+	ResumeId uint   `gorm:"not null;index" json:"resume_id"`
 	Resume   Resume `json:"resume"`
-	Field    string `json:"field"`
-	SkillId  uint   `json:"skill_id"`
+
+	UserId uint `gorm:"not null;index" json:"user_id"`
+	User   User `json:"user"`
 }
