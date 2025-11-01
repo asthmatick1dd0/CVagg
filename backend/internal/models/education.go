@@ -15,10 +15,5 @@ type Education struct {
 	StartDate  time.Time  `gorm:"not null" json:"start_date"`
 	EndDate    *time.Time `gorm:"not null" json:"end_date"`
 	Finished   bool       `gorm:"not null" json:"finished"`
-
-	ResumeId uint   `gorm:"not null;index" json:"resume_id"`
-	Resume   Resume `json:"resume"`
-
-	UserId uint `gorm:"not null;index" json:"user_id"`
-	User   User `json:"user"`
+	Item
 }
