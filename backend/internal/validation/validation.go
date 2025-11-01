@@ -13,6 +13,7 @@ type ErrorResponse struct { // потом эти респонсы отправл
 
 var validate = validator.New()
 
+// При проверке на ошибки проверять не errs == nil а len(errs) == 0
 func ValidateStruct[T any](payload T) []*ErrorResponse {
 	errors := make([]*ErrorResponse, 0)
 	err := validate.Struct(payload)
