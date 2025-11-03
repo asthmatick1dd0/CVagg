@@ -73,10 +73,10 @@
 | Backlead             | Андрей Хробостов  | @ansergoff                         |
 | Frontlead, UI/UX     | Ирина Григорян    | @smokinblackdog                    |
 | Backend              | Артём Голуб       | @Kekzuke                           |
-| Backend              | Яков Бых          | —                                  |
+| Backend              | Яков Бых          | @lobzikk_lobzikk                   |
 | UI/UX Design         | Ирина Втюрина     | @blacktail69                       |
 | Frontend             | Анастасия Исаева  | @cirrusghoulpro228                 |
-| DevOps, тестирование | Николай Сидоренко | @xaxaxaxaxaxaxaxaxaxxaxxaxaxaxaxa |
+| DevOps, тестирование | Николай Сидоренко | @xaxaxaxaxaxaxaxaxaxxaxxaxaxaxaxa  |
 <br>
 <br>
 <br>
