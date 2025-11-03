@@ -49,7 +49,8 @@
 ![Figma](https://img.shields.io/badge/Figma-F24E1E?style=for-the-badge&logo=figma&logoColor=white)<br>
 **Tools:**  
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white) ![Git](https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white) ![Nginx](https://img.shields.io/badge/Nginx-009639?style=for-the-badge&logo=nginx&logoColor=white)<br>
-
+**Ссылка на фигму:**
+https://www.figma.com/design/G6vf14E8DJfDqrZ3NmlERk/CVaggregator?node-id=0-1&p=f&t=TQAKC8uJby7zNw0K-0 <br>
 <br>
 
 ## СТРУКТУРА РЕПОЗИТОРИЯ
