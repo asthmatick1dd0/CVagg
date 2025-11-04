@@ -1,4 +1,5 @@
-package transport
+// package dto for object that transport data
+package dto
 
 import (
 	"time"

@@ -1,3 +1,4 @@
+// Package routes for setuping routes
 package routes
 
 import (
