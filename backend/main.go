@@ -21,6 +21,7 @@ func main() {
 
 	app.Use(func(c *fiber.Ctx) error {
 		c.Locals("resumeService", service.NewResumeService(repository.NewResumeRepository(db)))
+		c.Locals("userRepo", repository.NewUserRepository(db))
 		return c.Next()
 	})
 
