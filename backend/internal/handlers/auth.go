@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"github.com/asthmatick1dd0/CVagg/internal/models"
-	"github.com/asthmatick1dd0/CVagg/internal/parsing"
 	"github.com/asthmatick1dd0/CVagg/internal/repository"
 	"github.com/asthmatick1dd0/CVagg/internal/transport"
 	internal "github.com/asthmatick1dd0/CVagg/internal/validation"
@@ -11,9 +10,9 @@ import (
 
 func SignUpHandler(c *fiber.Ctx) error {
 	var input transport.SignUpInput
-	err := parsing.QueryParser(&input, c.Queries())
+	err := c.QueryParser(&input)
 	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(err)
+		return c.Status(fiber.StatusBadRequest).JSON(err.Error())
 	}
 	errs := internal.ValidateStruct(input)
 	if len(errs) != 0 {
