@@ -1,12 +1,11 @@
 package routes
 
 import (
-	"github.com/asthmatick1dd0/CVagg/internal/repository"
 	"github.com/gofiber/fiber/v2"
 )
 
-func SetupRoutes(app *fiber.App, userRep repository.UserRepository) {
+func SetupRoutes(app *fiber.App) {
 	ProfileRoutes(app)
-	AuthRoutes(app, userRep)
+	AuthRoutes(app)
 	EditorRoutes(app)
 }

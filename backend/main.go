@@ -18,7 +18,12 @@ func main() {
 
 	app := fiber.New()
 
-	routes.SetupRoutes(app, repository.NewUserRepository(db))
+	app.Use(func(c *fiber.Ctx) error {
+		c.Locals("userRepo", repository.NewUserRepository(db))
+		return c.Next()
+	})
+
+	routes.SetupRoutes(app)
 
 	if err := app.Listen(":8080"); err != nil {
 		log.Fatalf("server error: %v", err)
