@@ -6,6 +6,7 @@ import (
 	"github.com/asthmatick1dd0/CVagg/internal/database"
 	"github.com/asthmatick1dd0/CVagg/internal/repository"
 	"github.com/asthmatick1dd0/CVagg/internal/routes"
+	"github.com/asthmatick1dd0/CVagg/internal/service"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -19,6 +20,7 @@ func main() {
 	app := fiber.New()
 
 	app.Use(func(c *fiber.Ctx) error {
+		c.Locals("resumeService", service.NewResumeService(repository.NewResumeRepository(db)))
 		c.Locals("userRepo", repository.NewUserRepository(db))
 		return c.Next()
 	})
