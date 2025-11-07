@@ -1,12 +1,14 @@
 import { Routes, Route } from "react-router-dom"
 import LandingPage from "./pages/LandingPage/LandingPage"
+import LoginPage from "./pages/Auth/LoginPage";
 
 function App() {
   return (
     <>
       <Routes>
-        {/* TODO: после создания страницы аутентификации добавить рут на неё */}
         <Route path="/" element={<LandingPage/>} />
+        <Route path="/login" element={<LoginPage />} />
+        {/* TODO (Настя): после создания страницы регистрации добавить рут на неё */}
       </Routes>
     </>
   );
