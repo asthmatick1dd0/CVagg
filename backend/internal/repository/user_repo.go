@@ -1,3 +1,4 @@
+// Package repository for grabbing and putting data from/to database
 package repository
 
 import (

@@ -1,4 +1,4 @@
-package transport
+package input
 
 type SignUpInput struct {
 	Username string `json:"username" validate:"required"`
