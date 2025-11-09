@@ -1,4 +1,4 @@
-// package dto for object that transport data
+// Package dto for object that transport data
 package dto
 
 import (
