@@ -6,22 +6,22 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-type EditorHandler struct {
+type editorHandler struct {
 	service *service.EditorService
 }
 
-func NewEditorHandler(service *service.EditorService) *EditorHandler {
-	return &EditorHandler{service}
+func NewEditorHandler(service *service.EditorService) *editorHandler {
+	return &editorHandler{service}
 }
 
-func (h *EditorHandler) SaveResume(ctx *fiber.Ctx) error {
-	// TODO(CVAGG-40): надо переписать нормально и переформировать папку transport
+func (h *editorHandler) CreateResume(ctx *fiber.Ctx) error {
+	// TODO [CVAGG-40]: надо переписать нормально и переформировать папку transport
 	var input input.ResumeInput
 	if err := ctx.BodyParser(&input); err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "invalid request"})
 	}
 
-	resume, err := h.service.SaveResume(&input)
+	resume, err := h.service.Create(&input)
 	if err != nil {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "internal server error"})
 	}

@@ -3,34 +3,24 @@ package service
 import (
 	"github.com/asthmatick1dd0/CVagg/internal/models"
 	"github.com/asthmatick1dd0/CVagg/internal/repository"
+	"github.com/asthmatick1dd0/CVagg/internal/transport/input"
 )
-
-type ResumeService interface {
-	Create(userID uint, title string) (*models.Resume, error)
-	GetByUserId(userID uint) ([]models.Resume, error)
-	GetById(id uint) (*models.Resume, error)
-	Update(resume *models.Resume) error
-	Delete(id uint) error
-}
 
 type resumeService struct {
 	repo repository.ResumeRepository
 }
 
-func NewResumeService(r repository.ResumeRepository) ResumeService {
+func NewResumeService(r repository.ResumeRepository) *resumeService {
 	return &resumeService{repo: r}
 }
 
-func (s *resumeService) Create(userID uint, title string) (*models.Resume, error) {
+func (s *resumeService) Create(input *input.ResumeInput) (*models.Resume, error) {
 	resume := &models.Resume{
-		Title:  title,
-		UserId: userID,
-		Items:  []models.ResumeItem{},
+		Title:   input.Title,
+		UserId:  input.UserID,
+		Summary: input.Summary,
+		Items:   input.Items,
 	}
-	if err := s.repo.Create(resume); err != nil {
-		return nil, err
-	}
-	return resume, nil
 }
 
 func (s *resumeService) GetByUserId(userID uint) ([]models.Resume, error) {

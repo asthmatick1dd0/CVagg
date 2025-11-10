@@ -8,6 +8,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+// TODO [CVAGG-42]: написать middleware для аутентификации и реализовать передачу id через локалс. + убрать логику из хендлера👿
 func parseUserID(c *fiber.Ctx) uint {
 	if val := c.Get("X-User-Id"); val != "" {
 		if id, err := strconv.Atoi(val); err == nil {
@@ -22,6 +23,7 @@ func parseUserID(c *fiber.Ctx) uint {
 	return 0
 }
 
+// TODO [CVAGG-41]: Добавить внедрение зависимостей через структуру хенделера!№!№!№!№!№!№!)))(;(;()))
 func Create(c *fiber.Ctx) error {
 	var body struct {
 		Title string `json:"title"`
