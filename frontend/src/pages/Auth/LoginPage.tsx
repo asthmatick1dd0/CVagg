@@ -25,7 +25,11 @@ function LoginPage(){
             </CardContent>
             <CardFooter className="flex flex-col">
                 <Button type="submit" className="w-full">Войти</Button>
-                <Button variant="link"><i>Нет аккаунта?</i></Button>
+                <Button variant="link">
+                    <a href="/registration">
+                        <i>Нет аккаунта?</i>
+                    </a>
+                </Button>
             </CardFooter>
         </Card>
     </div>
