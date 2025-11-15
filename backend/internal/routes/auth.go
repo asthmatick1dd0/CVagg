@@ -2,6 +2,7 @@ package routes
 
 import (
 	"github.com/asthmatick1dd0/CVagg/internal/handlers"
+	"github.com/asthmatick1dd0/CVagg/internal/service"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -12,15 +13,11 @@ func AuthRoutes(app *fiber.App) {
 	// /api/v1/auth/....
 	auth := v1.Group("/auth")
 
-	auth.Get("/signin", func(c *fiber.Ctx) error {
-		return c.SendString("login route")
-	})
+	auth.Get("/signin", handlers.SignInHandler)
 
 	auth.Post("/signup", handlers.SignUpHandler)
 
-	auth.Post("/logout", func(c *fiber.Ctx) error {
-		return c.SendString("logout route")
-	})
+	auth.Post("/logout", service.DeserealizeUser, handlers.LogOutHandler)
 
 	auth.Post("/forgot-password", func(c *fiber.Ctx) error {
 		return c.SendString("forgot-password route")
@@ -30,7 +27,5 @@ func AuthRoutes(app *fiber.App) {
 		return c.SendString("refresh route")
 	})
 
-	auth.Get("/me", func(c *fiber.Ctx) error {
-		return c.SendString("me route")
-	})
+	auth.Get("/me", service.DeserealizeUser, handlers.MeHandler)
 }
