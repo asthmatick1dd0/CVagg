@@ -1,4 +1,4 @@
-package transport
+package input
 
 type SignUpInput struct {
 	Username string `json:"username" validate:"required"`
@@ -14,4 +14,4 @@ type SignInInputUsername struct {
 type SignInInputEmail struct {
 	Email    string `json:"email" validate:"required,email"`
 	Password string `json:"password" validate:"required"`
-} // чтобы потом у юзверя был выбор - логиниться через почту или юз
+} // теперь тока для тестов валидации, юзверь логинится ТОЛЬКО через юз, ибо сложно и запарно

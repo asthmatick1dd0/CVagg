@@ -1,4 +1,5 @@
-package internal
+// Package validation for validating input data
+package validation
 
 import (
 	"github.com/go-playground/validator/v10"

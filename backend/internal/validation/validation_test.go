@@ -1,14 +1,14 @@
-package internal
+package validation
 
 import (
 	"encoding/json"
 	"testing"
 
-	"github.com/asthmatick1dd0/CVagg/internal/transport"
+	"github.com/asthmatick1dd0/CVagg/internal/transport/input"
 )
 
 func TestValidateStruct(t *testing.T) {
-	var payload *transport.SignInInputEmail
+	var payload *input.SignInInputEmail
 	json.Unmarshal([]byte("{\"email\":\"aaa\"}"), &payload)
 	errors := ValidateStruct(payload)
 	if errors == nil {
