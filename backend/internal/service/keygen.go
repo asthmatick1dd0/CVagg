@@ -6,7 +6,7 @@ import (
 	"crypto/rand"
 )
 
-func GenerateJWTSecret() *ecdsa.PrivateKey {
+func GenerateJWTSecret() ecdsa.PrivateKey {
 	key, _ := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
-	return key
+	return *key
 }

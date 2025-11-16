@@ -73,19 +73,21 @@ func SignInHandler(c *fiber.Ctx) error {
 	claims["iat"] = now
 	claims["nbf"] = now
 	claims["exp"] = now.Add(c.Locals("JWTExpirationTime").(time.Duration))
-	_, err = token.SignedString(c.Locals("JWTSecret").(ecdsa.PrivateKey))
+	key, _ := c.Locals("JWTSecret").(ecdsa.PrivateKey)
+	tokenString, err := token.SignedString(&key)
+	// panic: interface conversion: interface {} is *ecdsa.PrivateKey, not ecdsa.PrivateKey
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(err.Error())
 	}
-	// c.Cookie(&fiber.Cookie{
-	// 	Name:     "token",
-	// 	Value:    tokenString,
-	// 	Path:     "/",
-	// 	MaxAge:   c.Locals("JWTMaxAge").(int),
-	// 	Secure:   false,
-	// 	HTTPOnly: true,
-	// 	Domain:   "localhost",
-	// })
+	c.Cookie(&fiber.Cookie{
+		Name:     "token",
+		Value:    tokenString,
+		Path:     "/",
+		MaxAge:   c.Locals("JWTMaxAge").(int),
+		Secure:   false,
+		HTTPOnly: true,
+		Domain:   "localhost",
+	})
 
 	return c.Status(fiber.StatusAccepted).JSON(input)
 }
