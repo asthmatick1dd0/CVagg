@@ -6,6 +6,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+// TODO [CVAGG-43] Переписать все хендлеры с использованием service, а не Locals
 type editorHandler struct {
 	service *service.EditorService
 }

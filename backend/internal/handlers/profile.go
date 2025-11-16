@@ -3,10 +3,26 @@ package handlers
 import (
 	"strconv"
 
-	"github.com/asthmatick1dd0/CVagg/internal/models"
 	"github.com/asthmatick1dd0/CVagg/internal/service"
+	"github.com/asthmatick1dd0/CVagg/internal/transport/input"
 	"github.com/gofiber/fiber/v2"
 )
+
+type ProfileHandler interface {
+	Create(c *fiber.Ctx) error
+	Update(c *fiber.Ctx) error
+	Delete(c *fiber.Ctx) error
+	GetByID(c *fiber.Ctx) error
+	GetAllByUserID(c *fiber.Ctx) error
+}
+
+type profileHandler struct {
+	s service.ResumeService
+}
+
+func NewProfileHandler(s *service.ResumeService) ProfileHandler {
+	return &profileHandler{s}
+}
 
 // TODO [CVAGG-42]: написать middleware для аутентификации и реализовать передачу id через локалс. + убрать логику из хендлера👿
 func parseUserID(c *fiber.Ctx) uint {
@@ -24,33 +40,15 @@ func parseUserID(c *fiber.Ctx) uint {
 }
 
 // TODO [CVAGG-41]: Добавить внедрение зависимостей через структуру хенделера!№!№!№!№!№!№!)))(;(;()))
-func Create(c *fiber.Ctx) error {
-	var body struct {
-		Title string `json:"title"`
-	}
-	if err := c.BodyParser(&body); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "invalid body"})
+func (h *profileHandler) Create(c *fiber.Ctx) error {
+	var input input.ResumeInput
+	if err := c.BodyParser(&input); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "can't parse data to structure"})
 	}
 
-	userID := parseUserID(c)
-	if userID == 0 {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "missing user_id (query or X-User-Id header)"})
+	if err := h.s.Create(&input); err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "internal error while creating resume"})
 	}
-
-	v := c.Locals("resumeService")
-	if v == nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "resumeService not configured"})
-	}
-	svc, ok := v.(service.ResumeService)
-	if !ok {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "resumeService has wrong type"})
-	}
-
-	resume, err := svc.Create(userID, body.Title)
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
-	}
-	return c.Status(fiber.StatusCreated).JSON(resume)
 }
 
 func GetByUserId(c *fiber.Ctx) error {
@@ -68,7 +66,7 @@ func GetByUserId(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "resumeService has wrong type"})
 	}
 
-	resumes, err := svc.GetByUserId(userID)
+	resumes, err := svc.GetAllByUserID(userID)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
@@ -91,7 +89,7 @@ func GetById(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "resumeService has wrong type"})
 	}
 
-	resume, err := svc.GetById(uint(id64))
+	resume, err := svc.GetByID(uint(id64))
 	if err != nil {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"error": err.Error()})
 	}
@@ -99,25 +97,14 @@ func GetById(c *fiber.Ctx) error {
 }
 
 func Update(c *fiber.Ctx) error {
-	var body models.Resume
-
-	if err := c.BodyParser(&body); err != nil {
-		c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid body"})
+	var input input.ResumeInput
+	if err := c.BodyParser(&input); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "can't parse data to structure"})
 	}
 
-	v := c.Locals("resumeService")
-	if v == nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "resumeService not configured"})
+	if err := h.s.Update(&input); err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "internal error while creating resume"})
 	}
-	svc, ok := v.(service.ResumeService)
-	if !ok {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "resumeService has wrong type"})
-	}
-
-	if err := svc.Update(&body); err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
-	}
-	return c.JSON(body)
 }
 
 func Delete(c *fiber.Ctx) error {

@@ -6,12 +6,20 @@ import (
 	"github.com/asthmatick1dd0/CVagg/internal/transport/input"
 )
 
+type ResumeService interface {
+	Create(input *input.ResumeInput) error
+	Update(resume *models.Resume) error
+	Delete(id uint) error
+	GetByID(id uint) (*models.Resume, error)
+	GetAllByUserID(id uint) ([]*models.Resume, error)
+}
+
 type resumeService struct {
 	repo  repository.ResumeRepository
 	rItem ResumeItemService
 }
 
-func NewResumeService(r repository.ResumeRepository) *resumeService {
+func NewResumeService(r repository.ResumeRepository) ResumeService {
 	return &resumeService{repo: r}
 }
 
@@ -25,11 +33,11 @@ func (s *resumeService) Create(input *input.ResumeInput) error {
 	return s.repo.Create(resume)
 }
 
-func (s *resumeService) GetByUserId(userID uint) ([]models.Resume, error) {
+func (s *resumeService) GetAllByUserID(userID uint) ([]models.Resume, error) {
 	return s.repo.GetByUserId(userID)
 }
 
-func (s *resumeService) GetById(userID uint) (*models.Resume, error) {
+func (s *resumeService) GetByID(userID uint) (*models.Resume, error) {
 	return s.repo.GetById(userID)
 }
 
