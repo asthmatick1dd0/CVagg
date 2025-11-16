@@ -6,7 +6,7 @@ import (
 
 type ResumeItemRepository[T any] interface {
 	BaseRepository[T]
-	GetAllByResumeID(resumeId uint) ([]T, error)
+	GetAllByResumeID(resumeId uint) ([]*T, error)
 }
 
 // generic структура
@@ -43,9 +43,9 @@ func (r *resumeItemRepo[T]) GetById(id uint) (*T, error) {
 	return &entity, nil
 }
 
-func (r *resumeItemRepo[T]) GetAllByResumeID(resumeId uint) ([]T, error) {
+func (r *resumeItemRepo[T]) GetAllByResumeID(resumeId uint) ([]*T, error) {
 	// Точно также как написал выше
-	var entities []T
+	var entities []*T
 	if err := r.db.Where("resume_id = ?", resumeId).Find(&entities).Error; err != nil {
 		return nil, err
 	}

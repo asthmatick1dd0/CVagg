@@ -1,8 +1,8 @@
 package handlers
 
 import (
+	"github.com/asthmatick1dd0/CVagg/internal/service"
 	"github.com/asthmatick1dd0/CVagg/internal/transport/input"
-	"github.com/asthmatick1dd0/CVagg/service"
 	"github.com/gofiber/fiber/v2"
 )
 

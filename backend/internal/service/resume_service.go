@@ -16,7 +16,7 @@ type ResumeService interface {
 
 type resumeService struct {
 	repo  repository.ResumeRepository
-	rItem ResumeItemService
+	rItem ItemService
 }
 
 func NewResumeService(r repository.ResumeRepository) ResumeService {
@@ -33,8 +33,8 @@ func (s *resumeService) Create(input *input.ResumeInput) error {
 	return s.repo.Create(resume)
 }
 
-func (s *resumeService) GetAllByUserID(userID uint) ([]models.Resume, error) {
-	return s.repo.GetByUserId(userID)
+func (s *resumeService) GetAllByUserID(userID uint) ([]*models.Resume, error) {
+	return s.repo.GetAllByUserID(userID)
 }
 
 func (s *resumeService) GetByID(userID uint) (*models.Resume, error) {
