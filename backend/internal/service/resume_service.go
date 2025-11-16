@@ -7,20 +7,22 @@ import (
 )
 
 type resumeService struct {
-	repo repository.ResumeRepository
+	repo  repository.ResumeRepository
+	rItem ResumeItemService
 }
 
 func NewResumeService(r repository.ResumeRepository) *resumeService {
 	return &resumeService{repo: r}
 }
 
-func (s *resumeService) Create(input *input.ResumeInput) (*models.Resume, error) {
+func (s *resumeService) Create(input *input.ResumeInput) error {
+
 	resume := &models.Resume{
-		Title:   input.Title,
-		UserId:  input.UserID,
-		Summary: input.Summary,
-		Items:   input.Items,
+		Title:  input.Title,
+		UserId: input.UserID,
+		Items:  input.Items,
 	}
+	return s.repo.Create(resume)
 }
 
 func (s *resumeService) GetByUserId(userID uint) ([]models.Resume, error) {
