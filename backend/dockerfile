@@ -1,12 +1,25 @@
-FROM golang:1.25-alpine AS build
-WORKDIR /app
-COPY . .
-RUN go mod tidy
-RUN go build -o main .
+FROM golang:1.25-alpine
 
-FROM alpine:latest
 WORKDIR /app
-COPY --from=build /app/main .
-RUN chmod +x ./main
+COPY go.mod go.sum ./
+RUN go mod download
+
+COPY . .
 EXPOSE 8080
-CMD ["./main"]
+
+CMD ["go", "run", "."]
+
+
+# !!ДЛЯ ПРОДАКШЕНА!!
+# FROM golang:1.25-alpine AS build
+# WORKDIR /app
+# COPY . .
+# RUN go mod tidy
+# RUN go build -o main .
+
+# FROM alpine:latest
+# WORKDIR /app
+# COPY --from=build /app/main .
+# RUN chmod +x ./main
+# EXPOSE 8080
+# CMD ["./main"]
