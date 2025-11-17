@@ -20,8 +20,8 @@ type profileHandler struct {
 	s service.ResumeService
 }
 
-func NewProfileHandler(s *service.ResumeService) ProfileHandler {
-	return &profileHandler{s}
+func NewProfileHandler(s service.ResumeService) ProfileHandler {
+	return &profileHandler{s: s}
 }
 
 // TODO [CVAGG-42]: написать middleware для аутентификации и реализовать передачу id через локалс. + убрать логику из хендлера👿
@@ -39,7 +39,6 @@ func parseUserID(c *fiber.Ctx) uint {
 	return 0
 }
 
-// TODO [CVAGG-41]: Добавить внедрение зависимостей через структуру хенделера!№!№!№!№!№!№!)))(;(;()))
 func (h *profileHandler) Create(c *fiber.Ctx) error {
 	var input input.ResumeInput
 	if err := c.BodyParser(&input); err != nil {
