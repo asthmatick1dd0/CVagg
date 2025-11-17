@@ -1,11 +1,23 @@
 package routes
 
 import (
+	"log"
+
+	"github.com/asthmatick1dd0/CVagg/internal/database"
 	"github.com/asthmatick1dd0/CVagg/internal/handlers"
+	"github.com/asthmatick1dd0/CVagg/internal/repository"
+	"github.com/asthmatick1dd0/CVagg/internal/service"
 	"github.com/gofiber/fiber/v2"
 )
 
 func ProfileRoutes(app *fiber.App) {
+
+	db, err := database.ConnectDB()
+	if err != nil {
+		log.Fatalf("failed to connect to DB: %v", err)
+	}
+
+	hand := handlers.NewProfileHandler(service.NewResumeService(repository.NewResumeRepository(db)))
 
 	api := app.Group("/api")
 	v1 := api.Group("/v1")
@@ -21,19 +33,19 @@ func ProfileRoutes(app *fiber.App) {
 	resumes := profile.Group("/resumes")
 
 	// Create new resume
-	resumes.Post("", handlers.Create)
+	resumes.Post("", hand.Create)
 
 	// Get all resumes for user
-	resumes.Get("", handlers.GetByUserId)
+	resumes.Get("", hand.GetAllByUserID)
 
 	// Update resume
-	resumes.Patch("/:id", handlers.Update)
+	resumes.Patch("/:id", hand.Update)
 
 	// Get resume by id
-	resumes.Get("/:id", handlers.GetById)
+	resumes.Get("/:id", hand.GetByID)
 
 	// Delete resume by id
-	resumes.Delete("/:id", handlers.Delete)
+	resumes.Delete("/:id", hand.Delete)
 
 	// /api/v1/profile/settings/...
 	settings := profile.Group("/settings")
