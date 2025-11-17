@@ -1,11 +1,24 @@
 package routes
 
 import (
-	"github.com/asthmatick1dd0/CVagg/internal/container"
+	"log"
+
+	"github.com/asthmatick1dd0/CVagg/internal/database"
+	"github.com/asthmatick1dd0/CVagg/internal/handlers"
+	"github.com/asthmatick1dd0/CVagg/internal/repository"
+	"github.com/asthmatick1dd0/CVagg/internal/service"
 	"github.com/gofiber/fiber/v2"
 )
 
-func ProfileRoutes(app *fiber.App, cont *container.HandlerContainer) {
+func ProfileRoutes(app *fiber.App) {
+
+	db, err := database.ConnectDB()
+	if err != nil {
+		log.Fatalf("failed to connect to DB: %v", err)
+	}
+
+	hand := handlers.NewProfileHandler(service.NewResumeService(repository.NewResumeRepository(db)))
+
 	api := app.Group("/api")
 	v1 := api.Group("/v1")
 
@@ -20,19 +33,19 @@ func ProfileRoutes(app *fiber.App, cont *container.HandlerContainer) {
 	resumes := profile.Group("/resumes")
 
 	// Create new resume
-	resumes.Post("", cont.ResumeHandler.Create)
+	resumes.Post("", hand.Create)
 
 	// Get all resumes for user
-	resumes.Get("", cont.ResumeHandler.GetAllByUserID)
+	resumes.Get("", hand.GetAllByUserID)
 
 	// Update resume
-	resumes.Patch("/:id", cont.ResumeHandler.Update)
+	resumes.Patch("/:id", hand.Update)
 
 	// Get resume by id
-	resumes.Get("/:id", cont.ResumeHandler.GetByID)
+	resumes.Get("/:id", hand.GetByID)
 
 	// Delete resume by id
-	resumes.Delete("/:id", cont.ResumeHandler.Delete)
+	resumes.Delete("/:id", hand.Delete)
 
 	// /api/v1/profile/settings/...
 	settings := profile.Group("/settings")
