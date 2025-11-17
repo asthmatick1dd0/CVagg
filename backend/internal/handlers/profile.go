@@ -49,54 +49,38 @@ func (h *profileHandler) Create(c *fiber.Ctx) error {
 	if err := h.s.Create(&input); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "internal error while creating resume"})
 	}
+
+	return c.SendStatus(fiber.StatusCreated)
 }
 
-func GetByUserId(c *fiber.Ctx) error {
+func (h *profileHandler) GetAllByUserID(c *fiber.Ctx) error {
 	userID := parseUserID(c)
 	if userID == 0 {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "missing user_id (query or X-User-Id header)"})
 	}
 
-	v := c.Locals("resumeService")
-	if v == nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "resumeService not configured"})
-	}
-	svc, ok := v.(service.ResumeService)
-	if !ok {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "resumeService has wrong type"})
-	}
-
-	resumes, err := svc.GetAllByUserID(userID)
+	resumes, err := h.s.GetAllByUserID(userID)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
 	return c.JSON(resumes)
 }
 
-func GetById(c *fiber.Ctx) error {
+func (h *profileHandler) GetByID(c *fiber.Ctx) error {
 	idStr := c.Params("id")
 	id64, err := strconv.ParseUint(idStr, 10, 64)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "invalid id"})
 	}
 
-	v := c.Locals("resumeService")
-	if v == nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "resumeService not configured"})
-	}
-	svc, ok := v.(service.ResumeService)
-	if !ok {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "resumeService has wrong type"})
-	}
-
-	resume, err := svc.GetByID(uint(id64))
+	resume, err := h.s.GetByID(uint(id64))
 	if err != nil {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"error": err.Error()})
 	}
 	return c.JSON(resume)
 }
 
-func Update(c *fiber.Ctx) error {
+func (h *profileHandler) Update(c *fiber.Ctx) error {
 	var input input.ResumeInput
 	if err := c.BodyParser(&input); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "can't parse data to structure"})
@@ -105,25 +89,18 @@ func Update(c *fiber.Ctx) error {
 	if err := h.s.Update(&input); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "internal error while creating resume"})
 	}
+
+	return c.SendStatus(fiber.StatusCreated)
 }
 
-func Delete(c *fiber.Ctx) error {
+func (h *profileHandler) Delete(c *fiber.Ctx) error {
 	idStr := c.Params("id")
 	id64, err := strconv.ParseUint(idStr, 10, 64)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "invalid id"})
 	}
 
-	v := c.Locals("resumeService")
-	if v == nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "resumeService not configured"})
-	}
-	svc, ok := v.(service.ResumeService)
-	if !ok {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "resumeService has wrong type"})
-	}
-
-	if err := svc.Delete(uint(id64)); err != nil {
+	if err := h.s.Delete(uint(id64)); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
 	return c.SendStatus(fiber.StatusNoContent)
