@@ -15,7 +15,7 @@ type HandlerContainer struct {
 
 	resumeService service.ResumeService
 
-	resumeHandler handlers.ProfileHandler
+	ResumeHandler handlers.ProfileHandler
 }
 
 func NewHandlerContainer() *HandlerContainer {
@@ -37,9 +37,9 @@ func NewHandlerContainer() *HandlerContainer {
 	log.Printf("Initialized Resume Handler")
 
 	container := &HandlerContainer{
-		resumeRepo:    _resumeRepo,
-		resumeService: _resumeService,
-		resumeHandler: _resumeHandler,
+		ResumeRepo:    _resumeRepo,
+		ResumeService: _resumeService,
+		ResumeHandler: _resumeHandler,
 	}
 
 	log.Printf("Initialized handler container")
