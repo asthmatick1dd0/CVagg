@@ -5,7 +5,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func EditorRoutes(app *fiber.App, cont *container.HandlerContainer) {
+func EditorRoutes(app *fiber.App, cont *container.Container) {
 	api := app.Group("/api")
 	v1 := api.Group("/v1")
 

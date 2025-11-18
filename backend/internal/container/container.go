@@ -10,7 +10,7 @@ import (
 )
 
 // Пополнять по мере подключения новых хендлеров к рутам
-type HandlerContainer struct {
+type Container struct {
 	userRepo          repository.UserRepository
 	resumeRepo        repository.ResumeRepository
 	resumeItemRepo    repository.ItemRepository
@@ -29,7 +29,7 @@ type HandlerContainer struct {
 	EditorHandler    handlers.EditorHandler
 }
 
-func NewHandlerContainer() *HandlerContainer {
+func NewContainer() *Container {
 	db, err := database.ConnectDB()
 	if err != nil {
 		log.Fatalf("failed to connect to DB: %v", err)
@@ -66,7 +66,7 @@ func NewHandlerContainer() *HandlerContainer {
 
 	log.Printf("Initialized Resume Handler")
 
-	container := &HandlerContainer{
+	container := &Container{
 		userRepo:          _userRepo,
 		resumeRepo:        _resumeRepo,
 		resumeItemRepo:    _resumeItemRepo,
