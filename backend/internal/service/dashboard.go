@@ -7,8 +7,9 @@ import (
 )
 
 type DashboardService interface {
-	Delete(id uint) error
 	GetAllByUserID(id uint) ([]*models.Resume, error)
+	GetByID(id uint) (*models.Resume, error)
+	Delete(id uint) error
 }
 
 type dashboardService struct {

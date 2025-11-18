@@ -8,8 +8,9 @@ import (
 )
 
 type DashboardHandler interface {
-	Delete(c *fiber.Ctx) error
 	GetAllByUserID(c *fiber.Ctx) error
+	GetByID(c *fiber.Ctx) error
+	Delete(c *fiber.Ctx) error
 }
 
 type dashboardHandler struct {
@@ -46,6 +47,20 @@ func (h *dashboardHandler) GetAllByUserID(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
 	return c.JSON(resumes)
+}
+
+func (h *dashboardHandler) GetByID(c *fiber.Ctx) error {
+	idStr := c.Params("id")
+	id64, err := strconv.ParseUint(idStr, 10, 64)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "invalid id"})
+	}
+
+	resume, err := h.s.GetByID(uint(id64))
+	if err != nil {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"error": err.Error()})
+	}
+	return c.JSON(resume)
 }
 
 func (h *dashboardHandler) Delete(c *fiber.Ctx) error {
