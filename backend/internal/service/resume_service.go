@@ -8,7 +8,7 @@ import (
 
 type ResumeService interface {
 	Create(input *input.ResumeInput) error
-	Update(resume *models.Resume) error
+	Update(resume *input.ResumeInput) error
 	Delete(id uint) error
 	GetByID(id uint) (*models.Resume, error)
 	GetAllByUserID(id uint) ([]*models.Resume, error)
@@ -28,8 +28,10 @@ func (s *resumeService) Create(input *input.ResumeInput) error {
 	resume := &models.Resume{
 		Title:  input.Title,
 		UserId: input.UserID,
-		Items:  input.Items,
 	}
+
+	s.rItem.Create(input)
+
 	return s.repo.Create(resume)
 }
 
@@ -41,7 +43,7 @@ func (s *resumeService) GetByID(userID uint) (*models.Resume, error) {
 	return s.repo.GetById(userID)
 }
 
-func (s *resumeService) Update(resume *models.Resume) error {
+func (s *resumeService) Update(resume *input.ResumeInput) error {
 	return s.repo.Update(resume)
 }
 

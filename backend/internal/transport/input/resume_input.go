@@ -14,7 +14,7 @@ type ItemInput struct {
 	Education     *EducationInput     `json:"education,omitempty"`
 	HardSkill     *HardSkillInput     `json:"hard_skill,omitempty"`
 	Custom        *CustomInput        `json:"custom,omitempty"`
-	JobExperience *JobExperienceInput `json:"job_experience,omitempty`
+	JobExperience *JobExperienceInput `json:"job_experience,omitempty"`
 }
 
 type EducationInput struct {
