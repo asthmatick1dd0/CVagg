@@ -6,13 +6,17 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-// TODO [CVAGG-43] Переписать все хендлеры с использованием service, а не Locals
-type editorHandler struct {
-	service *service.EditorService
+type EditorHandler interface {
+	CreateResume(ctx *fiber.Ctx) error
 }
 
-func NewEditorHandler(service *service.EditorService) *editorHandler {
-	return &editorHandler{service}
+type editorHandler struct {
+	s *service.EditorService
+}
+
+// TODO [CVAGG-47]: Дописать сервис для редактора
+func NewEditorHandler(s *service.EditorService) *editorHandler {
+	return &editorHandler{s: s}
 }
 
 func (h *editorHandler) CreateResume(ctx *fiber.Ctx) error {
@@ -22,7 +26,7 @@ func (h *editorHandler) CreateResume(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "invalid request"})
 	}
 
-	resume, err := h.service.Create(&input)
+	resume, err := h.s.Create(&input)
 	if err != nil {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "internal server error"})
 	}
