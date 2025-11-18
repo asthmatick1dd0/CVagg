@@ -12,8 +12,6 @@ services:
     volumes:
       - ./backend:/app
 
-    
-
   nginx:
     container_name: cvagg-nginx
     build: ./frontend
@@ -21,8 +19,6 @@ services:
       - "80:80"
     depends_on:
       - backend
-    volumes:
-      - ./frontend:/usr/share/nginx/html
 
   database:
     container_name: cvagg-postgres
