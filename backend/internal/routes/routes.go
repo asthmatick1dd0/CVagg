@@ -11,6 +11,6 @@ func SetupRoutes(app *fiber.App) {
 
 	ProfileRoutes(app, container)
 	// добавить контейнер как параметр, после написания хендлеров и добавления их в руты
-	AuthRoutes(app)
-	EditorRoutes(app)
+	AuthRoutes(app, container)
+	EditorRoutes(app, container)
 }
