@@ -1,12 +1,11 @@
 package routes
 
 import (
-	"github.com/asthmatick1dd0/CVagg/internal/handlers"
+	"github.com/asthmatick1dd0/CVagg/internal/container"
 	"github.com/gofiber/fiber/v2"
 )
 
-func ProfileRoutes(app *fiber.App) {
-
+func ProfileRoutes(app *fiber.App, cont *container.HandlerContainer) {
 	api := app.Group("/api")
 	v1 := api.Group("/v1")
 
@@ -21,19 +20,19 @@ func ProfileRoutes(app *fiber.App) {
 	resumes := profile.Group("/resumes")
 
 	// Create new resume
-	resumes.Post("", handlers.Create)
+	resumes.Post("", cont.DashboardHandler.Create)
 
 	// Get all resumes for user
-	resumes.Get("", handlers.GetByUserId)
+	resumes.Get("", cont.DashboardHandler.GetAllByUserID)
 
 	// Update resume
-	resumes.Patch("/:id", handlers.Update)
+	resumes.Patch("/:id", cont.DashboardHandler.Update)
 
 	// Get resume by id
-	resumes.Get("/:id", handlers.GetById)
+	resumes.Get("/:id", cont.DashboardHandler.GetByID)
 
 	// Delete resume by id
-	resumes.Delete("/:id", handlers.Delete)
+	resumes.Delete("/:id", cont.DashboardHandler.Delete)
 
 	// /api/v1/profile/settings/...
 	settings := profile.Group("/settings")

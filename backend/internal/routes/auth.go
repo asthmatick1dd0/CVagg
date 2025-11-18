@@ -1,12 +1,13 @@
 package routes
 
 import (
+	"github.com/asthmatick1dd0/CVagg/internal/container"
 	"github.com/asthmatick1dd0/CVagg/internal/handlers"
 	"github.com/asthmatick1dd0/CVagg/internal/service"
 	"github.com/gofiber/fiber/v2"
 )
 
-func AuthRoutes(app *fiber.App) {
+func AuthRoutes(app *fiber.App, cont *container.HandlerContainer) {
 	api := app.Group("/api")
 	v1 := api.Group("/v1")
 
@@ -15,7 +16,7 @@ func AuthRoutes(app *fiber.App) {
 
 	auth.Get("/signin", handlers.SignInHandler)
 
-	auth.Post("/signup", handlers.SignUpHandler)
+	auth.Post("/signup", cont.AuthHandler.SignUp)
 
 	auth.Post("/logout", service.DeserealizeUser, handlers.LogOutHandler)
 

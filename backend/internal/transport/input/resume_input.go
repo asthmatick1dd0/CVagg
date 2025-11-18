@@ -3,11 +3,10 @@ package input
 import "time"
 
 type ResumeInput struct {
-	ID      uint                   `json:"id"`
-	UserID  uint                   `json:"user_id"`
-	Title   string                 `json:"title"`
-	Summary string                 `json:"summary"`
-	Items   map[string][]ItemInput `json:"items"`
+	ID     uint                   `json:"id"`
+	UserID uint                   `json:"user_id"`
+	Title  string                 `json:"title"`
+	Items  map[string][]ItemInput `json:"items"`
 }
 
 type ItemInput struct {
@@ -15,7 +14,7 @@ type ItemInput struct {
 	Education     *EducationInput     `json:"education,omitempty"`
 	HardSkill     *HardSkillInput     `json:"hard_skill,omitempty"`
 	Custom        *CustomInput        `json:"custom,omitempty"`
-	JobExperience *JobExperienceInput `json:"job_experience,omitempty`
+	JobExperience *JobExperienceInput `json:"job_experience,omitempty"`
 }
 
 type EducationInput struct {

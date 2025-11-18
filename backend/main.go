@@ -21,7 +21,7 @@ func main() {
 	app := fiber.New()
 
 	app.Use(func(c *fiber.Ctx) error {
-		c.Locals("resumeService", service.NewResumeService(repository.NewResumeRepository(db)))
+		c.Locals("resumeService", service.NewDashboardService(repository.NewResumeRepository(db)))
 		c.Locals("userRepo", repository.NewUserRepository(db))
 
 		//TODO: Запихать значения, связанные с безопасностью, в .env, и впредь выгружать оттуда
