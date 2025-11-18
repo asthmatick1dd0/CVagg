@@ -5,28 +5,22 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func ProfileRoutes(app *fiber.App, cont *container.HandlerContainer) {
+func DashboardRoutes(app *fiber.App, cont *container.Container) {
 	api := app.Group("/api")
 	v1 := api.Group("/v1")
 
-	// /api/v1/profile/...
-	profile := v1.Group("/profile")
+	// /api/v1/dashboard/...
+	dashboard := v1.Group("/dashboard")
 
-	profile.Get("/me", func(c *fiber.Ctx) error {
+	dashboard.Get("/me", func(c *fiber.Ctx) error {
 		return c.SendString("User Profile")
 	})
 
-	// /api/v1/profile/resumes/...
-	resumes := profile.Group("/resumes")
-
-	// Create new resume
-	resumes.Post("", cont.DashboardHandler.Create)
+	// /api/v1/dashboard/resumes/...
+	resumes := dashboard.Group("/resumes")
 
 	// Get all resumes for user
 	resumes.Get("", cont.DashboardHandler.GetAllByUserID)
-
-	// Update resume
-	resumes.Patch("/:id", cont.DashboardHandler.Update)
 
 	// Get resume by id
 	resumes.Get("/:id", cont.DashboardHandler.GetByID)
@@ -35,7 +29,7 @@ func ProfileRoutes(app *fiber.App, cont *container.HandlerContainer) {
 	resumes.Delete("/:id", cont.DashboardHandler.Delete)
 
 	// /api/v1/profile/settings/...
-	settings := profile.Group("/settings")
+	settings := dashboard.Group("/settings")
 
 	settings.Patch("/change-avatar", func(c *fiber.Ctx) error {
 		return c.SendString("Change user avatar")

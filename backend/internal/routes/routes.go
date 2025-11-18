@@ -7,9 +7,9 @@ import (
 )
 
 func SetupRoutes(app *fiber.App) {
-	container := container.NewHandlerContainer()
+	container := container.NewContainer()
 
-	ProfileRoutes(app, container)
+	DashboardRoutes(app, container)
 	// добавить контейнер как параметр, после написания хендлеров и добавления их в руты
 	AuthRoutes(app, container)
 	EditorRoutes(app, container)
