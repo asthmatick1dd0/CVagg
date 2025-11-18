@@ -44,7 +44,7 @@ func (s *dashboardService) Update(input *input.ResumeInput) error {
 
 	resume := &models.Resume{
 		Title:  input.Title,
-		UserId: input.UserID,
+		UserID: input.UserID,
 	}
 
 	return s.repo.Update(resume)
