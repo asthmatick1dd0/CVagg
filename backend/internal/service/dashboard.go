@@ -25,8 +25,7 @@ func NewDashboardService(r repository.ResumeRepository) DashboardService {
 func (s *dashboardService) Create(input *input.ResumeInput) error {
 
 	resume := &models.Resume{
-		Title:  input.Title,
-		UserId: input.UserID,
+		Title: input.Title,
 	}
 
 	return s.repo.Create(resume)

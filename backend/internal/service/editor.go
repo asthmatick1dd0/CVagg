@@ -40,6 +40,7 @@ func NewEditorService(
 	}
 }
 
+// TODO [CVAGG-50] свернуть в несколько маленьких функций
 func (s *editorService) SaveResume(resume *input.ResumeInput) error {
 	resumeInput := &models.Resume{
 		Title:  resume.Title,

@@ -4,7 +4,6 @@ import (
 	"crypto/ecdsa"
 	"time"
 
-	"github.com/asthmatick1dd0/CVagg/internal/container"
 	"github.com/asthmatick1dd0/CVagg/internal/models"
 	"github.com/asthmatick1dd0/CVagg/internal/repository"
 	"github.com/asthmatick1dd0/CVagg/internal/service"
@@ -29,7 +28,7 @@ func NewAuthHandler(s service.AuthService) AuthHandler {
 	return &authHandler{s: s}
 }
 
-func (h *authHandler) SignUp(c *fiber.Ctx, cont *container.HandlerContainer) error {
+func (h *authHandler) SignUp(c *fiber.Ctx) error {
 	var input input.SignUpInput
 	err := c.QueryParser(&input)
 	if err != nil {
