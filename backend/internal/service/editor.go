@@ -53,6 +53,7 @@ func (s *editorService) SaveResume(resume *input.ResumeInput) error {
 		switch section {
 		case "jobexperience":
 			for _, it := range items {
+
 				jobExpInput := &models.JobExperience{
 					Company:   it.JobExperience.Company,
 					Position:  it.JobExperience.Position,
@@ -60,6 +61,15 @@ func (s *editorService) SaveResume(resume *input.ResumeInput) error {
 					EndDate:   it.JobExperience.EndDate,
 				}
 				if err := s.jobExpRepo.Create(jobExpInput); err != nil {
+					return err
+				}
+				resumeItemInput := &models.ResumeItem{
+					ItemType: it.Type,
+					ItemId:   jobExpInput.ID,
+
+					ResumeId: resumeInput.ID,
+				}
+				if err := s.resumeItemRepo.Create(resumeItemInput); err != nil {
 					return err
 				}
 			}
@@ -77,6 +87,16 @@ func (s *editorService) SaveResume(resume *input.ResumeInput) error {
 				if err := s.educationRepo.Create(eduInput); err != nil {
 					return err
 				}
+
+				resumeItemInput := &models.ResumeItem{
+					ItemType: it.Type,
+					ItemId:   eduInput.ID,
+
+					ResumeId: resumeInput.ID,
+				}
+				if err := s.resumeItemRepo.Create(resumeItemInput); err != nil {
+					return err
+				}
 			}
 		case "hardskill":
 			for _, it := range items {
@@ -86,6 +106,15 @@ func (s *editorService) SaveResume(resume *input.ResumeInput) error {
 				if err := s.hardSkillRepo.Create(hardSkillInput); err != nil {
 					return err
 				}
+				resumeItemInput := &models.ResumeItem{
+					ItemType: it.Type,
+					ItemId:   hardSkillInput.ID,
+
+					ResumeId: resumeInput.ID,
+				}
+				if err := s.resumeItemRepo.Create(resumeItemInput); err != nil {
+					return err
+				}
 			}
 		case "about":
 			for _, it := range items {
@@ -93,6 +122,16 @@ func (s *editorService) SaveResume(resume *input.ResumeInput) error {
 					About: it.About.About,
 				}
 				if err := s.aboutRepo.Create(aboutInput); err != nil {
+					return err
+				}
+
+				resumeItemInput := &models.ResumeItem{
+					ItemType: it.Type,
+					ItemId:   aboutInput.ID,
+
+					ResumeId: resumeInput.ID,
+				}
+				if err := s.resumeItemRepo.Create(resumeItemInput); err != nil {
 					return err
 				}
 			}
@@ -105,7 +144,17 @@ func (s *editorService) SaveResume(resume *input.ResumeInput) error {
 				if err := s.customRepo.Create(customInput); err != nil {
 					return err
 				}
+				resumeItemInput := &models.ResumeItem{
+					ItemType: it.Type,
+					ItemId:   customInput.ID,
+
+					ResumeId: resumeInput.ID,
+				}
+				if err := s.resumeItemRepo.Create(resumeItemInput); err != nil {
+					return err
+				}
 			}
 		}
 	}
+	return nil
 }
