@@ -4,16 +4,13 @@ import (
 	"strconv"
 
 	"github.com/asthmatick1dd0/CVagg/internal/service"
-	"github.com/asthmatick1dd0/CVagg/internal/transport/input"
 	"github.com/gofiber/fiber/v2"
 )
 
 type DashboardHandler interface {
-	Create(c *fiber.Ctx) error
-	Update(c *fiber.Ctx) error
-	Delete(c *fiber.Ctx) error
-	GetByID(c *fiber.Ctx) error
 	GetAllByUserID(c *fiber.Ctx) error
+	GetByID(c *fiber.Ctx) error
+	Delete(c *fiber.Ctx) error
 }
 
 type dashboardHandler struct {
@@ -37,19 +34,6 @@ func parseUserID(c *fiber.Ctx) uint {
 		}
 	}
 	return 0
-}
-
-func (h *dashboardHandler) Create(c *fiber.Ctx) error {
-	var input input.ResumeInput
-	if err := c.BodyParser(&input); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "can't parse data to structure"})
-	}
-
-	if err := h.s.Create(&input); err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "internal error while creating resume"})
-	}
-
-	return c.SendStatus(fiber.StatusCreated)
 }
 
 func (h *dashboardHandler) GetAllByUserID(c *fiber.Ctx) error {
@@ -77,19 +61,6 @@ func (h *dashboardHandler) GetByID(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"error": err.Error()})
 	}
 	return c.JSON(resume)
-}
-
-func (h *dashboardHandler) Update(c *fiber.Ctx) error {
-	var input input.ResumeInput
-	if err := c.BodyParser(&input); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "can't parse data to structure"})
-	}
-
-	if err := h.s.Update(&input); err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "internal error while creating resume"})
-	}
-
-	return c.SendStatus(fiber.StatusCreated)
 }
 
 func (h *dashboardHandler) Delete(c *fiber.Ctx) error {
