@@ -10,6 +10,17 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
+type AuthService interface {
+}
+
+type authService struct {
+	repo repository.UserRepository
+}
+
+func NewAuthService(repo repository.UserRepository) AuthService {
+	return &authService{repo}
+}
+
 // / Middleware для нормальной работы хендлеров разлогинивания и личной страницы
 func DeserealizeUser(c *fiber.Ctx) error {
 	var token string
