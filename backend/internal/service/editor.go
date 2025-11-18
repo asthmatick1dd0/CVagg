@@ -78,6 +78,34 @@ func (s *editorService) SaveResume(resume *input.ResumeInput) error {
 					return err
 				}
 			}
+		case "hardskill":
+			for _, it := range items {
+				hardSkillInput := &models.HardSkill{
+					SkillId: it.HardSkill.SkillID,
+				}
+				if err := s.hardSkillRepo.Create(hardSkillInput); err != nil {
+					return err
+				}
+			}
+		case "about":
+			for _, it := range items {
+				aboutInput := &models.About{
+					About: it.About.About,
+				}
+				if err := s.aboutRepo.Create(aboutInput); err != nil {
+					return err
+				}
+			}
+		case "custom":
+			for _, it := range items {
+				customInput := &models.Custom{
+					Title:   it.Custom.Title,
+					Content: it.Custom.Content,
+				}
+				if err := s.customRepo.Create(customInput); err != nil {
+					return err
+				}
+			}
 		}
 	}
 }
