@@ -14,13 +14,13 @@ type HandlerContainer struct {
 	resumeRepo repository.ResumeRepository
 	authRepo   repository.UserRepository
 
-	resumeService service.ResumeService
-	authService   service.AuthService
-	editorService service.EditorService
+	dashboardService service.DashboardService
+	authService      service.AuthService
+	editorService    service.EditorService
 
-	ResumeHandler handlers.ProfileHandler
-	AuthHandler   handlers.AuthHandler
-	EditorHandler handlers.EditorHandler
+	DashboardHandler handlers.DashboardHandler
+	AuthHandler      handlers.AuthHandler
+	EditorHandler    handlers.EditorHandler
 }
 
 func NewHandlerContainer() *HandlerContainer {
@@ -34,13 +34,13 @@ func NewHandlerContainer() *HandlerContainer {
 
 	log.Printf("Connected to DB successfully")
 
-	_resumeService := service.NewResumeService(_resumeRepo)
+	_resumeService := service.NewDashboardService(_resumeRepo)
 	_authService := service.NewAuthService(_authService)
 	_editorService := service.NewEditorService(_resumeRepo)
 
 	log.Printf("Initialized Resume Service")
 
-	_resumeHandler := handlers.NewProfileHandler(_resumeService)
+	_dashboardHandler := handlers.NewDashboardHandler(_resumeService)
 	_authHandler := handlers.NewAuthHandler(_resumeService)
 	_editorHandler := handlers.NewEditorHandler(_editorService)
 
@@ -50,13 +50,13 @@ func NewHandlerContainer() *HandlerContainer {
 		resumeRepo: _resumeRepo,
 		authRepo:   _authRepo,
 
-		resumeService: _resumeService,
-		authService:   _authService,
-		editorService: _editorService,
+		dashboardService: _dashboardService,
+		authService:      _authService,
+		editorService:    _editorService,
 
-		ResumeHandler: _resumeHandler,
-		AuthHandler:   _authHandler,
-		EditorHandler: _editorHandler,
+		DashboardHandler: _dashboardHandler,
+		AuthHandler:      _authHandler,
+		EditorHandler:    _editorHandler,
 	}
 
 	log.Printf("Initialized handler container")

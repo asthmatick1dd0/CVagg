@@ -8,7 +8,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-type ProfileHandler interface {
+type DashboardHandler interface {
 	Create(c *fiber.Ctx) error
 	Update(c *fiber.Ctx) error
 	Delete(c *fiber.Ctx) error
@@ -16,12 +16,12 @@ type ProfileHandler interface {
 	GetAllByUserID(c *fiber.Ctx) error
 }
 
-type profileHandler struct {
-	s service.ResumeService
+type dashboardHandler struct {
+	s service.DashboardService
 }
 
-func NewProfileHandler(s service.ResumeService) ProfileHandler {
-	return &profileHandler{s: s}
+func NewDashboardHandler(s service.DashboardService) DashboardHandler {
+	return &dashboardHandler{s: s}
 }
 
 // TODO [CVAGG-42]: написать middleware для аутентификации и реализовать передачу id через локалс. + убрать логику из хендлера👿
@@ -39,7 +39,7 @@ func parseUserID(c *fiber.Ctx) uint {
 	return 0
 }
 
-func (h *profileHandler) Create(c *fiber.Ctx) error {
+func (h *dashboardHandler) Create(c *fiber.Ctx) error {
 	var input input.ResumeInput
 	if err := c.BodyParser(&input); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "can't parse data to structure"})
@@ -52,7 +52,7 @@ func (h *profileHandler) Create(c *fiber.Ctx) error {
 	return c.SendStatus(fiber.StatusCreated)
 }
 
-func (h *profileHandler) GetAllByUserID(c *fiber.Ctx) error {
+func (h *dashboardHandler) GetAllByUserID(c *fiber.Ctx) error {
 	userID := parseUserID(c)
 	if userID == 0 {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "missing user_id (query or X-User-Id header)"})
@@ -65,7 +65,7 @@ func (h *profileHandler) GetAllByUserID(c *fiber.Ctx) error {
 	return c.JSON(resumes)
 }
 
-func (h *profileHandler) GetByID(c *fiber.Ctx) error {
+func (h *dashboardHandler) GetByID(c *fiber.Ctx) error {
 	idStr := c.Params("id")
 	id64, err := strconv.ParseUint(idStr, 10, 64)
 	if err != nil {
@@ -79,7 +79,7 @@ func (h *profileHandler) GetByID(c *fiber.Ctx) error {
 	return c.JSON(resume)
 }
 
-func (h *profileHandler) Update(c *fiber.Ctx) error {
+func (h *dashboardHandler) Update(c *fiber.Ctx) error {
 	var input input.ResumeInput
 	if err := c.BodyParser(&input); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "can't parse data to structure"})
@@ -92,7 +92,7 @@ func (h *profileHandler) Update(c *fiber.Ctx) error {
 	return c.SendStatus(fiber.StatusCreated)
 }
 
-func (h *profileHandler) Delete(c *fiber.Ctx) error {
+func (h *dashboardHandler) Delete(c *fiber.Ctx) error {
 	idStr := c.Params("id")
 	id64, err := strconv.ParseUint(idStr, 10, 64)
 	if err != nil {

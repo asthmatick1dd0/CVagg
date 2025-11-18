@@ -20,19 +20,19 @@ func ProfileRoutes(app *fiber.App, cont *container.HandlerContainer) {
 	resumes := profile.Group("/resumes")
 
 	// Create new resume
-	resumes.Post("", cont.ResumeHandler.Create)
+	resumes.Post("", cont.DashboardHandler.Create)
 
 	// Get all resumes for user
-	resumes.Get("", cont.ResumeHandler.GetAllByUserID)
+	resumes.Get("", cont.DashboardHandler.GetAllByUserID)
 
 	// Update resume
-	resumes.Patch("/:id", cont.ResumeHandler.Update)
+	resumes.Patch("/:id", cont.DashboardHandler.Update)
 
 	// Get resume by id
-	resumes.Get("/:id", cont.ResumeHandler.GetByID)
+	resumes.Get("/:id", cont.DashboardHandler.GetByID)
 
 	// Delete resume by id
-	resumes.Delete("/:id", cont.ResumeHandler.Delete)
+	resumes.Delete("/:id", cont.DashboardHandler.Delete)
 
 	// /api/v1/profile/settings/...
 	settings := profile.Group("/settings")

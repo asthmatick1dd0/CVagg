@@ -6,7 +6,7 @@ import (
 	"github.com/asthmatick1dd0/CVagg/internal/transport/input"
 )
 
-type ResumeService interface {
+type DashboardService interface {
 	Create(input *input.ResumeInput) error
 	Update(resume *input.ResumeInput) error
 	Delete(id uint) error
@@ -14,39 +14,42 @@ type ResumeService interface {
 	GetAllByUserID(id uint) ([]*models.Resume, error)
 }
 
-type resumeService struct {
-	repo  repository.ResumeRepository
-	rItem ItemService
+type dashboardService struct {
+	repo repository.ResumeRepository
 }
 
-func NewResumeService(r repository.ResumeRepository) ResumeService {
-	return &resumeService{repo: r}
+func NewDashboardService(r repository.ResumeRepository) DashboardService {
+	return &dashboardService{repo: r}
 }
 
-func (s *resumeService) Create(input *input.ResumeInput) error {
+func (s *dashboardService) Create(input *input.ResumeInput) error {
 
 	resume := &models.Resume{
 		Title:  input.Title,
 		UserId: input.UserID,
 	}
 
-	s.rItem.Create(input)
-
 	return s.repo.Create(resume)
 }
 
-func (s *resumeService) GetAllByUserID(userID uint) ([]*models.Resume, error) {
+func (s *dashboardService) GetAllByUserID(userID uint) ([]*models.Resume, error) {
 	return s.repo.GetAllByUserID(userID)
 }
 
-func (s *resumeService) GetByID(userID uint) (*models.Resume, error) {
+func (s *dashboardService) GetByID(userID uint) (*models.Resume, error) {
 	return s.repo.GetById(userID)
 }
 
-func (s *resumeService) Update(resume *input.ResumeInput) error {
+func (s *dashboardService) Update(input *input.ResumeInput) error {
+
+	resume := &models.Resume{
+		Title:  input.Title,
+		UserId: input.UserID,
+	}
+
 	return s.repo.Update(resume)
 }
 
-func (s *resumeService) Delete(id uint) error {
+func (s *dashboardService) Delete(id uint) error {
 	return s.repo.Delete(id)
 }
