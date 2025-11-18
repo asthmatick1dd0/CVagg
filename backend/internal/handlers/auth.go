@@ -1,20 +1,18 @@
 package handlers
 
 import (
+	"crypto/ecdsa"
+	"time"
 
-	"github.com/asthmatick1dd0/CVagg/internal/container"
 	"github.com/asthmatick1dd0/CVagg/internal/models"
 	"github.com/asthmatick1dd0/CVagg/internal/repository"
 	"github.com/asthmatick1dd0/CVagg/internal/service"
-	"github.com/asthmatick1dd0/CVagg/internal/transport/input"
-	"github.com/asthmatick1dd0/CVagg/internal/validation"
 	"github.com/asthmatick1dd0/CVagg/internal/transport/dto"
-	"github.com/asthmatick1dd0/CVagg/internal/validation"
+	"github.com/asthmatick1dd0/CVagg/internal/transport/input"
+	internal "github.com/asthmatick1dd0/CVagg/internal/validation"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
-  "crypto/ecdsa"
-	"time"
 )
 
 type AuthHandler interface {
@@ -30,14 +28,14 @@ func NewAuthHandler(s service.AuthService) AuthHandler {
 	return &authHandler{s: s}
 }
 
-func (h *authHandler) SignUp(c *fiber.Ctx, cont *container.HandlerContainer) error {
+func (h *authHandler) SignUp(c *fiber.Ctx) error {
 	var input input.SignUpInput
 	err := c.QueryParser(&input)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(err.Error())
 	}
 
-	errs := validation.ValidateStruct(input)
+	errs := internal.ValidateStruct(input)
 	if len(errs) != 0 {
 		return c.Status(fiber.StatusBadRequest).JSON(errs)
 	}

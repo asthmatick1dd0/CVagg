@@ -11,11 +11,11 @@ type EditorHandler interface {
 }
 
 type editorHandler struct {
-	s *service.EditorService
+	s service.EditorService
 }
 
 // TODO [CVAGG-47]: Дописать сервис для редактора
-func NewEditorHandler(s *service.EditorService) *editorHandler {
+func NewEditorHandler(s service.EditorService) EditorHandler {
 	return &editorHandler{s: s}
 }
 
@@ -26,9 +26,9 @@ func (h *editorHandler) CreateResume(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "invalid request"})
 	}
 
-	resume, err := h.s.Create(&input)
+	err := h.s.SaveResume(&input)
 	if err != nil {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "internal server error"})
 	}
-	return ctx.Status(fiber.StatusCreated).JSON(resume)
+	return nil
 }

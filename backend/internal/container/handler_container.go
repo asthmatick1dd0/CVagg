@@ -11,8 +11,14 @@ import (
 
 // Пополнять по мере подключения новых хендлеров к рутам
 type HandlerContainer struct {
-	resumeRepo repository.ResumeRepository
-	authRepo   repository.UserRepository
+	userRepo          repository.UserRepository
+	resumeRepo        repository.ResumeRepository
+	resumeItemRepo    repository.ItemRepository
+	jobExperienceRepo repository.JobExperienceRepository
+	educationRepo     repository.EducationRepository
+	hardSkillRepo     repository.HardSkillRepository
+	aboutRepo         repository.AboutRepository
+	customRepo        repository.CustomRepository
 
 	dashboardService service.DashboardService
 	authService      service.AuthService
@@ -29,26 +35,46 @@ func NewHandlerContainer() *HandlerContainer {
 		log.Fatalf("failed to connect to DB: %v", err)
 	}
 
+	_userRepo := repository.NewUserRepository(db)
 	_resumeRepo := repository.NewResumeRepository(db)
-	_authRepo := repository.NewUserRepository(db)
+	_resumeItemRepo := repository.NewItemRepository(db)
+	_jobExperienceRepo := repository.NewJobExperienceRepository(db)
+	_educationRepo := repository.NewEducationRepository(db)
+	_hardSkillRepo := repository.NewHardSkillRepository(db)
+	_aboutRepo := repository.NewAboutRepository(db)
+	_customRepo := repository.NewCustomRepository(db)
 
 	log.Printf("Connected to DB successfully")
 
-	_resumeService := service.NewDashboardService(_resumeRepo)
-	_authService := service.NewAuthService(_authService)
-	_editorService := service.NewEditorService(_resumeRepo)
+	_dashboardService := service.NewDashboardService(_resumeRepo)
+	_authService := service.NewAuthService(_userRepo)
+	_editorService := service.NewEditorService(
+		_resumeRepo,
+		_resumeItemRepo,
+		_jobExperienceRepo,
+		_educationRepo,
+		_hardSkillRepo,
+		_aboutRepo,
+		_customRepo,
+	)
 
 	log.Printf("Initialized Resume Service")
 
-	_dashboardHandler := handlers.NewDashboardHandler(_resumeService)
-	_authHandler := handlers.NewAuthHandler(_resumeService)
+	_dashboardHandler := handlers.NewDashboardHandler(_dashboardService)
+	_authHandler := handlers.NewAuthHandler(_authService)
 	_editorHandler := handlers.NewEditorHandler(_editorService)
 
 	log.Printf("Initialized Resume Handler")
 
 	container := &HandlerContainer{
-		resumeRepo: _resumeRepo,
-		authRepo:   _authRepo,
+		userRepo:          _userRepo,
+		resumeRepo:        _resumeRepo,
+		resumeItemRepo:    _resumeItemRepo,
+		jobExperienceRepo: _jobExperienceRepo,
+		educationRepo:     _educationRepo,
+		hardSkillRepo:     _hardSkillRepo,
+		aboutRepo:         _aboutRepo,
+		customRepo:        _customRepo,
 
 		dashboardService: _dashboardService,
 		authService:      _authService,

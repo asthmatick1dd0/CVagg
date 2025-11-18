@@ -10,9 +10,12 @@ type ResumeInput struct {
 }
 
 type ItemInput struct {
+	ResumeID      uint                `json:"resume_id"`
+	UserID        uint                `json:"user_id"`
 	Type          string              `json:"type"` // "education", "hard_skill", "custom"
 	Education     *EducationInput     `json:"education,omitempty"`
 	HardSkill     *HardSkillInput     `json:"hard_skill,omitempty"`
+	About         *AboutInput         `json:"about,omitempty"`
 	Custom        *CustomInput        `json:"custom,omitempty"`
 	JobExperience *JobExperienceInput `json:"job_experience,omitempty"`
 }
