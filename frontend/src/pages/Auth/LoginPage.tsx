@@ -5,17 +5,17 @@ import { Button } from "@/components/ui/button";
 function LoginPage(){
     return (
     <>
-    <div className="min-h-screen flex items-center justify-center custom-gradient">
-        <Card className="scale-105 md:scale-125 lg:scale-140">
-            <CardHeader className="flex flex-col justify-center items-center">
-                <CardTitle className="text-lg">Войти в аккаунт</CardTitle>
+    <div className="min-h-screen flex items-center justify-start custom-bg">
+        <Card className="min-h-screen w-full min-md:w-[600px]">
+            <CardHeader className="flex flex-col items-center"> 
+                <CardTitle className="text-4xl ">Войти в аккаунт</CardTitle>
             </CardHeader>
             <CardContent className="">
                 <form>
                     {/* TODO (в будущем): добавить/заменить юзернейм на почту */}
                     <div className="py-2">
                         <label htmlFor="uname">Имя пользователя</label>
-                        <Input id="uname" type="text" placeholder="you@example.com" />
+                        <Input id="uname" type="text" placeholder="username" />
                     </div>
                     <div className="">
                         <label htmlFor="password">Пароль</label>
@@ -23,8 +23,8 @@ function LoginPage(){
                     </div>
                 </form>
             </CardContent>
-            <CardFooter className="flex flex-col">
-                <Button type="submit" className="w-full">Войти</Button>
+            <CardFooter className="flex flex-col w-full">
+                <Button type="submit" className="px-12">Войти</Button>
                 <Button variant="link">
                     <a href="/registration">
                         <i>Нет аккаунта?</i>
