@@ -4,11 +4,10 @@ import { Button } from "@/components/ui/button";
 
 function RegistrationPage(){
     return (
-    <div className="min-h-screen flex items-center justify-center custom-gradient">
-        <Card className="scale-105 md:scale-125 lg:scale-140">
-
-            <CardHeader className="flex flex-col justify-center items-center">
-                <CardTitle className="text-lg">Регистрация</CardTitle>
+    <div className="min-h-screen flex items-center justify-start custom-bg">
+        <Card className="min-h-screen w-full md:w-[400px] lg:w-[591px]">
+            <CardHeader className="flex flex-col items-center"> 
+                <CardTitle className="text-4xl">Регистрация</CardTitle>
             </CardHeader>
 
             <CardContent className="">

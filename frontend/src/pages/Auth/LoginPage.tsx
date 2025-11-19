@@ -5,10 +5,10 @@ import { Button } from "@/components/ui/button";
 function LoginPage(){
     return (
     <>
-    <div className="min-h-screen flex items-center justify-center custom-gradient">
-        <Card className="scale-105 md:scale-125 lg:scale-140">
-            <CardHeader className="flex flex-col justify-center items-center">
-                <CardTitle className="text-lg">Войти в аккаунт</CardTitle>
+    <div className="min-h-screen flex items-center justify-start custom-bg">
+        <Card className="min-h-screen w-full md:w-[400px] lg:w-[591px]">
+            <CardHeader className="flex flex-col items-center"> 
+                <CardTitle className="text-4xl ">Войти в аккаунт</CardTitle>
             </CardHeader>
             <CardContent className="">
                 <form>
