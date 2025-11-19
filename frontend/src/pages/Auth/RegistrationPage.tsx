@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 function RegistrationPage(){
     return (
     <div className="min-h-screen flex items-center justify-start custom-bg">
-        <Card className="min-h-screen w-full md:w-[400px] lg:w-[591px]">
+        <Card className="min-h-screen w-full min-md:w-[600px]">
             <CardHeader className="flex flex-col items-center"> 
                 <CardTitle className="text-4xl">Регистрация</CardTitle>
             </CardHeader>
@@ -13,13 +13,13 @@ function RegistrationPage(){
             <CardContent className="">
                 <form>
                     <div className="py-2">
-                        <label htmlFor="login">Логин</label>
-                        <Input id="login" type="text" placeholder="Irina332217" />
+                        <label htmlFor="uname">Логин</label>
+                        <Input id="uname" type="text" placeholder="username" />
                     </div>
 
                     <div className="">
-                        <label htmlFor="uname">Электронная почта</label>{/*Я сделала расположение в кнопок не как в фигме, потому что такое мне кажется более логичным */}
-                        <Input id="uname" type="text" placeholder="you@example.com" /> {/*На страничке логина ув примере была почта, поэтому я ей дала айдишку uname, но, предполагаю, она должна быть у логина*/}
+                        <label htmlFor="email">Электронная почта</label>
+                        <Input id="email" type="email" placeholder="you@example.com" />
                     </div>
 
                     <div className="">
@@ -34,8 +34,8 @@ function RegistrationPage(){
                 </form>
             </CardContent>
 
-            <CardFooter className="flex flex-col">
-                <Button type="submit" className="w-full">Зарегистрироваться</Button>
+            <CardFooter className="flex flex-col w-full">
+                <Button type="submit" className="px-8">Зарегистрироваться</Button>
 
                 <Button variant="link">
                     <a href="/login">

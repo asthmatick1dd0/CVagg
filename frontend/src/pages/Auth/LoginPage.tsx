@@ -6,7 +6,7 @@ function LoginPage(){
     return (
     <>
     <div className="min-h-screen flex items-center justify-start custom-bg">
-        <Card className="min-h-screen w-full md:w-[400px] lg:w-[591px]">
+        <Card className="min-h-screen w-full min-md:w-[600px]">
             <CardHeader className="flex flex-col items-center"> 
                 <CardTitle className="text-4xl ">Войти в аккаунт</CardTitle>
             </CardHeader>
@@ -15,7 +15,7 @@ function LoginPage(){
                     {/* TODO (в будущем): добавить/заменить юзернейм на почту */}
                     <div className="py-2">
                         <label htmlFor="uname">Имя пользователя</label>
-                        <Input id="uname" type="text" placeholder="you@example.com" />
+                        <Input id="uname" type="text" placeholder="username" />
                     </div>
                     <div className="">
                         <label htmlFor="password">Пароль</label>
@@ -23,8 +23,8 @@ function LoginPage(){
                     </div>
                 </form>
             </CardContent>
-            <CardFooter className="flex flex-col">
-                <Button type="submit" className="w-full">Войти</Button>
+            <CardFooter className="flex flex-col w-full">
+                <Button type="submit" className="px-12">Войти</Button>
                 <Button variant="link">
                     <a href="/registration">
                         <i>Нет аккаунта?</i>
