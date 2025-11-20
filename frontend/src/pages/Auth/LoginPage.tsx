@@ -6,8 +6,8 @@ function LoginPage(){
     return (
     <>
     <div className="min-h-screen flex items-center justify-start custom-bg">
-        <Card className="min-h-screen w-full min-md:w-[600px]">
-            <CardHeader className="flex flex-col items-center"> 
+        <Card className="w-full min-md:w-[600px] flex flex-col justify-center items-center py-auto">
+            <CardHeader className="flex flex-col items-center w-full"> 
                 <CardTitle className="text-4xl ">Войти в аккаунт</CardTitle>
             </CardHeader>
             <CardContent className="">
@@ -23,7 +23,7 @@ function LoginPage(){
                     </div>
                 </form>
             </CardContent>
-            <CardFooter className="flex flex-col w-full">
+            <CardFooter className="flex flex-col w-full my-9">
                 <Button type="submit" className="px-12">
                     <a href="/dashboard">
                         Войти
