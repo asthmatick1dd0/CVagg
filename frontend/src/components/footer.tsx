@@ -1,6 +1,6 @@
 const Footer = () => {
   return (
-    <section className="bg-background flex items-center justify-center p-12">
+    <section className="bg-background w-full flex items-center justify-center p-12">
       <div className="flex flex-row items-center gap-7">
         <a href="https://github.com/asthmatick1dd0/CVagg/" target="_blank">
           <img

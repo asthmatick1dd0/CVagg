@@ -57,6 +57,10 @@ font-family: "Noto Sans", monospace;
   background: linear-gradient(to bottom, #0A0A0A 41%, #560004 100%);
 }
 
+.dashboard-gradient {
+  background: linear-gradient(to bottom, #560004 0%, #0A0A0A 50%, #0a0a0ac0 80%, #56000491 100%);
+}
+
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
