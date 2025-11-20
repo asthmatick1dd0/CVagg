@@ -35,7 +35,11 @@ function RegistrationPage(){
             </CardContent>
 
             <CardFooter className="flex flex-col w-full">
-                <Button type="submit" className="px-8">Зарегистрироваться</Button>
+                <Button type="submit" className="px-8">
+                    <a href="/dashboard">
+                        Зарегистрироваться
+                    </a>
+                </Button> {/*TODO: реализовать логику регистрации*/}
 
                 <Button variant="link">
                     <a href="/login">

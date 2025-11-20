@@ -5,7 +5,7 @@ const Header = () => {
   return (
     <section className="bg-background flex w-full h-16 items-center justify-center p-12">
       <div className="flex flex-row items-center justify-between w-full gap-7">
-        <a href="/">
+        <a href="/dashboard">
             <img
                 src="/cvagg_logo_small.svg"
                 alt="CVaggregator logo"
