@@ -54,23 +54,7 @@ func (s *editorService) SaveResume(resume *input.ResumeInput) error {
 		switch section {
 		case "jobexperience":
 			for _, it := range items {
-
-				jobExpInput := &models.JobExperience{
-					Company:   it.JobExperience.Company,
-					Position:  it.JobExperience.Position,
-					StartDate: it.JobExperience.StartDate,
-					EndDate:   it.JobExperience.EndDate,
-				}
-				if err := s.jobExpRepo.Create(jobExpInput); err != nil {
-					return err
-				}
-				resumeItemInput := &models.ResumeItem{
-					ItemType: it.Type,
-					ItemId:   jobExpInput.ID,
-
-					ResumeId: resumeInput.ID,
-				}
-				if err := s.resumeItemRepo.Create(resumeItemInput); err != nil {
+				if err := s.SaveJobExperience(&it); err != nil {
 					return err
 				}
 			}
@@ -156,6 +140,33 @@ func (s *editorService) SaveResume(resume *input.ResumeInput) error {
 				}
 			}
 		}
+	}
+	return nil
+}
+
+func (s *editorService) SaveJobExperience(it *input.ItemInput) error {
+	jobExpModel := &models.JobExperience{
+		Company:   it.JobExperience.Company,
+		Position:  it.JobExperience.Position,
+		StartDate: it.JobExperience.StartDate,
+		EndDate:   it.JobExperience.EndDate,
+		Item: models.Item{
+			ResumeId: it.ResumeID,
+			UserId:   it.UserID,
+		},
+	}
+	if err := s.jobExpRepo.Create(jobExpModel); err != nil {
+		return err
+	}
+
+	resumeItemModel := &models.ResumeItem{
+		ItemId:   jobExpModel.ID,
+		ItemType: "jobexperience",
+
+		ResumeId: it.ResumeID,
+	}
+	if err := s.resumeItemRepo.Create(resumeItemModel); err != nil {
+		return err
 	}
 	return nil
 }
