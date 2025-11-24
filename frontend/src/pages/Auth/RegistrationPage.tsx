@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 function RegistrationPage(){
     return (
     <div className="min-h-screen flex items-center justify-start custom-bg">
-        <Card className="min-h-screen w-full min-md:w-[600px]">
+        <Card className="min-h-screen w-full min-md:w-[600px] flex flex-col items-center justify-center">
             <CardHeader className="flex flex-col items-center"> 
                 <CardTitle className="text-4xl">Регистрация</CardTitle>
             </CardHeader>
@@ -17,12 +17,12 @@ function RegistrationPage(){
                         <Input id="uname" type="text" placeholder="username" />
                     </div>
 
-                    <div className="">
+                    <div className="pb-2">
                         <label htmlFor="email">Электронная почта</label>
                         <Input id="email" type="email" placeholder="you@example.com" />
                     </div>
 
-                    <div className="">
+                    <div className="pb-2">
                         <label htmlFor="password">Пароль</label>
                         <Input id="password" type="password" placeholder="••••••••" />
                     </div>
@@ -35,7 +35,11 @@ function RegistrationPage(){
             </CardContent>
 
             <CardFooter className="flex flex-col w-full">
-                <Button type="submit" className="px-8">Зарегистрироваться</Button>
+                <Button type="submit" className="px-8">
+                    <a href="/dashboard">
+                        Зарегистрироваться
+                    </a>
+                </Button> {/*TODO: реализовать логику регистрации*/}
 
                 <Button variant="link">
                     <a href="/login">

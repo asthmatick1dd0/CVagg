@@ -17,14 +17,13 @@ font-family: "Noto Sans", monospace;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   --radius: 0.625rem;
-  --background: #000000;
-  
+  --background: #0A0A0A;
   --foreground: #A3A3A3;
-  --card: #0A0A0A;
+  --card: #141414;
   --card-foreground: #A3A3A3;
   --popover: oklch(100% 0.00011 271.152);
   --popover-foreground: #A3A3A3;
-  --primary: #FAFAFA;
+  --primary: #ED1B24;
   --primary-foreground: #ffffff;
   --secondary: #ffffff;
   --secondary-foreground: #0A0A0A;
@@ -46,7 +45,6 @@ font-family: "Noto Sans", monospace;
   --sidebar-ring: oklch(0.708 0 0);
 }
 
-
 .font-inter {
   font-family: "Inter", serif;
 }
@@ -64,6 +62,10 @@ font-family: "Noto Sans", monospace;
 
 .custom-gradient {
   background: linear-gradient(to bottom, #0A0A0A 41%, #560004 100%);
+}
+
+.dashboard-gradient {
+  background: linear-gradient(to bottom, #560004 0%, #0A0A0A 50%, #0a0a0ac0 80%, #56000491 100%);
 }
 
 .custom-gradient2 {
@@ -116,3 +118,4 @@ font-family: "Noto Sans", monospace;
     @apply bg-background text-foreground;
   }
 }
+
