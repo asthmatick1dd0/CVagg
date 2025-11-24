@@ -51,6 +51,7 @@ func (s *editorService) SaveResume(resume *input.ResumeInput) error {
 
 	// проходимся по мапе и обрабатываем []Items исходя из ключа
 	for section, items := range resume.Items {
+		// TODO [CVAGG-59] Переписать этот монструозный свитч в мапу
 		switch section {
 		case "jobexperience":
 			// здесь проходимся по массиву Items
