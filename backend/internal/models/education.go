@@ -13,7 +13,6 @@ type Education struct {
 	Degree     string     `gorm:"type:varchar(100)" json:"degree"`
 	Major      string     `gorm:"type:varchar(100)" json:"major"`
 	StartDate  time.Time  `gorm:"not null" json:"start_date"`
-	EndDate    *time.Time `gorm:"not null" json:"end_date"`
+	EndDate    *time.Time `json:"end_date"`
 	Finished   bool       `gorm:"not null" json:"finished"`
-	Item
 }

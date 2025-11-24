@@ -7,5 +7,4 @@ import (
 type About struct {
 	gorm.Model
 	About string `json:"about"`
-	Item
 }
