@@ -40,7 +40,6 @@ func NewEditorService(
 	}
 }
 
-// TODO [CVAGG-50] свернуть в несколько маленьких функций
 func (s *editorService) SaveResume(resume *input.ResumeInput) error {
 	resumeInput := &models.Resume{
 		Title:  resume.Title,
@@ -60,82 +59,25 @@ func (s *editorService) SaveResume(resume *input.ResumeInput) error {
 			}
 		case "education":
 			for _, it := range items {
-				eduInput := &models.Education{
-					University: it.Education.University,
-					Faculty:    it.Education.Faculty,
-					Degree:     it.Education.Degree,
-					Major:      it.Education.Major,
-					StartDate:  it.Education.StartDate,
-					EndDate:    it.Education.EndDate,
-					Finished:   it.Education.Finished,
-				}
-				if err := s.educationRepo.Create(eduInput); err != nil {
-					return err
-				}
-
-				resumeItemInput := &models.ResumeItem{
-					ItemType: it.Type,
-					ItemId:   eduInput.ID,
-
-					ResumeId: resumeInput.ID,
-				}
-				if err := s.resumeItemRepo.Create(resumeItemInput); err != nil {
+				if err := s.SaveEducation(&it); err != nil {
 					return err
 				}
 			}
 		case "hardskill":
 			for _, it := range items {
-				hardSkillInput := &models.HardSkill{
-					SkillId: it.HardSkill.SkillID,
-				}
-				if err := s.hardSkillRepo.Create(hardSkillInput); err != nil {
-					return err
-				}
-				resumeItemInput := &models.ResumeItem{
-					ItemType: it.Type,
-					ItemId:   hardSkillInput.ID,
-
-					ResumeId: resumeInput.ID,
-				}
-				if err := s.resumeItemRepo.Create(resumeItemInput); err != nil {
+				if err := s.SaveHardSkill(&it); err != nil {
 					return err
 				}
 			}
 		case "about":
 			for _, it := range items {
-				aboutInput := &models.About{
-					About: it.About.About,
-				}
-				if err := s.aboutRepo.Create(aboutInput); err != nil {
-					return err
-				}
-
-				resumeItemInput := &models.ResumeItem{
-					ItemType: it.Type,
-					ItemId:   aboutInput.ID,
-
-					ResumeId: resumeInput.ID,
-				}
-				if err := s.resumeItemRepo.Create(resumeItemInput); err != nil {
+				if err := s.SaveAbout(&it); err != nil {
 					return err
 				}
 			}
 		case "custom":
 			for _, it := range items {
-				customInput := &models.Custom{
-					Title:   it.Custom.Title,
-					Content: it.Custom.Content,
-				}
-				if err := s.customRepo.Create(customInput); err != nil {
-					return err
-				}
-				resumeItemInput := &models.ResumeItem{
-					ItemType: it.Type,
-					ItemId:   customInput.ID,
-
-					ResumeId: resumeInput.ID,
-				}
-				if err := s.resumeItemRepo.Create(resumeItemInput); err != nil {
+				if err := s.SaveCustom(&it); err != nil {
 					return err
 				}
 			}
@@ -161,12 +103,115 @@ func (s *editorService) SaveJobExperience(it *input.ItemInput) error {
 
 	resumeItemModel := &models.ResumeItem{
 		ItemId:   jobExpModel.ID,
-		ItemType: "jobexperience",
+		ItemType: it.Type,
 
 		ResumeId: it.ResumeID,
 	}
 	if err := s.resumeItemRepo.Create(resumeItemModel); err != nil {
 		return err
 	}
+
+	return nil
+}
+
+func (s *editorService) SaveEducation(it *input.ItemInput) error {
+	educationModel := &models.Education{
+		University: it.Education.University,
+		Faculty:    it.Education.Faculty,
+		Degree:     it.Education.Degree,
+		Major:      it.Education.Major,
+		StartDate:  it.Education.StartDate,
+		EndDate:    it.Education.EndDate,
+		Finished:   it.Education.Finished,
+		Item: models.Item{
+			ResumeId: it.ResumeID,
+			UserId:   it.UserID,
+		},
+	}
+	if err := s.educationRepo.Create(educationModel); err != nil {
+		return err
+	}
+
+	resumeItemModel := &models.ResumeItem{
+		ItemId:   educationModel.ID,
+		ItemType: it.Type,
+
+		ResumeId: it.ResumeID,
+	}
+	if err := s.resumeItemRepo.Create(resumeItemModel); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *editorService) SaveHardSkill(it *input.ItemInput) error {
+	hardSkillModel := &models.HardSkill{
+		SkillId: it.HardSkill.SkillID,
+		Item: models.Item{
+			ResumeId: it.ResumeID,
+			UserId:   it.UserID,
+		},
+	}
+	if err := s.hardSkillRepo.Create(hardSkillModel); err != nil {
+		return err
+	}
+
+	resumeItemModel := &models.ResumeItem{
+		ItemType: it.Type,
+		ItemId:   hardSkillModel.ID,
+
+		ResumeId: it.ResumeID,
+	}
+	if err := s.resumeItemRepo.Create(resumeItemModel); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *editorService) SaveAbout(it *input.ItemInput) error {
+	aboutModel := &models.About{
+		About: it.About.About,
+		Item: models.Item{
+			ResumeId: it.ResumeID,
+			UserId:   it.UserID,
+		}}
+	if err := s.aboutRepo.Create(aboutModel); err != nil {
+		return err
+	}
+
+	resumeItemInput := &models.ResumeItem{
+		ItemType: it.Type,
+		ItemId:   aboutModel.ID,
+
+		ResumeId: it.ResumeID,
+	}
+	if err := s.resumeItemRepo.Create(resumeItemInput); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *editorService) SaveCustom(it *input.ItemInput) error {
+	customModel := &models.Custom{
+		Title:   it.Custom.Title,
+		Content: it.Custom.Content,
+	}
+	if err := s.customRepo.Create(customModel); err != nil {
+		return err
+	}
+
+	resumeItemModel := &models.ResumeItem{
+		ItemType: it.Type,
+		ItemId:   customModel.ID,
+
+		ResumeId: it.ResumeID,
+	}
+	if err := s.resumeItemRepo.Create(resumeItemModel); err != nil {
+		return err
+	}
+
 	return nil
 }
