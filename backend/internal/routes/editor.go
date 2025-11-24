@@ -12,9 +12,7 @@ func EditorRoutes(app *fiber.App, cont *container.Container) {
 	// /api/v1/editor/...
 	editor := v1.Group("/editor")
 
-	editor.Post("/save", func(c *fiber.Ctx) error {
-		return c.SendString("save route")
-	})
+	editor.Post("/save", cont.EditorHandler.CreateResume)
 
 	editor.Patch("/:id/save", func(c *fiber.Ctx) error {
 		return c.SendString("save by id route")
