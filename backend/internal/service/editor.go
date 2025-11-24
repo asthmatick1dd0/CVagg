@@ -49,9 +49,12 @@ func (s *editorService) SaveResume(resume *input.ResumeInput) error {
 		return err
 	}
 
+	// проходимся по мапе и обрабатываем []Items исходя из ключа
 	for section, items := range resume.Items {
 		switch section {
 		case "jobexperience":
+			// здесь проходимся по массиву Items
+			// поскольку в одном резюме может быть множество, допустим, опыта работы, то у нас в каждой секции лежит массив
 			for _, it := range items {
 				if err := s.SaveJobExperience(&it, resumeInput.ID); err != nil {
 					return err
@@ -85,6 +88,8 @@ func (s *editorService) SaveResume(resume *input.ResumeInput) error {
 	}
 	return nil
 }
+
+// TODO [CVAGG-56] Сделать отдельную функцию SaveResumeItem чтобы много раз не повторяться
 
 func (s *editorService) SaveJobExperience(it *input.ItemInput, ID uint) error {
 	jobExpModel := &models.JobExperience{
