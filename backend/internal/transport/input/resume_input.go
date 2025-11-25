@@ -11,7 +11,7 @@ type ResumeInput struct {
 
 type ItemInput struct {
 	ResumeID      uint                `json:"resume_id"`
-	UserID        uint                `json:"user_id"`
+	FieldID       uint                `json:"field_id"`
 	Type          string              `json:"type"` // "education", "hard_skill", "custom"
 	Education     *EducationInput     `json:"education,omitempty"`
 	HardSkill     *HardSkillInput     `json:"hard_skill,omitempty"`
