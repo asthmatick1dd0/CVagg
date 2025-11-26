@@ -20,15 +20,16 @@ func NewEditorHandler(s service.EditorService) EditorHandler {
 }
 
 func (h *editorHandler) CreateResume(ctx *fiber.Ctx) error {
-	// TODO [CVAGG-40]: надо переписать нормально и переформировать папку transport
 	var input input.ResumeInput
 	if err := ctx.BodyParser(&input); err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "invalid request"})
 	}
 
-	err := h.s.SaveResume(&input)
-	if err != nil {
-		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "internal server error"})
+	if err := h.s.SaveResume(&input); err != nil {
+		// возвращаем ошибку Fiber, чтобы статус реально был 500
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
-	return nil
+
+	// успешный кейс
+	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{"status": "ok"})
 }
