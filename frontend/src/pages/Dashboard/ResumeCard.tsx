@@ -9,7 +9,7 @@ export function ResumeCard({ resume }: ResumeCardProps) {
     <section className="flex flex-col items-center">
       <div className="w-38 h-46 rounded-2xl bg-white/50 shadow-md hover:shadow-xl transition cursor-pointer" />
 
-      <p className="font-inter mt-2 text-sm text-center text-white">
+      <p className="font-inter mt-2 text-sm text-center text-white max-w-38 truncate">
         {resume.title}
       </p>
     </section>
