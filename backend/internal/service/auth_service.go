@@ -30,23 +30,28 @@ func DeserealizeUser(c *fiber.Ctx) error {
 	} else if c.Cookies("token") != "" {
 		token = c.Cookies("token")
 	}
+
 	if token == "" {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"message": "you are not authorized"})
 	}
+
 	tokenByte, err := jwt.Parse(token, func(t *jwt.Token) (any, error) {
 		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok { //HS256 <-> HMAC
 			return nil, fmt.Errorf("weird signing method: %s", t.Header["alg"])
 		}
 		return c.Locals("JWTSecret").([]byte), nil
 	})
+
 	if err != nil {
-		return c.Status(fiber.StatusUnauthorized).JSON(err)
+		return c.Status(fiber.StatusUnauthorized).JSON(err.Error())
 	}
+
 	claims, ok := tokenByte.Claims.(jwt.MapClaims)
 	if !ok || !tokenByte.Valid {
 		return c.Status(fiber.StatusUnauthorized).JSON("invalid token claim")
 	}
-	userID, err := strconv.Atoi(fmt.Sprint(claims["sub"]))
+
+	userID, err := strconv.Atoi(fmt.Sprint(claims["subID"]))
 	if err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(err)
 	}
@@ -54,6 +59,7 @@ func DeserealizeUser(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(err)
 	}
-	c.Locals("user", user)
+
+	c.Locals(user.Username, user)
 	return c.Next()
 }

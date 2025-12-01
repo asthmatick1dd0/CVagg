@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/asthmatick1dd0/CVagg/internal/database"
+	"github.com/asthmatick1dd0/CVagg/internal/models"
 	"github.com/asthmatick1dd0/CVagg/internal/repository"
 	"github.com/asthmatick1dd0/CVagg/internal/routes"
 	"github.com/asthmatick1dd0/CVagg/internal/service"
@@ -26,9 +27,10 @@ func main() {
 
 		//TODO: Запихать значения, связанные с безопасностью, в .env, и впредь выгружать оттуда
 		c.Locals("JWTExpirationTime", time.Hour*12)
-		c.Locals("JWTSecret", service.GenerateJWTSecret())
+		// c.Locals("JWTSecret", service.GenerateJWTSecret())
+		c.Locals("JWTSecret", []byte("super_secret"))
 		c.Locals("JWTMaxAge", 1440)
-
+		c.Locals("CurrentUsers", make(map[uint]models.User, 0))
 		return c.Next()
 	})
 

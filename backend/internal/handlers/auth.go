@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"crypto/ecdsa"
 	"time"
 
 	"github.com/asthmatick1dd0/CVagg/internal/models"
@@ -9,6 +8,7 @@ import (
 	"github.com/asthmatick1dd0/CVagg/internal/service"
 	"github.com/asthmatick1dd0/CVagg/internal/transport/dto"
 	"github.com/asthmatick1dd0/CVagg/internal/transport/input"
+	"github.com/asthmatick1dd0/CVagg/internal/validation"
 	internal "github.com/asthmatick1dd0/CVagg/internal/validation"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
@@ -59,42 +59,48 @@ func (h *authHandler) SignUp(c *fiber.Ctx) error {
 
 func SignInHandler(c *fiber.Ctx) error {
 	var input input.SignInInputEmail
+
 	if err := c.QueryParser(&input); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(err.Error())
 	}
+
 	errs := internal.ValidateStruct(input)
 	if len(errs) != 0 {
 		return c.Status(fiber.StatusBadRequest).JSON(errs)
 	}
+
 	repo := c.Locals("userRepo").(repository.UserRepository)
+
 	ok, err := repo.ExistsByEmail(input.Email)
-	if err != nil {
+	if err != nil || !ok {
 		return c.Status(fiber.StatusUnauthorized).JSON("wrong email or password")
 	}
-	if !ok {
-		return c.Status(fiber.StatusUnauthorized).JSON("wrong email or password")
-	}
+
 	user, err := repo.GetByEmail(input.Email)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(err)
 	}
+
 	if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(input.Password)); err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(err)
 	}
 
-	token := jwt.New(jwt.SigningMethodES256)
+	token := jwt.New(jwt.SigningMethodHS256)
 	now := time.Now().UTC()
 	claims := token.Claims.(jwt.MapClaims)
-	claims["sub"] = user.ID
-	claims["iat"] = now
-	claims["nbf"] = now
-	claims["exp"] = now.Add(c.Locals("JWTExpirationTime").(time.Duration))
-	key, _ := c.Locals("JWTSecret").(ecdsa.PrivateKey)
-	tokenString, err := token.SignedString(&key)
-	// panic: interface conversion: interface {} is *ecdsa.PrivateKey, not ecdsa.PrivateKey
+	claims["subID"] = user.ID
+	claims["sub"] = user.Username
+	claims["iat"] = now.Unix()
+	claims["nbf"] = now.Unix()
+	claims["exp"] = now.Add(c.Locals("JWTExpirationTime").(time.Duration)).Unix()
+
+	key, _ := c.Locals("JWTSecret").([]byte)
+	tokenString, err := token.SignedString(key)
+
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(err.Error())
 	}
+
 	c.Cookie(&fiber.Cookie{
 		Name:     "token",
 		Value:    tokenString,
@@ -105,7 +111,7 @@ func SignInHandler(c *fiber.Ctx) error {
 		Domain:   "localhost",
 	})
 
-	return c.Status(fiber.StatusAccepted).JSON(input)
+	return c.Status(fiber.StatusAccepted).JSON(fiber.Map{"tokenString": tokenString})
 }
 
 func LogOutHandler(c *fiber.Ctx) error {
@@ -114,10 +120,46 @@ func LogOutHandler(c *fiber.Ctx) error {
 		Value:   "",
 		Expires: time.Now().Add(-time.Hour), //небольшая костылизация - возвращается просроченный токен
 	})
+
 	return c.SendString("Succesfully logged out")
 }
 
+// Обращаться только с токеном (signed string) в теле запроса
 func MeHandler(c *fiber.Ctx) error {
-	user := c.Locals("user").(dto.UserResponse)
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{"data": fiber.Map{"user": user}})
+	var input input.JWTInput
+	if err := c.QueryParser(&input); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(err.Error())
+	}
+
+	errs := validation.ValidateStruct(input)
+	if len(errs) != 0 {
+		return c.Status(fiber.StatusBadRequest).JSON(errs)
+	}
+
+	token, err := jwt.Parse(input.SignedString, func(t *jwt.Token) (any, error) {
+		return c.Locals("JWTSecret").([]byte), nil
+	})
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(err.Error())
+	}
+
+	claims := token.Claims.(jwt.MapClaims)
+
+	// TODO: Завернуть всё ниже до самого последнего ретёрна в отдельную функцию
+	created, _ := claims["iat"].(int)
+	createdTime := time.Unix(int64(created), 0)
+	updatedTime := time.Now()
+	expired, _ := claims["exp"].(int64)
+	expiredTime := time.Unix(expired, 0)
+
+	user := c.Locals(claims["sub"]).(*models.User)
+	resp := dto.UserResponse{
+		Username:  user.Username,
+		Email:     user.Email,
+		ExpiresAt: expiredTime,
+		UpdatedAt: updatedTime,
+		CreatedAt: createdTime,
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{"data": fiber.Map{"user": resp}})
 }
