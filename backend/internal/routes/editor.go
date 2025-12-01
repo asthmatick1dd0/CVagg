@@ -32,7 +32,5 @@ func EditorRoutes(app *fiber.App, cont *container.Container) {
 		return c.SendString("export route")
 	})
 
-	editor.Get("/:id/export", func(c *fiber.Ctx) error {
-		return c.SendString("export by id route")
-	})
+	editor.Get("/:id/export", cont.EditorHandler.ExportResumePDF)
 }
