@@ -14,6 +14,8 @@ func EditorRoutes(app *fiber.App, cont *container.Container) {
 
 	editor.Post("/save", cont.EditorHandler.CreateResume)
 
+	editor.Get("/:id", cont.EditorHandler.GetResumeByID)
+
 	editor.Patch("/:id/save", func(c *fiber.Ctx) error {
 		return c.SendString("save by id route")
 	})

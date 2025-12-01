@@ -1,6 +1,8 @@
 package service
 
 import (
+	"fmt"
+
 	"github.com/asthmatick1dd0/CVagg/internal/models"
 	"github.com/asthmatick1dd0/CVagg/internal/repository"
 	"github.com/asthmatick1dd0/CVagg/internal/transport/input"
@@ -8,6 +10,7 @@ import (
 
 type EditorService interface {
 	SaveResume(resume *input.ResumeInput) error
+	GetResumeByID(id uint) (*input.ResumeInput, error)
 }
 
 type editorService struct {
@@ -210,4 +213,131 @@ func (s *editorService) SaveCustom(it *input.ItemInput, ID uint) error {
 	}
 
 	return nil
+}
+
+func (s *editorService) GetResumeByID(id uint) (*input.ResumeInput, error) {
+	resumeModel, err := s.resumeRepo.GetById(id)
+	if err != nil {
+		return nil, err
+	}
+
+	resume := &input.ResumeInput{
+		ID:     resumeModel.ID,
+		UserID: resumeModel.UserID,
+		Title:  resumeModel.Title,
+		Items:  make(map[string][]input.ItemInput),
+	}
+
+	items, err := s.resumeItemRepo.GetAllByResumeID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	loaders := map[string]func(itemID uint) (*input.ItemInput, error){
+		"jobexperience": func(itemID uint) (*input.ItemInput, error) {
+			model, err := s.jobExpRepo.GetById(itemID)
+			if err != nil {
+				return nil, err
+			}
+
+			return &input.ItemInput{
+				Type:     "jobexperience",
+				FieldID:  model.ID,
+				ResumeID: id,
+				JobExperience: &input.JobExperienceInput{
+					Company:   model.Company,
+					Position:  model.Position,
+					StartDate: model.StartDate,
+					EndDate:   model.EndDate,
+				},
+			}, nil
+		},
+
+		"education": func(itemID uint) (*input.ItemInput, error) {
+			model, err := s.educationRepo.GetById(itemID)
+			if err != nil {
+				return nil, err
+			}
+
+			return &input.ItemInput{
+				Type:     "education",
+				FieldID:  model.ID,
+				ResumeID: id,
+				Education: &input.EducationInput{
+					University: model.University,
+					Faculty:    model.Faculty,
+					Degree:     model.Degree,
+					Major:      model.Major,
+					StartDate:  model.StartDate,
+					EndDate:    model.EndDate,
+					Finished:   model.Finished,
+				},
+			}, nil
+		},
+
+		"hardskill": func(itemID uint) (*input.ItemInput, error) {
+			model, err := s.hardSkillRepo.GetById(itemID)
+			if err != nil {
+				return nil, err
+			}
+
+			return &input.ItemInput{
+				Type:     "hardskill",
+				FieldID:  model.ID,
+				ResumeID: id,
+				HardSkill: &input.HardSkillInput{
+					SkillID: model.SkillId,
+				},
+			}, nil
+		},
+
+		"about": func(itemID uint) (*input.ItemInput, error) {
+			model, err := s.aboutRepo.GetById(itemID)
+			if err != nil {
+				return nil, err
+			}
+
+			return &input.ItemInput{
+				Type:     "about",
+				FieldID:  model.ID,
+				ResumeID: id,
+				About: &input.AboutInput{
+					About: model.About,
+				},
+			}, nil
+		},
+
+		"custom": func(itemID uint) (*input.ItemInput, error) {
+			model, err := s.customRepo.GetById(itemID)
+			if err != nil {
+				return nil, err
+			}
+
+			return &input.ItemInput{
+				Type:     "custom",
+				FieldID:  model.ID,
+				ResumeID: id,
+				Custom: &input.CustomInput{
+					Title:   model.Title,
+					Content: model.Content,
+				},
+			}, nil
+		},
+	}
+
+	for _, item := range items {
+		loader, ok := loaders[item.ItemType]
+		if !ok {
+			return nil, fmt.Errorf("unknown item type: %s", item.ItemType)
+		}
+
+		it, err := loader(item.ItemId)
+		if err != nil {
+			return nil, err
+		}
+
+		resume.Items[item.ItemType] = append(resume.Items[item.ItemType], *it)
+	}
+
+	return resume, nil
 }

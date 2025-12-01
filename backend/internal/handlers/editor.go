@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"strconv"
+
 	"github.com/asthmatick1dd0/CVagg/internal/service"
 	"github.com/asthmatick1dd0/CVagg/internal/transport/input"
 	"github.com/gofiber/fiber/v2"
@@ -8,13 +10,13 @@ import (
 
 type EditorHandler interface {
 	CreateResume(ctx *fiber.Ctx) error
+	GetResumeByID(ctx *fiber.Ctx) error
 }
 
 type editorHandler struct {
 	s service.EditorService
 }
 
-// TODO [CVAGG-47]: Дописать сервис для редактора
 func NewEditorHandler(s service.EditorService) EditorHandler {
 	return &editorHandler{s: s}
 }
@@ -31,4 +33,18 @@ func (h *editorHandler) CreateResume(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "internal server error"})
 	}
 	return nil
+}
+
+func (h *editorHandler) GetResumeByID(ctx *fiber.Ctx) error {
+	IDstr := ctx.Params("id")
+	ID64, err := strconv.ParseUint(IDstr, 10, 64)
+	if err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "invalid id"})
+	}
+
+	resume, err := h.s.GetResumeByID(uint(ID64))
+	if err != nil {
+		return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{"error": "no such resume"})
+	}
+	return ctx.JSON(resume)
 }
