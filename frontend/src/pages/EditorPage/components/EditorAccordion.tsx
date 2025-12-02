@@ -15,15 +15,29 @@ export function AccordionDemo() {
       className="w-full"
     >
       <AccordionItem value="education">
-        <AccordionTrigger>Образование</AccordionTrigger>
+        <AccordionTrigger className="group [&>svg]:hidden">
+          <div className="flex items-center justify-between w-full pr-4">
+            <span className="font-medium">Образование</span>
+            <div className="w-6 h-6 flex items-center justify-center rounded-full border-2 border-white transition-all duration-200 group-data-[state=open]:bg-white group-data-[state=open]:rotate-45">
+              <span className="text-lg font-bold  duration-200">+</span>
+            </div>
+          </div>
+        </AccordionTrigger>
         <AccordionContent className="flex flex-col gap-4 text-balance">
-           <Field className="gap-1">
-                <Input id="education" placeholder="Специализированный ввод в следующей версии" className="placeholder:text-xs placeholder:text-white"/>
-            </Field>
+          <Field className="gap-1">
+            <Input id="education" placeholder="Специализированный ввод в следующей версии" className="placeholder:text-xs placeholder:text-white"/>
+          </Field>
         </AccordionContent>
       </AccordionItem>
       <AccordionItem value="experience">
-        <AccordionTrigger>Опыт работы</AccordionTrigger>
+        <AccordionTrigger className="group [&>svg]:hidden">
+          <div className="flex items-center justify-between w-full pr-4">
+            <span className="font-medium">Опыт работы</span>
+            <div className="w-6 h-6 flex items-center justify-center rounded-full border-2 border-white transition-all duration-200 group-data-[state=open]:bg-white group-data-[state=open]:rotate-45">
+              <span className="text-lg font-bold  duration-200">+</span>
+            </div>
+          </div>
+        </AccordionTrigger>
         <AccordionContent className="flex flex-col gap-4 text-balance">
           <Field className="gap-1">
                 <Input id="experience" placeholder="Специализированный ввод в следующей версии" className="placeholder:text-xs placeholder:text-white"/>
@@ -31,7 +45,14 @@ export function AccordionDemo() {
         </AccordionContent>
       </AccordionItem>
       <AccordionItem value="hardskills">
-        <AccordionTrigger>Навыки</AccordionTrigger>
+        <AccordionTrigger className="group [&>svg]:hidden">
+          <div className="flex items-center justify-between w-full pr-4">
+            <span className="font-medium">Навыки</span>
+            <div className="w-6 h-6 flex items-center justify-center rounded-full border-2 border-white transition-all duration-200 group-data-[state=open]:bg-white group-data-[state=open]:rotate-45">
+              <span className="text-lg font-bold  duration-200">+</span>
+            </div>
+          </div>
+        </AccordionTrigger>
         <AccordionContent className="flex flex-col gap-4 text-balance">
           <Field className="gap-1">
                 <Input id="hardskills" placeholder="Специализированный ввод в следующей версии" className="placeholder:text-xs placeholder:text-white"/>
@@ -39,7 +60,14 @@ export function AccordionDemo() {
         </AccordionContent>
       </AccordionItem>
       <AccordionItem value="custom">
-        <AccordionTrigger>Дополнительная информация</AccordionTrigger>
+        <AccordionTrigger className="group [&>svg]:hidden">
+          <div className="flex items-center justify-between w-full pr-4">
+            <span className="font-medium">Дополнительная информация</span>
+            <div className="w-6 h-6 flex items-center justify-center rounded-full border-2 border-white transition-all duration-200 group-data-[state=open]:bg-white group-data-[state=open]:rotate-45">
+              <span className="text-lg font-bold  duration-200">+</span>
+            </div>
+          </div>
+        </AccordionTrigger>
         <AccordionContent className="flex flex-col gap-4 text-balance">
           <Field className="gap-1">
                 <Input id="custom" placeholder="Специализированный ввод в следующей версии" className="placeholder:text-xs placeholder:text-white"/>
