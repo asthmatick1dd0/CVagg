@@ -113,7 +113,6 @@ export function EditorInputs() {
         <div className="py-5">
             <FieldSeparator />
                 <AccordionDemo />
-            <FieldSeparator />
         </div>
       </form>
     </div>
