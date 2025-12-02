@@ -15,3 +15,7 @@ type SignInInputEmail struct {
 	Email    string `json:"email" validate:"required,email"`
 	Password string `json:"password" validate:"required"`
 } // теперь тока для тестов валидации, юзверь логинится ТОЛЬКО через юз, ибо сложно и запарно
+
+type JWTInput struct { // используется только для Me хендлера
+	SignedString string `json:"signedstring" validate:"required"`
+}
