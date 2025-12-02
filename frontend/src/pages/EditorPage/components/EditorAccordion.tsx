@@ -4,7 +4,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
-import { Field, FieldLabel } from "@/components/ui/field"
+import { Field } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 
 export function AccordionDemo() {
