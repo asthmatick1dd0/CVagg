@@ -3,6 +3,7 @@ import LandingPage from "./pages/LandingPage/LandingPage"
 import DashboardPage from "./pages/Dashboard/DashboardPage";
 import LoginPage from "./pages/Auth/LoginPage";
 import RegistrationPage from "./pages/Auth/RegistrationPage";
+import EditorPage from "./pages/EditorPage/EditorPage";
 import { useAuth } from "./contexts/AuthContext";
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
           path="/dashboard"
           element={user ? <DashboardPage /> : <Navigate to="/login" replace />}
         />
+        <Route path="/resume" element={<EditorPage/>} />
       </Routes>
     </>
   );

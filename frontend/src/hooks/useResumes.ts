@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import type { Resume } from "@/types/resume.types";
+import type { Resume } from "@/types/types";
 import { resumeApi } from "@/services/resumeService";
 
 export const useResumes = () => {

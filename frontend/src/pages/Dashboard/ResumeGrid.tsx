@@ -1,4 +1,4 @@
-import type { Resume } from "@/types/resume.types";
+import type { Resume } from "@/types/types";
 import { ResumeCard } from "./ResumeCard";
 import { NewResumeCard } from "./NewResumeCard";
 import { Button } from "@/components/ui/button";
