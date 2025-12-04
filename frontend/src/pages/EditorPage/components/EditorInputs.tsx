@@ -12,11 +12,11 @@ import { Input } from "@/components/ui/input"
 import DemoAvatar from "@/assets/icons/demo.svg"
 import { DynamicForm } from "./EditorButtons"
 import { AccordionDemo } from "./EditorAccordion"
-import { resumeApi } from "@/services/resumeService"
 import type { Resume } from "@/types/types"
+import { useResumeContext } from "@/contexts/resumeContext"
 
-export function EditorInputs({ onSaved }: { onSaved?: () => void }) {
-    
+export function EditorInputs() {
+    const { saveResume, loading } = useResumeContext()
     const [resume, setResume] = useState<Partial<Resume>>({
     personalInfo: {
         name: "",
@@ -32,21 +32,9 @@ export function EditorInputs({ onSaved }: { onSaved?: () => void }) {
         skills: [],
     });
 
-
-  const [loading, setLoading] = useState(false)
-
   const handleSave = async () => {
-    try {
-      setLoading(true)
-      await resumeApi.saveResume(resume)
-      if (onSaved) {
-        onSaved()
-        console.log("Saved!")}
-    } catch (err) {
-      console.error("Ошибка при сохранении", err)
-    } finally {
-      setLoading(false)
-    }
+    const saved = await saveResume(resume)
+    console.log("saved resume:", saved)
   }
 
   return (

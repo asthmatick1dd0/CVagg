@@ -5,6 +5,7 @@ import LoginPage from "./pages/Auth/LoginPage";
 import RegistrationPage from "./pages/Auth/RegistrationPage";
 import EditorPage from "./pages/EditorPage/EditorPage";
 import { useAuth } from "./contexts/AuthContext";
+import { ResumeProvider } from "./contexts/resumeContext";
 
 function App() {
   const { user, loading } = useAuth();
@@ -15,6 +16,7 @@ function App() {
 
   return (
     <>
+    <ResumeProvider>
       <Routes>
         <Route path="/" element={<LandingPage/>} />
         <Route
@@ -31,6 +33,7 @@ function App() {
         />
         <Route path="/resume" element={<EditorPage/>} />
       </Routes>
+    </ResumeProvider>
     </>
   );
 };
