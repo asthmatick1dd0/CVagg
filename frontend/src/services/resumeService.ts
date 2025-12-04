@@ -15,7 +15,7 @@ export const resumeApi = {
         return response.data;
     },
     fetchResumeById: async (id: string, userID: number = 1): Promise<Resume> => {
-        const response = await api.get<Resume>(`/dashboard/resumes/:${id}?user_id=${userID}`);
+        const response = await api.get<Resume>(`/dashboard/resumes/${id}?user_id=${userID}`);
         return response.data;
     },
     saveResume: async (data: Partial<Resume>, userID: number = 1): Promise<Resume> => {
