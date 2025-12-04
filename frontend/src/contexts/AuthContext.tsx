@@ -26,7 +26,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const refreshUser = async (token?: string): Promise<User | null> => {
     try {
-      if (!token) return null; // must pass token
+      if (!token) return null;
       const res = await api.get(`/auth/me?SignedString=${encodeURIComponent(token)}`, {
         withCredentials: true,
       });
@@ -78,7 +78,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   useEffect(() => {
-    // Optional: refresh user if you have token saved elsewhere (e.g., localStorage)
     setLoading(false);
   }, []);
 
