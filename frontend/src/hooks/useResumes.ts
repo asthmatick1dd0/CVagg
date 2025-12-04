@@ -32,11 +32,46 @@ export const useResumes = () => {
         }
     }, [user]);
 
+     const saveResume = async (data: Partial<Resume>) => {
+        setLoading(true);
+        setError(null);
+        try {
+            const newResume = await resumeApi.saveResume(data);
+            setResumes(prev => [...prev, newResume]);
+            return newResume;
+        } catch (err) {
+            console.error(err);
+            setError("Ошибка при сохранении резюме.");
+            return null;
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // на будущее: хук для обновления резюме
+    const updateResume = async (id: string, data: Partial<Resume>) => {
+        setLoading(true);
+        setError(null);
+        try {
+            const updated = await resumeApi.updateResume(id, data);
+            setResumes(prev =>
+                prev.map(r => (r.id === updated.id ? updated : r))
+            );
+            return updated;
+        } catch (err) {
+            console.error(err);
+            setError("Ошибка при обновлении резюме.");
+            return null;
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
         if (user && user.id) {
             fetchResumes();
         }
     }, [fetchResumes, user]);
 
-    return { resumes, loading, error, refetch: fetchResumes };
+    return { resumes, loading, error, refetch: fetchResumes, saveResume, updateResume};
 };
