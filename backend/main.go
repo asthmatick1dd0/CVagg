@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/asthmatick1dd0/CVagg/internal/database"
-	"github.com/asthmatick1dd0/CVagg/internal/models"
 	"github.com/asthmatick1dd0/CVagg/internal/repository"
 	"github.com/asthmatick1dd0/CVagg/internal/routes"
 	"github.com/asthmatick1dd0/CVagg/internal/service"
@@ -21,16 +20,17 @@ func main() {
 
 	app := fiber.New()
 
+	secret := service.GenerateJWTSecret() // Секрет обязательно выносить в отдельную константу, иначе он перегенерируется при каждом вызове ключа из локалс
+
 	app.Use(func(c *fiber.Ctx) error {
 		c.Locals("resumeService", service.NewDashboardService(repository.NewResumeRepository(db)))
 		c.Locals("userRepo", repository.NewUserRepository(db))
+		repo, _ := c.Locals("userRepo").(repository.UserRepository)
+		c.Locals("authService", service.NewAuthService(repo))
 
-		//TODO: Запихать значения, связанные с безопасностью, в .env, и впредь выгружать оттуда
 		c.Locals("JWTExpirationTime", time.Hour*12)
-		// c.Locals("JWTSecret", service.GenerateJWTSecret())
-		c.Locals("JWTSecret", []byte("super_secret"))
+		c.Locals("JWTSecret", secret)
 		c.Locals("JWTMaxAge", 1440)
-		c.Locals("CurrentUsers", make(map[uint]models.User, 0))
 		return c.Next()
 	})
 

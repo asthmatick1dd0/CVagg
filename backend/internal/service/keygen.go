@@ -1,12 +1,9 @@
 package service
 
-import (
-	"crypto/ecdsa"
-	"crypto/elliptic"
-	"crypto/rand"
-)
+import "crypto/rand"
 
-func GenerateJWTSecret() ecdsa.PrivateKey {
-	key, _ := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
-	return *key
+func GenerateJWTSecret() []byte {
+	token := make([]byte, 32)
+	rand.Read(token)
+	return token
 }

@@ -5,10 +5,11 @@ import (
 	"time"
 )
 
-type UserResponse struct { // это пихать на фронт, валидировать и хранить локально в памяти для каждого юзверя
+type UserResponse struct { // это пихать на фронт, валидировать и хранить локально в памяти для каждого юзверя (но на самом деле можно и по беку рассылать)
+	ID        uint      `json:"id,omitempty"`
 	Username  string    `json:"name,omitempty"`
 	Email     string    `json:"email,omitempty"`
-	ExpiresAt time.Time `json:"expires_at"` // мб потом будет не нужно
+	ExpiresAt time.Time `json:"expires_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 	CreatedAt time.Time `json:"created_at"`
 }
