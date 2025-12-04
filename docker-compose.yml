@@ -11,6 +11,7 @@ services:
       - database
     volumes:
       - ./backend:/app
+      - ./assets:/app/assets
 
   nginx:
     container_name: cvagg-nginx
