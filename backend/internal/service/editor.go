@@ -1,26 +1,30 @@
 package service
 
 import (
+	"bytes"
 	"fmt"
 
 	"github.com/asthmatick1dd0/CVagg/internal/models"
 	"github.com/asthmatick1dd0/CVagg/internal/repository"
 	"github.com/asthmatick1dd0/CVagg/internal/transport/input"
+	"github.com/jung-kurt/gofpdf"
 )
 
 type EditorService interface {
 	SaveResume(resume *input.ResumeInput) error
 	GetResumeByID(id uint) (*input.ResumeInput, error)
+	ExportResumePDF(id uint) ([]byte, error)
 }
 
 type editorService struct {
-	resumeRepo     repository.ResumeRepository
-	resumeItemRepo repository.ItemRepository
-	jobExpRepo     repository.JobExperienceRepository
-	educationRepo  repository.EducationRepository
-	hardSkillRepo  repository.HardSkillRepository
-	aboutRepo      repository.AboutRepository
-	customRepo     repository.CustomRepository
+	resumeRepo       repository.ResumeRepository
+	resumeItemRepo   repository.ItemRepository
+	jobExpRepo       repository.JobExperienceRepository
+	educationRepo    repository.EducationRepository
+	hardSkillRepo    repository.HardSkillRepository
+	aboutRepo        repository.AboutRepository
+	customRepo       repository.CustomRepository
+	personalDataRepo repository.PersonalDataRepository
 }
 
 func NewEditorService(
@@ -31,15 +35,17 @@ func NewEditorService(
 	hardSkillRepo repository.HardSkillRepository,
 	aboutRepo repository.AboutRepository,
 	customRepo repository.CustomRepository,
+	personalDataRepo repository.PersonalDataRepository,
 ) EditorService {
 	return &editorService{
-		resumeRepo:     resumeRepo,
-		resumeItemRepo: resumeItemRepo,
-		jobExpRepo:     jobExpRepo,
-		educationRepo:  educationRepo,
-		hardSkillRepo:  hardSkillRepo,
-		aboutRepo:      aboutRepo,
-		customRepo:     customRepo,
+		resumeRepo:       resumeRepo,
+		resumeItemRepo:   resumeItemRepo,
+		jobExpRepo:       jobExpRepo,
+		educationRepo:    educationRepo,
+		hardSkillRepo:    hardSkillRepo,
+		aboutRepo:        aboutRepo,
+		customRepo:       customRepo,
+		personalDataRepo: personalDataRepo,
 	}
 }
 
@@ -88,6 +94,12 @@ func (s *editorService) SaveResume(resume *input.ResumeInput) error {
 					return err
 				}
 			}
+		case "PersonalData":
+			for _, it := range items {
+				if err := s.SavePersonalData(&it, resumeInput.ID); err != nil {
+					return err
+				}
+			}
 		}
 	}
 	return nil
@@ -110,6 +122,31 @@ func (s *editorService) SaveJobExperience(it *input.ItemInput, ID uint) error {
 	resumeItemModel := &models.ResumeItem{
 		ItemId:   jobExpModel.ID,
 		ItemType: it.Type,
+
+		ResumeId: ID,
+	}
+	if err := s.resumeItemRepo.Create(resumeItemModel); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *editorService) SavePersonalData(it *input.ItemInput, ID uint) error {
+	personalDataModel := &models.PersonalData{
+		FullName: it.PersonalData.FullName,
+		Email:    it.PersonalData.Email,
+		Phone:    it.PersonalData.Phone,
+		Address:  it.PersonalData.Address,
+	}
+
+	if err := s.personalDataRepo.Create(personalDataModel); err != nil {
+		return err
+	}
+
+	resumeItemModel := &models.ResumeItem{
+		ItemType: it.Type,
+		ItemId:   personalDataModel.ID,
 
 		ResumeId: ID,
 	}
@@ -323,6 +360,25 @@ func (s *editorService) GetResumeByID(id uint) (*input.ResumeInput, error) {
 				},
 			}, nil
 		},
+
+		"PersonalData": func(itemID uint) (*input.ItemInput, error) {
+			model, err := s.personalDataRepo.GetById(itemID)
+			if err != nil {
+				return nil, err
+			}
+
+			return &input.ItemInput{
+				Type:     "PersonalData",
+				FieldID:  model.ID,
+				ResumeID: id,
+				PersonalData: &input.PersonalDataInput{
+					FullName: model.FullName,
+					Email:    model.Email,
+					Phone:    model.Phone,
+					Address:  model.Address,
+				},
+			}, nil
+		},
 	}
 
 	for _, item := range items {
@@ -340,4 +396,121 @@ func (s *editorService) GetResumeByID(id uint) (*input.ResumeInput, error) {
 	}
 
 	return resume, nil
+}
+
+func (s *editorService) ExportResumePDF(id uint) ([]byte, error) {
+	resume, err := s.GetResumeByID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	pdf := gofpdf.New("P", "mm", "A4", "")
+
+	fontPath := "assets/fonts/DejaVuSans.ttf"
+	pdf.AddUTF8Font("DejaVu", "", fontPath)
+	pdf.SetFont("DejaVu", "", 14)
+	pdf.AddPage()
+
+	marginX := 20.0
+
+	// Title
+	pdf.SetXY(marginX, 20)
+	pdf.SetFont("DejaVu", "", 16)
+	pdf.CellFormat(0, 8, resume.Title, "", 1, "L", false, 0, "")
+	pdf.Ln(2)
+	pdf.SetFont("DejaVu", "", 12)
+
+	// Personal data
+	if items, ok := resume.Items["PersonalData"]; ok && len(items) > 0 {
+		pd := items[0].PersonalData
+		pdf.SetX(marginX)
+		pdf.CellFormat(0, 6, pd.FullName, "", 1, "L", false, 0, "")
+		contact := pd.Email
+		if pd.Phone != "" {
+			if contact != "" {
+				contact += " | "
+			}
+			contact += pd.Phone
+		}
+		if contact != "" {
+			pdf.SetX(marginX)
+			pdf.CellFormat(0, 6, contact, "", 1, "L", false, 0, "")
+		}
+		if pd.Address != "" {
+			pdf.SetX(marginX)
+			pdf.CellFormat(0, 6, pd.Address, "", 1, "L", false, 0, "")
+		}
+		pdf.Ln(2)
+	}
+
+	// Job experience
+	if items, ok := resume.Items["jobexperience"]; ok && len(items) > 0 {
+		pdf.SetFont("DejaVu", "", 12)
+		pdf.SetX(marginX)
+		pdf.CellFormat(0, 7, "Experience:", "", 1, "L", false, 0, "")
+		for _, it := range items {
+			je := it.JobExperience
+			line := fmt.Sprintf("%s — %s (%s - %s)", je.Company, je.Position, je.StartDate, je.EndDate)
+			pdf.SetX(marginX + 4)
+			pdf.MultiCell(0, 6, line, "", "L", false)
+		}
+		pdf.Ln(2)
+	}
+
+	// Education
+	if items, ok := resume.Items["education"]; ok && len(items) > 0 {
+		pdf.SetX(marginX)
+		pdf.CellFormat(0, 7, "Education:", "", 1, "L", false, 0, "")
+		for _, it := range items {
+			ed := it.Education
+			line := fmt.Sprintf("%s — %s, %s (%s - %s)", ed.University, ed.Degree, ed.Major, ed.StartDate, ed.EndDate)
+			pdf.SetX(marginX + 4)
+			pdf.MultiCell(0, 6, line, "", "L", false)
+		}
+		pdf.Ln(2)
+	}
+
+	// Hard skills
+	if items, ok := resume.Items["hardskill"]; ok && len(items) > 0 {
+		pdf.SetX(marginX)
+		pdf.CellFormat(0, 7, "Skills:", "", 1, "L", false, 0, "")
+		skills := ""
+		for i, it := range items {
+			if i > 0 {
+				skills += ", "
+			}
+			skills += fmt.Sprintf("%d", it.HardSkill.SkillID)
+		}
+		pdf.SetX(marginX + 4)
+		pdf.MultiCell(0, 6, skills, "", "L", false)
+		pdf.Ln(2)
+	}
+
+	// About
+	if items, ok := resume.Items["about"]; ok && len(items) > 0 {
+		pdf.SetX(marginX)
+		pdf.CellFormat(0, 7, "About:", "", 1, "L", false, 0, "")
+		for _, it := range items {
+			pdf.SetX(marginX + 4)
+			pdf.MultiCell(0, 6, it.About.About, "", "L", false)
+		}
+		pdf.Ln(2)
+	}
+
+	// Custom sections
+	if items, ok := resume.Items["custom"]; ok && len(items) > 0 {
+		for _, it := range items {
+			pdf.SetX(marginX)
+			pdf.CellFormat(0, 7, it.Custom.Title, "", 1, "L", false, 0, "")
+			pdf.SetX(marginX + 4)
+			pdf.MultiCell(0, 6, it.Custom.Content, "", "L", false)
+			pdf.Ln(1)
+		}
+	}
+
+	var buf bytes.Buffer
+	if err := pdf.Output(&buf); err != nil {
+		return nil, fmt.Errorf("write pdf to buffer: %w", err)
+	}
+	return buf.Bytes(), nil
 }

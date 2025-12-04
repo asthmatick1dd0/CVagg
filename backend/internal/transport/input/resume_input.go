@@ -18,6 +18,14 @@ type ItemInput struct {
 	About         *AboutInput         `json:"about,omitempty"`
 	Custom        *CustomInput        `json:"custom,omitempty"`
 	JobExperience *JobExperienceInput `json:"job_experience,omitempty"`
+	PersonalData  *PersonalDataInput  `json:"personal_data,omitempty"`
+}
+
+type PersonalDataInput struct {
+	FullName string `json:"full_name"`
+	Email    string `json:"email"`
+	Phone    string `json:"phone"`
+	Address  string `json:"address"`
 }
 
 type EducationInput struct {
