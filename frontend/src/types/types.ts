@@ -1,5 +1,8 @@
 export interface Resume {
   id: number;
+  title?: string;
+  createdAt: string;
+  updatedAt?: string;
   personalInfo: {
     name?: string;
     surname?: string;

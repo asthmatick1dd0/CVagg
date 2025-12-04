@@ -8,7 +8,7 @@ import exportIcon from "@/assets/icons/export.svg";
 export function ResumeGrid({ resumes }: { resumes: Resume[] }) {
   const transformedResumes = resumes.map(resume => ({
     ...resume,
-    id: resume.id?.toString() || resume.id
+    id: resume.id
   }));
   return (
     <section className="flex flex-col justify-center items-center rounded-4xl bg-primary/60 pt-10 pb-18 px-3 gap-12 min-w-sm">

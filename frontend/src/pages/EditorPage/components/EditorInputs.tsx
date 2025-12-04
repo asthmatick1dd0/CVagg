@@ -15,7 +15,7 @@ import { AccordionDemo } from "./EditorAccordion"
 import { resumeApi } from "@/services/resumeService"
 import type { Resume } from "@/types/types"
 
-export function EditorInputs() {
+export function EditorInputs({ onSaved }: { onSaved?: () => void }) {
     
     const [resume, setResume] = useState<Partial<Resume>>({
     personalInfo: {
@@ -39,7 +39,9 @@ export function EditorInputs() {
     try {
       setLoading(true)
       await resumeApi.saveResume(resume)
-      console.log("Saved!")
+      if (onSaved) {
+        onSaved()
+        console.log("Saved!")}
     } catch (err) {
       console.error("Ошибка при сохранении", err)
     } finally {
@@ -180,7 +182,6 @@ export function EditorInputs() {
           <AccordionDemo />
         </div>
 
-        {/* 🟢 Кнопка сохранить */}
         <Button type="submit" className="mt-6 w-full" disabled={loading}>
           {loading ? "Сохранение..." : "Сохранить резюме"}
         </Button>
