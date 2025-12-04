@@ -11,10 +11,11 @@ interface User {
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  register: (username: string, email: string, password: string) => Promise<void>;
-  login: (email: string, password: string) => Promise<void>;
+  error: string | null;
+  register: (username: string, email: string, password: string) => Promise<string | null>;
+  login: (email: string, password: string) => Promise<string | null>;
   logout: () => Promise<void>;
-  refreshUser: () => Promise<User | null>;
+  refreshUser: (tokenOverride?: string) => Promise<User | null>;
 }
 
 const AuthContext = createContext<AuthContextType>(null!);
@@ -22,19 +23,55 @@ const AuthContext = createContext<AuthContextType>(null!);
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   const navigate = useNavigate();
 
-  const refreshUser = async (token?: string): Promise<User | null> => {
+  const handleError = (err: unknown): string => {
+    console.error("AUTH ERROR:", err);
+    if ((err as any)?.response?.data?.message) return (err as any).response.data.message;
+    if ((err as any)?.message) return (err as any).message;
+    return "Произошла неизвестная ошибка";
+  };
+
+  // Updated refreshUser to accept a token directly or from storage
+  const refreshUser = async (tokenOverride?: string): Promise<User | null> => {
     try {
-      if (!token) return null;
+      // 1. Get token from Argument OR LocalStorage
+      const token = tokenOverride || localStorage.getItem("token");
+
+      if (!token) {
+        setLoading(false);
+        return null;
+      }
+
+      // 2. Send token via Query Param 'SignedString' as required by your Backend
       const res = await api.get(`/auth/me?SignedString=${encodeURIComponent(token)}`, {
         withCredentials: true,
       });
-      const fetchedUser = res.data?.data?.user;
-      setUser(fetchedUser || null);
-      return fetchedUser || null;
-    } catch {
+
+      // 3. DEBUG LOG: Check what the backend actually returns
+      console.log("DEBUG /auth/me Response:", res.data);
+
+      // 4. Robust check for user object (Handles slightly different backend structures)
+      const fetchedUser = 
+        res.data?.data?.user || // If backend returns { data: { user: ... } }
+        res.data?.user ||       // If backend returns { user: ... }
+        res.data;               // If backend returns { id: ..., email: ... } directly
+
+      if (!fetchedUser) {
+        console.warn("User data not found in response");
+        return null;
+      }
+
+      setUser(fetchedUser);
+      return fetchedUser;
+    } catch (err) {
+      // If token is invalid, clear it
+      console.error("Refresh failed", err);
+      localStorage.removeItem("token");
       setUser(null);
+      // Do not set global error here to avoid flashing errors on initial load
       return null;
     } finally {
       setLoading(false);
@@ -42,47 +79,88 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const register = async (username: string, email: string, password: string) => {
-    await api.post(
-      `/auth/signup?Username=${encodeURIComponent(username)}&Email=${encodeURIComponent(email)}&Password=${encodeURIComponent(password)}`,
-      {},
-      { withCredentials: true }
-    );
-    navigate("/login");
+    try {
+      await api.post(
+        `/auth/signup?Username=${encodeURIComponent(username)}&Email=${encodeURIComponent(email)}&Password=${encodeURIComponent(password)}`,
+        {},
+        { withCredentials: true }
+      );
+      navigate("/login");
+      return null;
+    } catch (err) {
+      const msg = handleError(err);
+      setError(msg);
+      return msg;
+    }
   };
 
   const login = async (email: string, password: string) => {
     try {
-      // Get token from signin response
       const res = await api.get(
         `/auth/signin?Email=${encodeURIComponent(email)}&Password=${encodeURIComponent(password)}`,
         { withCredentials: true }
       );
 
       const token: string = res.data?.tokenString;
-      if (!token) throw new Error("No token returned from backend");
+      
+      if (!token) {
+        throw new Error("Сервер не вернул токен (tokenString missing)");
+      }
 
-      // Fetch user with the token
+      // 1. SAVE TOKEN
+      localStorage.setItem("token", token);
+
+      // 2. LOAD USER using the new token
       const loggedInUser = await refreshUser(token);
-      if (!loggedInUser) throw new Error("Failed to fetch user");
+
+      if (!loggedInUser) {
+        throw new Error("Не удалось загрузить пользователя после входа");
+      }
 
       navigate("/dashboard");
+      return null;
     } catch (err) {
-      throw err;
+      const msg = handleError(err);
+      setError(msg);
+      return msg;
     }
   };
 
   const logout = async () => {
-    await api.post("/auth/logout", {}, { withCredentials: true });
-    setUser(null);
-    navigate("/login");
+    try {
+      const token = localStorage.getItem("token");
+      if (token) {
+        await api.post(
+            `/auth/logout?SignedString=${encodeURIComponent(token)}`, 
+            {}, 
+            { withCredentials: true }
+        );
+      }
+    } catch (err) {
+      console.error("Logout API failed:", handleError(err));
+    } finally {
+      localStorage.removeItem("token");
+      setUser(null);
+      navigate("/login");
+    }
   };
 
   useEffect(() => {
-    setLoading(false);
+    refreshUser();
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, loading, register, login, logout, refreshUser }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        loading,
+        error,
+        register,
+        login,
+        logout,
+        refreshUser
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

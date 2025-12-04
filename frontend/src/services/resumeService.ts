@@ -1,29 +1,18 @@
 import type { Resume } from '@/types/types';
 import { api } from '@/utils/api';
 
+const getTokenQuery = () => {
+    const token = localStorage.getItem("token");
+    return token ? `&SignedString=${encodeURIComponent(token)}` : "";
+};
+
 export const resumeApi = {
-    fetchResumes: async (userID: number = 1): Promise<Resume[]> => {
-        const response = await api.get('/dashboard/resumes', {
-            params: { user_id: userID },
-        });
+    fetchResumes: async (userID: number): Promise<Resume[]> => {
+        const response = await api.get(`/dashboard/resumes?user_id=${userID}${getTokenQuery()}`);
         return response.data;
     },
-    fetchResumeById: async (id: string, userID: number = 1): Promise<Resume> => {
-        const response = await api.get<Resume>(`/dashboard/resumes/${id}`, {
-            params: { user_id: userID },
-        });
-        return response.data;
-    },
-    saveResume: async (data: Partial<Resume>, userID: number = 1): Promise<Resume> => {
-        const response = await api.post<Resume>('/editor/save', data, {
-            params: { user_id: userID },
-        });
-        return response.data;
-    },
-    updateResume: async (id: string, data: Partial<Resume>, userID: number = 1): Promise<Resume> => {
-        const response = await api.patch<Resume>(`/editor/:${id}/save`, data, {
-            params: { user_id: userID },
-        });
+    fetchResumeById: async (id: string, userID: number): Promise<Resume> => {
+        const response = await api.get<Resume>(`/resumes/${id}?user_id=${userID}${getTokenQuery()}`);
         return response.data;
     },
 };
