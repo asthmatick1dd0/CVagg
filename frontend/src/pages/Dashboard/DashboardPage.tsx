@@ -13,13 +13,8 @@ function DashboardPage(){
 
     const transformedResumes = resumes.map((resume) => ({
         ...resume,
-        id: resume.id || resume.id?.toString(),
+        id: resume.id,
         createdAt: new Date(resume.createdAt).toLocaleDateString("ru-RU", {
-            day: "2-digit",
-            month: "2-digit",
-            year: "numeric",
-        }),
-        updatedAt: new Date(resume.updatedAt).toLocaleDateString("ru-RU", {
             day: "2-digit",
             month: "2-digit",
             year: "numeric",
