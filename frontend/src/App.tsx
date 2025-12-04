@@ -4,7 +4,7 @@ import DashboardPage from "./pages/Dashboard/DashboardPage";
 import LoginPage from "./pages/Auth/LoginPage";
 import RegistrationPage from "./pages/Auth/RegistrationPage";
 import EditorPage from "./pages/EditorPage/EditorPage";
-import { ResumeProvider } from "./contexts/resumeContext";
+import { ResumeProvider } from "./contexts/ResumeContext";
 
 function App() {
   return (

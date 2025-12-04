@@ -13,7 +13,7 @@ import DemoAvatar from "@/assets/icons/demo.svg"
 import { DynamicForm } from "./EditorButtons"
 import { AccordionDemo } from "./EditorAccordion"
 import type { Resume } from "@/types/types"
-import { useResumeContext } from "@/contexts/resumeContext"
+import { useResumeContext } from "@/contexts/ResumeContext"
 
 export function EditorInputs() {
     const { saveResume, loading } = useResumeContext()
@@ -33,8 +33,15 @@ export function EditorInputs() {
     });
 
   const handleSave = async () => {
-    const saved = await saveResume(resume)
-    console.log("saved resume:", saved)
+    try {
+      const saved = await saveResume(resume)
+      if (saved) {
+        console.log("saved resume:", saved)
+        alert("Резюме успешно сохранено!")
+      }
+    } catch (error) {
+      console.error("Error saving resume:", error)
+    }
   }
 
   return (
