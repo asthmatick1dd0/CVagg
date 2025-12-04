@@ -14,13 +14,14 @@ type EditorService interface {
 }
 
 type editorService struct {
-	resumeRepo     repository.ResumeRepository
-	resumeItemRepo repository.ItemRepository
-	jobExpRepo     repository.JobExperienceRepository
-	educationRepo  repository.EducationRepository
-	hardSkillRepo  repository.HardSkillRepository
-	aboutRepo      repository.AboutRepository
-	customRepo     repository.CustomRepository
+	resumeRepo       repository.ResumeRepository
+	resumeItemRepo   repository.ItemRepository
+	jobExpRepo       repository.JobExperienceRepository
+	educationRepo    repository.EducationRepository
+	hardSkillRepo    repository.HardSkillRepository
+	aboutRepo        repository.AboutRepository
+	customRepo       repository.CustomRepository
+	personalDataRepo repository.PersonalDataRepository
 }
 
 func NewEditorService(
@@ -31,15 +32,17 @@ func NewEditorService(
 	hardSkillRepo repository.HardSkillRepository,
 	aboutRepo repository.AboutRepository,
 	customRepo repository.CustomRepository,
+	personalDataRepo repository.PersonalDataRepository,
 ) EditorService {
 	return &editorService{
-		resumeRepo:     resumeRepo,
-		resumeItemRepo: resumeItemRepo,
-		jobExpRepo:     jobExpRepo,
-		educationRepo:  educationRepo,
-		hardSkillRepo:  hardSkillRepo,
-		aboutRepo:      aboutRepo,
-		customRepo:     customRepo,
+		resumeRepo:       resumeRepo,
+		resumeItemRepo:   resumeItemRepo,
+		jobExpRepo:       jobExpRepo,
+		educationRepo:    educationRepo,
+		hardSkillRepo:    hardSkillRepo,
+		aboutRepo:        aboutRepo,
+		customRepo:       customRepo,
+		personalDataRepo: personalDataRepo,
 	}
 }
 
@@ -88,6 +91,12 @@ func (s *editorService) SaveResume(resume *input.ResumeInput) error {
 					return err
 				}
 			}
+		case "PersonalData":
+			for _, it := range items {
+				if err := s.SavePersonalData(&it, resumeInput.ID); err != nil {
+					return err
+				}
+			}
 		}
 	}
 	return nil
@@ -110,6 +119,31 @@ func (s *editorService) SaveJobExperience(it *input.ItemInput, ID uint) error {
 	resumeItemModel := &models.ResumeItem{
 		ItemId:   jobExpModel.ID,
 		ItemType: it.Type,
+
+		ResumeId: ID,
+	}
+	if err := s.resumeItemRepo.Create(resumeItemModel); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *editorService) SavePersonalData(it *input.ItemInput, ID uint) error {
+	personalDataModel := &models.PersonalData{
+		FullName: it.PersonalData.FullName,
+		Email:    it.PersonalData.Email,
+		Phone:    it.PersonalData.Phone,
+		Address:  it.PersonalData.Address,
+	}
+
+	if err := s.personalDataRepo.Create(personalDataModel); err != nil {
+		return err
+	}
+
+	resumeItemModel := &models.ResumeItem{
+		ItemType: it.Type,
+		ItemId:   personalDataModel.ID,
 
 		ResumeId: ID,
 	}
