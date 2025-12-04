@@ -167,9 +167,9 @@ func (as *authService) SignInUser(c *fiber.Ctx, input input.SignInInputEmail) (*
 		return user, fmt.Errorf("wrong password")
 	}
 
-	if err := as.AddToPool(user.ID, user); err != nil {
-		return user, fmt.Errorf("user %s already authorized", user.Username)
-	}
+	// if err := as.AddToPool(user.ID, user); err != nil {
+	// 	return user, fmt.Errorf("user %s already authorized", user.Username)
+	// }
 
 	return user, nil
 }
