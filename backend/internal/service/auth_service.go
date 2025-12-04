@@ -35,9 +35,9 @@ func NewAuthService(repo repository.UserRepository) AuthService {
 }
 
 func (as *authService) AddToPool(id uint, user *models.User) error {
-	if _, ok := as.userPool[id]; ok {
-		return fmt.Errorf("user with id %d already exists in pool", id)
-	}
+	// if _, ok := as.userPool[id]; ok {
+	// 	return fmt.Errorf("user with id %d already exists in pool", id)
+	// }
 	as.userPool[id] = user
 	return nil
 }
