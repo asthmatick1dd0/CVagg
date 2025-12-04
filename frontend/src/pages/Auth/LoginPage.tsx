@@ -1,8 +1,27 @@
 import { Card, CardHeader, CardFooter, CardTitle, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 
 function LoginPage(){
+    const { login } = useAuth();
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [loading, setLoading] = useState(false);
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setLoading(true);
+        try {
+        await login(email, password);
+        } catch {
+        alert("Ошибка входа");
+        } finally {
+        setLoading(false);
+        }
+    };
+
     return (
     <>
     <div className="min-h-screen flex items-center justify-start custom-bg">
@@ -11,30 +30,41 @@ function LoginPage(){
                 <CardTitle className="text-4xl ">Войти в аккаунт</CardTitle>
             </CardHeader>
             <CardContent className="">
-                <form>
-                    {/* TODO (в будущем): добавить/заменить юзернейм на почту */}
+                <form onSubmit={handleSubmit}>
                     <div className="py-2">
-                        <label htmlFor="uname">Имя пользователя</label>
-                        <Input id="uname" type="text" placeholder="username" />
+                        <label htmlFor="email">Электронная почта</label>
+                        <Input 
+                        id="email" 
+                        type="text" 
+                        placeholder="email"
+                        value={email} 
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                        />
                     </div>
                     <div className="">
                         <label htmlFor="password">Пароль</label>
-                        <Input id="password" type="password" placeholder="••••••••" />
+                        <Input 
+                        id="password" 
+                        type="password" 
+                        placeholder="••••••••"
+                        value={password} 
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                        />
                     </div>
+                    <CardFooter className="flex flex-col w-full mt-12">
+                    <Button type="submit" className="px-12" disabled={loading}>
+                        {loading ? "Вход..." : "Войти"}
+                    </Button>
+                </CardFooter>
                 </form>
-            </CardContent>
-            <CardFooter className="flex flex-col w-full my-9">
-                <Button type="submit" className="px-12">
-                    <a href="/dashboard">
-                        Войти
-                    </a>
-                </Button> {/*TODO: реализовать логику аутентификации*/}
-                <Button variant="link">
-                    <a href="/registration">
+                <a href="/registration" className="flex flex-col w-full">
+                    <Button variant="link">
                         <i>Нет аккаунта?</i>
-                    </a>
-                </Button>
-            </CardFooter>
+                    </Button>
+                </a>
+            </CardContent>
         </Card>
     </div>
     </>
