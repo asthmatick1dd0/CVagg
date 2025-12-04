@@ -19,6 +19,7 @@ type Container struct {
 	hardSkillRepo     repository.HardSkillRepository
 	aboutRepo         repository.AboutRepository
 	customRepo        repository.CustomRepository
+	personalDataRepo  repository.PersonalDataRepository
 
 	dashboardService service.DashboardService
 	authService      service.AuthService
@@ -43,6 +44,7 @@ func NewContainer() *Container {
 	_hardSkillRepo := repository.NewHardSkillRepository(db)
 	_aboutRepo := repository.NewAboutRepository(db)
 	_customRepo := repository.NewCustomRepository(db)
+	_personalDataRepo := repository.NewPersonalDataRepository(db)
 
 	log.Printf("Connected to DB successfully")
 
@@ -56,6 +58,7 @@ func NewContainer() *Container {
 		_hardSkillRepo,
 		_aboutRepo,
 		_customRepo,
+		_personalDataRepo,
 	)
 
 	log.Printf("Initialized Resume Service")
@@ -75,6 +78,7 @@ func NewContainer() *Container {
 		hardSkillRepo:     _hardSkillRepo,
 		aboutRepo:         _aboutRepo,
 		customRepo:        _customRepo,
+		personalDataRepo:  _personalDataRepo,
 
 		dashboardService: _dashboardService,
 		authService:      _authService,
