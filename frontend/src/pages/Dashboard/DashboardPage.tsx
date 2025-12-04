@@ -4,22 +4,18 @@ import { Button } from "@/components/ui/button";
 import Footer from "@/components/footer";
 import Header from "@/components/header";
 import { DashboardPagination } from "./DashboardPagination";
-import { useResumes } from "@/hooks/useResumes";
+import { useResumeContext } from "@/contexts/resumeContext";
 
 function DashboardPage(){
-    const { resumes, loading, error, refetch } = useResumes();
+    const { resumes, loading, error } = useResumeContext();
+    const refetch = useResumeContext().fetchResumes;
     const [page, setPage] = useState(1);
     const perPage = 9;
 
     const transformedResumes = resumes.map((resume) => ({
         ...resume,
-        id: resume.id || resume.id?.toString(),
+        id: resume.id,
         createdAt: new Date(resume.createdAt).toLocaleDateString("ru-RU", {
-            day: "2-digit",
-            month: "2-digit",
-            year: "numeric",
-        }),
-        updatedAt: new Date(resume.updatedAt).toLocaleDateString("ru-RU", {
             day: "2-digit",
             month: "2-digit",
             year: "numeric",
