@@ -5,7 +5,7 @@ import LoginPage from "./pages/Auth/LoginPage";
 import RegistrationPage from "./pages/Auth/RegistrationPage";
 import EditorPage from "./pages/EditorPage/EditorPage";
 import { useAuth } from "./contexts/AuthContext";
-import { ResumeProvider } from "./contexts/resumeContext";
+import { ResumeProvider } from "./contexts/ResumeContext";
 
 function App() {
   const { user, loading } = useAuth();

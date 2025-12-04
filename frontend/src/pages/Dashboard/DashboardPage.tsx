@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import Footer from "@/components/footer";
 import Header from "@/components/header";
 import { DashboardPagination } from "./DashboardPagination";
-import { useResumeContext } from "@/contexts/resumeContext";
+import { useResumeContext } from "@/contexts/ResumeContext";
 
 function DashboardPage(){
     const { resumes, loading, error } = useResumeContext();
