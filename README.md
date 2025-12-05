@@ -78,7 +78,13 @@ https://www.figma.com/design/G6vf14E8DJfDqrZ3NmlERk/CVaggregator?node-id=0-1&t=z
 | UI/UX Design         | Ирина Втюрина     | @blacktail69                       |
 | Frontend             | Анастасия Исаева  | @cirrusghoulpro228                 |
 | DevOps, тестирование | Николай Сидоренко | @xaxaxaxaxaxaxaxaxaxxaxxaxaxaxaxa  |
+
 <br>
+
+## Способ запуска
+
+Перейти на наш сайт можно по ссылке https://cvagg.ru/ или запустить через **docker compose up --build**
+
 <br>
 <br>
 <br>
