@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"os"
 	"strings"
 	"time"
 
@@ -85,6 +86,10 @@ func (h *authHandler) SignIn(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(err.Error())
 	}
 
+	domain := os.Getenv("COOCKIE_DOMAIN")
+	if domain == "" {
+		domain = "localhost"
+	}
 	c.Cookie(&fiber.Cookie{
 		Name:     "token",
 		Value:    tokenString,
@@ -92,7 +97,7 @@ func (h *authHandler) SignIn(c *fiber.Ctx) error {
 		MaxAge:   c.Locals("JWTMaxAge").(int),
 		Secure:   false,
 		HTTPOnly: true,
-		Domain:   "localhost",
+		Domain:   domain,
 	})
 
 	return c.Status(fiber.StatusAccepted).JSON(fiber.Map{"tokenString": tokenString})
