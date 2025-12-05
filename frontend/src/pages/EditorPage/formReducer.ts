@@ -1,4 +1,4 @@
-import type { FormField, FieldType, PredefinedFieldLabel } from "@/types/types";
+import type { FormField, FieldType, PredefinedFieldLabel } from "@/types/resume.types";
 
 type FieldAction =
   | { type: 'ADD_FIELD'; fieldType: FieldType; label?: string; predefinedLabel?: PredefinedFieldLabel }

@@ -4,11 +4,10 @@ import { Button } from "@/components/ui/button";
 import Footer from "@/components/footer";
 import Header from "@/components/header";
 import { DashboardPagination } from "./DashboardPagination";
-import { useResumeContext } from "@/contexts/ResumeContext";
+import { useResumes } from "@/hooks/useResumes";
 
 function DashboardPage(){
-    const { resumes, loading, error } = useResumeContext();
-    const refetch = useResumeContext().fetchResumes;
+    const { resumes, loading, error, refetch } = useResumes();
     const [page, setPage] = useState(1);
     const perPage = 9;
 

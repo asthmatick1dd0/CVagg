@@ -5,6 +5,7 @@ import { useAuth } from "@/contexts/AuthContext";
 
 export const useResumes = () => {
     const { user } = useAuth();
+
     const [resumes, setResumes] = useState<Resume[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null); 
@@ -33,10 +34,12 @@ export const useResumes = () => {
     }, [user]);
 
      const saveResume = async (data: Partial<Resume>) => {
+        if (!user || !user.id) return null;
+
         setLoading(true);
         setError(null);
         try {
-            const newResume = await resumeApi.saveResume(data);
+            const newResume = await resumeApi.saveResume(data, Number(user.id));
             setResumes(prev => [...prev, newResume]);
             return newResume;
         } catch (err) {
@@ -49,11 +52,14 @@ export const useResumes = () => {
     };
 
     // на будущее: хук для обновления резюме
-    const updateResume = async (id: string, data: Partial<Resume>) => {
+    const updateResume = async (id: number, data: Partial<Resume>) => {
+        if (!user || !user.id) return null;
+
         setLoading(true);
         setError(null);
         try {
-            const updated = await resumeApi.updateResume(id, data);
+            const updated = await resumeApi.updateResume(id, data, Number(user.id));
+            
             setResumes(prev =>
                 prev.map(r => (r.id === updated.id ? updated : r))
             );

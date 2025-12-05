@@ -1,4 +1,4 @@
-import type { Resume } from "@/types/types";
+import type { Resume } from "@/types/resume.types";
 
 interface ResumeCardProps {
   resume: Resume;

@@ -1,4 +1,4 @@
-import type { Resume } from '@/types/types';
+import type { Resume } from '@/types/resume.types';
 import { api } from '@/utils/api';
 
 const getTokenQuery = () => {
@@ -15,5 +15,22 @@ export const resumeApi = {
         const response = await api.get<Resume>(`/resumes/${id}?user_id=${userID}${getTokenQuery()}`);
         return response.data;
     },
+    saveResume: async (data: Partial<Resume>, userId: number): Promise<Resume> => {
+        const response = await api.post(
+            `/editor/save?user_id=${userId}${getTokenQuery()}`, 
+            {
+                ...data,
+                user_id: userId,
+            }
+        );
+        return response.data;
+    },
+    updateResume: async (id: number, data: Partial<Resume>, userId: number): Promise<Resume> => {
+        const response = await api.patch(
+            `/editor/${id}/save?user_id=${userId}${getTokenQuery()}`,
+            { ...data, user_id: userId }
+        );
+        return response.data;
+    }
 };
 
