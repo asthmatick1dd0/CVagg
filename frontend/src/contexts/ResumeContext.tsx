@@ -44,7 +44,7 @@ export const ResumeProvider = ({ children }: { children: ReactNode }) => {
 
             if (data.items && data.items["personal_data"] && data.items["personal_data"].length > 0) {
                 const item = data.items["personal_data"][0];
-                personalSource = item.personal_data || item.personal_data || {};
+                personalSource = item.personal_data || item.PersonalData || {};
                 console.log("personal_data внутри items:", personalSource);
             }
 
@@ -65,7 +65,7 @@ export const ResumeProvider = ({ children }: { children: ReactNode }) => {
                     email: personalSource.Email || personalSource.email || "",
                     phone: personalSource.Phone || personalSource.phone || "",
                     address: personalSource.Address || personalSource.address || "",
-                    jobTitle: personalSource.JobTitle || personalSource.jobTitle || "",
+                    jobTitle: personalSource.desired_job || personalSource.DesiredJob || personalSource.JobTitle || "",
                 }
             }));
             console.groupEnd();
@@ -84,7 +84,6 @@ export const ResumeProvider = ({ children }: { children: ReactNode }) => {
       personalInfo: { ...prev.personalInfo, [field]: value },
     }));
   };
-
 
   const saveResume = async () => {
     if (!user?.id) return;
@@ -110,6 +109,8 @@ export const ResumeProvider = ({ children }: { children: ReactNode }) => {
             ]
         }
       };
+
+      console.log("🚀 Отправка (Версия PersonalData):", payload);
 
       await resumeApi.saveResume(payload, Number(user.id));
 
