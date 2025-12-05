@@ -86,7 +86,7 @@ func (h *authHandler) SignIn(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(err.Error())
 	}
 
-	domain := os.Getenv("COOCKIE_DOMAIN")
+	domain := os.Getenv("COOKIE_DOMAIN")
 	if domain == "" {
 		domain = "localhost"
 	}
