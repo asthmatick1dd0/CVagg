@@ -51,7 +51,7 @@ export const useResumes = () => {
         }
     };
 
-    // на будущее: хук для обновления резюме
+    // на будущее! обновление существующего резюме
     const updateResume = async (id: number, data: Partial<Resume>) => {
         if (!user || !user.id) return null;
 

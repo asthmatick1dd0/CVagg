@@ -11,10 +11,11 @@ import { Input } from "@/components/ui/input"
 import DemoAvatar from "@/assets/icons/demo.svg"
 import { DynamicForm } from "./EditorButtons"
 import { AccordionDemo } from "./EditorAccordion"
-import { useResumeContext } from "@/contexts/ResumeContext" 
+import { useResumeContext } from "@/contexts/ResumeContext"
 
 export function EditorInputs() {
-  const { resumeData, updatePersonalInfo, saveResume, loading } = useResumeContext();
+
+  const { resumeData, saveResume, loading, updatePersonalInfo } = useResumeContext()
 
   return (
     <div className="w-full min-w:400px p-10 bg-secondary/20 rounded-xl">
@@ -29,7 +30,6 @@ export function EditorInputs() {
             <FieldLegend className="pb-6">Персональная информация</FieldLegend>
 
             <FieldGroup className="grid grid-cols-[auto_1fr] gap-4 max-md:grid-cols-1">
-              {/* Фото (пока заглушка) */}
               <Field className="gap-1">
                 <div className="relative group flex flex-col gap-1">
                   <p className="text-sm font-medium">Фото</p>
@@ -48,7 +48,7 @@ export function EditorInputs() {
                     <FieldLabel htmlFor="name">Имя</FieldLabel>
                     <Input
                         id="name"
-                        value={resumeData.personalInfo?.name || ""} 
+                        value={resumeData.personalInfo?.name || ""}
                         onChange={(e) => updatePersonalInfo("name", e.target.value)}
                         required
                     />
@@ -78,7 +78,6 @@ export function EditorInputs() {
             </FieldGroup>
 
             <FieldGroup className="flex flex-col gap-4">
-              <FieldGroup className="grid grid-cols-2 gap-4 max-sm:grid-cols-1">
                 <Field className="gap-1">
                   <FieldLabel htmlFor="email">Email</FieldLabel>
                   <Input
@@ -88,7 +87,6 @@ export function EditorInputs() {
                     required
                   />
                 </Field>
-
                 <Field className="gap-1">
                   <FieldLabel htmlFor="phone">Номер телефона</FieldLabel>
                   <Input
@@ -98,16 +96,14 @@ export function EditorInputs() {
                     required
                   />
                 </Field>
-              </FieldGroup>
-
-              <Field className="gap-1">
-                <FieldLabel htmlFor="address">Адрес</FieldLabel>
-                <Input
-                  id="address"
-                  value={resumeData.personalInfo?.address || ""}
-                  onChange={(e) => updatePersonalInfo("address", e.target.value)}
-                />
-              </Field>
+                <Field className="gap-1">
+                  <FieldLabel htmlFor="address">Адрес</FieldLabel>
+                  <Input
+                    id="address"
+                    value={resumeData.personalInfo?.address || ""}
+                    onChange={(e) => updatePersonalInfo("address", e.target.value)}
+                  />
+                </Field>
             </FieldGroup>
 
             <div className="">

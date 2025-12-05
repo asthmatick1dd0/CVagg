@@ -5,11 +5,12 @@ import { Button } from "@/components/ui/button";
 import trashIcon from "@/assets/icons/trash.svg";
 import exportIcon from "@/assets/icons/export.svg";
 
-export function ResumeGrid({ resumes }: { resumes: Resume[] }) {
-  const transformedResumes = resumes.map(resume => ({
-    ...resume,
-    id: resume.id
-  }));
+interface ResumeGridProps {
+  resumes: Resume[];
+  onCreate: () => void; 
+}
+
+export function ResumeGrid({ resumes, onCreate }: ResumeGridProps) {
   return (
     <section className="flex flex-col justify-center items-center rounded-4xl bg-primary/60 pt-10 pb-18 px-3 gap-12 min-w-sm">
         <section className="flex flex-row w-full items-center justify-between px-6">
@@ -24,10 +25,13 @@ export function ResumeGrid({ resumes }: { resumes: Resume[] }) {
           </div>
         </section>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8 gap-y-16 px-5">
-            <NewResumeCard />
-              {transformedResumes.map(r => (
-            <ResumeCard key={r.id} resume={r}/>
-            ))}            
+            <NewResumeCard onClick={onCreate}/>
+              {resumes.map((r, index) => (
+                <ResumeCard 
+                    key={r.id || index} 
+                    resume={r}
+                />
+              ))}             
             </div>
     </section>
   );

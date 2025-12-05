@@ -4,21 +4,12 @@ import type { Resume } from "@/types/resume.types";
 import { resumeApi } from "@/services/resumeService";
 import { useAuth } from "@/contexts/AuthContext";
 
-// Начальное состояние
-const INITIAL_RESUME: Partial<Resume> = {
-  title: "Новое резюме",
+const INITIAL_RESUME: Resume = {
+  title: "Резюме",
   personalInfo: {
-    name: "",
-    surname: "",
-    jobTitle: "",
-    email: "",
-    phone: "",
-    address: "",
-    avatar: "",
+    name: "", surname: "", jobTitle: "", email: "", phone: "", address: "", avatar: "",
   },
-  experience: [],
-  education: [],
-  skills: [],
+  experience: [], education: [], skills: [],
 };
 
 interface ResumeContextType {
@@ -40,47 +31,90 @@ export const ResumeProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(false);
   const isNew = id === "new" || !id;
 
-  // 1. Загрузка данных при открытии страницы
   useEffect(() => {
-    if (!isNew && id && user?.id) {
+    if (!isNew && id && id !== "undefined" && user?.id) {
       setLoading(true);
+      
       resumeApi.fetchResumeById(id, Number(user.id))
-        .then((data) => {
+        .then((data: any) => {
+            console.group("ОТЛАДКА ЗАГРУЗКИ");
+            console.log("Сырой ответ:", data);
+
+            let personalSource: any = {};
+
+            if (data.items && data.items["PersonalData"] && data.items["PersonalData"].length > 0) {
+                const item = data.items["PersonalData"][0];
+                personalSource = item.PersonalData || item.personal_data || {};
+                console.log("PersonalData внутри items:", personalSource);
+            }
+
+            const fullName = personalSource.FullName || personalSource.full_name || "";
+            let [firstName, ...rest] = fullName.split(" ");
+            let lastName = rest.join(" ");
+
             setResumeData(prev => ({
+                ...INITIAL_RESUME,
                 ...prev,
-                ...data,
-                personalInfo: { ...prev.personalInfo, ...data.personalInfo }
+                id: data.id || data.ID,
+                title: data.title || data.Title || "Без названия",
+                
+                personalInfo: {
+                    ...INITIAL_RESUME.personalInfo,
+                    name: firstName || "",
+                    surname: lastName || "",
+                    email: personalSource.Email || personalSource.email || "",
+                    phone: personalSource.Phone || personalSource.phone || "",
+                    address: personalSource.Address || personalSource.address || "",
+                    jobTitle: "",
+                }
             }));
+            console.groupEnd();
         })
-        .catch((err) => console.error("Ошибка загрузки:", err))
+        .catch(err => console.error(err))
         .finally(() => setLoading(false));
+    } 
+    else if (isNew) {
+        setResumeData(INITIAL_RESUME);
     }
   }, [id, isNew, user]);
 
-  // 2. Функция обновления полей Personal Info
   const updatePersonalInfo = (field: string, value: string) => {
     setResumeData((prev) => ({
       ...prev,
-      personalInfo: {
-        ...prev.personalInfo,
-        [field]: value,
-      },
+      personalInfo: { ...prev.personalInfo, [field]: value },
     }));
   };
 
-  // 3. Функция сохранения
+
   const saveResume = async () => {
     if (!user?.id) return;
     setLoading(true);
     try {
-      let result;
-      if (isNew) {
-        result = await resumeApi.saveResume(resumeData, Number(user.id));
-        alert("Резюме создано!");
-        navigate("/dashboard");
-      } else {
-        alert("Функция обновления в разработке (Front-end готов)");
-      }
+      const fullName = `${resumeData.personalInfo?.name || ""} ${resumeData.personalInfo?.surname || ""}`.trim();
+
+      const payload = {
+        title: resumeData.title || "Резюме",
+        user_id: Number(user.id),
+        items: {
+            "PersonalData": [
+                {
+                    "type": "PersonalData",
+                    "personal_data": { 
+                        "full_name": fullName,
+                        "email": resumeData.personalInfo?.email,
+                        "phone": resumeData.personalInfo?.phone,
+                        "address": resumeData.personalInfo?.address
+                    }
+                }
+            ]
+        }
+      };
+
+      await resumeApi.saveResume(payload, Number(user.id));
+
+      alert("Резюме успешно сохранено! Внимание: функция обновления резюме отсутствует в данной версии. Повторное нажатие на эту кнопку создаёт новое резюме.");
+      navigate("/dashboard");
+
     } catch (error) {
       console.error("Ошибка сохранения:", error);
       alert("Не удалось сохранить резюме");
@@ -98,6 +132,8 @@ export const ResumeProvider = ({ children }: { children: ReactNode }) => {
 
 export const useResumeContext = () => {
   const context = useContext(ResumeContext);
-  if (!context) throw new Error("useResumeContext must be used within ResumeProvider");
+  if (!context) {
+    throw new Error("useResumeContext must be used within ResumeProvider");
+  }
   return context;
 };

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom"; 
 import { ResumeGrid } from "./ResumeGrid";
 import { Button } from "@/components/ui/button";
 import Footer from "@/components/footer";
@@ -7,23 +8,24 @@ import { DashboardPagination } from "./DashboardPagination";
 import { useResumes } from "@/hooks/useResumes";
 
 function DashboardPage(){
+    const navigate = useNavigate();
     const { resumes, loading, error, refetch } = useResumes();
     const [page, setPage] = useState(1);
     const perPage = 9;
 
-    const transformedResumes = resumes.map((resume) => ({
+    const transformedResumes = (resumes || []).map((resume) => ({
         ...resume,
-        id: resume.id,
-        createdAt: new Date(resume.createdAt).toLocaleDateString("ru-RU", {
-            day: "2-digit",
-            month: "2-digit",
-            year: "numeric",
-        }),
+        id: (resume.ID || resume.id || 0).toString(),
+        createdAt: resume.createdAt ? new Date(resume.createdAt).toLocaleDateString("ru-RU", { day: "2-digit", month: "2-digit", year: "numeric" }) : "Только что",
     }));
 
     const totalPages = Math.ceil(transformedResumes.length / perPage);
     const start = (page - 1) * perPage;
     const currentResumes = transformedResumes.slice(start, start + perPage);
+
+    const handleCreateClick = () => {
+        navigate("/editor/new");
+    };
 
     if (loading) {
         return (
@@ -58,7 +60,10 @@ function DashboardPage(){
                     <h1 className="text-5xl text-white font-bold">Ваши резюме</h1>
                 </div>
 
-                <ResumeGrid resumes={currentResumes} />
+                <ResumeGrid 
+                    resumes={currentResumes} 
+                    onCreate={handleCreateClick}
+                />
             </div>
 
         <div className="pb-12">

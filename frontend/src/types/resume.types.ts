@@ -1,7 +1,9 @@
 export interface Resume {
-  id: number;
+  id?: number | string; 
+  ID?: number;          
+  user_id?: number;
   title?: string;
-  createdAt: string;
+  createdAt?: string;
   updatedAt?: string;
   personalInfo: {
     name?: string;
