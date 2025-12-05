@@ -3,7 +3,9 @@ import LandingPage from "./pages/LandingPage/LandingPage"
 import DashboardPage from "./pages/Dashboard/DashboardPage";
 import LoginPage from "./pages/Auth/LoginPage";
 import RegistrationPage from "./pages/Auth/RegistrationPage";
+import EditorPage from "./pages/EditorPage/EditorPage";
 import { useAuth } from "./contexts/AuthContext";
+import { ResumeProvider } from "./contexts/ResumeContext";
 
 function App() {
   const { user, loading } = useAuth();
@@ -14,6 +16,7 @@ function App() {
 
   return (
     <>
+    <ResumeProvider>
       <Routes>
         <Route path="/" element={<LandingPage/>} />
         <Route
@@ -28,7 +31,12 @@ function App() {
           path="/dashboard"
           element={user ? <DashboardPage /> : <Navigate to="/login" replace />}
         />
+        <Route 
+        path="/editor/:id" 
+        element={user ? <EditorPage /> : <Navigate to="/login" replace />} 
+        />
       </Routes>
+    </ResumeProvider>
     </>
   );
 };
