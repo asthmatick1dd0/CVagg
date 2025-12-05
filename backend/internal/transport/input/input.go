@@ -3,7 +3,7 @@ package input
 type SignUpInput struct {
 	Username string `json:"username" validate:"required"`
 	Email    string `json:"email" validate:"required,email"`
-	Password string `json:"password" validate:"required"`
+	Password string `json:"password" validate:"required,ascii,max=72"` // больше 72 символов нормально не хэшируется
 }
 
 type SignInInputUsername struct {

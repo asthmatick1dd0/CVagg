@@ -20,15 +20,17 @@ func main() {
 
 	app := fiber.New()
 
+	secret := service.GenerateJWTSecret() // Секрет обязательно выносить в отдельную константу, иначе он перегенерируется при каждом вызове ключа из локалс
+
 	app.Use(func(c *fiber.Ctx) error {
-		c.Locals("resumeService", service.NewResumeService(repository.NewResumeRepository(db)))
+		c.Locals("resumeService", service.NewDashboardService(repository.NewResumeRepository(db)))
 		c.Locals("userRepo", repository.NewUserRepository(db))
+		repo, _ := c.Locals("userRepo").(repository.UserRepository)
+		c.Locals("authService", service.NewAuthService(repo))
 
-		//TODO: Запихать значения, связанные с безопасностью, в .env, и впредь выгружать оттуда
 		c.Locals("JWTExpirationTime", time.Hour*12)
-		c.Locals("JWTSecret", service.GenerateJWTSecret())
+		c.Locals("JWTSecret", secret)
 		c.Locals("JWTMaxAge", 1440)
-
 		return c.Next()
 	})
 

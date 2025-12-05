@@ -1,4 +1,3 @@
-version: '3'
 services:
   backend:
     container_name: cvagg-backend
@@ -11,18 +10,15 @@ services:
       - database
     volumes:
       - ./backend:/app
-
-    
+      - ./assets:/app/assets
 
   nginx:
     container_name: cvagg-nginx
     build: ./frontend
     ports:
-      - "80:80"
+      - "3000:80"
     depends_on:
       - backend
-    volumes:
-      - ./frontend:/usr/share/nginx/html
 
   database:
     container_name: cvagg-postgres

@@ -53,8 +53,23 @@ font-family: "Noto Sans", monospace;
   font-size: clamp(1rem, 2vw, 1.2rem);
 }
 
+.custom-bg {
+  background-image: url('/background.svg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
 .custom-gradient {
   background: linear-gradient(to bottom, #0A0A0A 41%, #560004 100%);
+}
+
+.dashboard-gradient {
+  background: linear-gradient(to bottom, #560004 0%, #0A0A0A 50%, #0a0a0ac0 80%, #56000491 100%);
+}
+
+.custom-gradient2 {
+  background: linear-gradient(to top, #0A0A0A 41%, #560004 100%);
 }
 
 @theme inline {
@@ -103,3 +118,4 @@ font-family: "Noto Sans", monospace;
     @apply bg-background text-foreground;
   }
 }
+

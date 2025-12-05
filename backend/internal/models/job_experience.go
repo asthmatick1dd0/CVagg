@@ -10,5 +10,4 @@ type JobExperience struct {
 	Position  string `json:"position"`
 	StartDate uint   `json:"start_date"`
 	EndDate   uint   `json:"end_date"`
-	Item
 }

@@ -9,6 +9,5 @@ type ResumeItem struct {
 	ItemId   uint   `gorm:"not null;index" json:"item_id"`
 	ItemType string `json:"item_type"`
 
-	ResumeId uint   `gorm:"not null;index" json:"resume_id"`
-	Resume   Resume `json:"resume"`
+	ResumeId uint `gorm:"not null;index" json:"resume_id"`
 }

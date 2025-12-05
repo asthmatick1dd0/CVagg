@@ -3,19 +3,30 @@ package input
 import "time"
 
 type ResumeInput struct {
-	ID      uint                   `json:"id"`
-	UserID  uint                   `json:"user_id"`
-	Title   string                 `json:"title"`
-	Summary string                 `json:"summary"`
-	Items   map[string][]ItemInput `json:"items"`
+	ID     uint                   `json:"id"`
+	UserID uint                   `json:"user_id"`
+	Title  string                 `json:"title"`
+	Items  map[string][]ItemInput `json:"items"`
 }
 
 type ItemInput struct {
+	ResumeID      uint                `json:"resume_id"`
+	FieldID       uint                `json:"field_id"`
 	Type          string              `json:"type"` // "education", "hard_skill", "custom"
 	Education     *EducationInput     `json:"education,omitempty"`
 	HardSkill     *HardSkillInput     `json:"hard_skill,omitempty"`
+	About         *AboutInput         `json:"about,omitempty"`
 	Custom        *CustomInput        `json:"custom,omitempty"`
-	JobExperience *JobExperienceInput `json:"job_experience,omitempty`
+	JobExperience *JobExperienceInput `json:"job_experience,omitempty"`
+	PersonalData  *PersonalDataInput  `json:"personal_data,omitempty"`
+}
+
+type PersonalDataInput struct {
+	DesiredJob string `json:"desired_job"`
+	FullName   string `json:"full_name"`
+	Email      string `json:"email"`
+	Phone      string `json:"phone"`
+	Address    string `json:"address"`
 }
 
 type EducationInput struct {

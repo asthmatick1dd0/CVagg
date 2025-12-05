@@ -7,7 +7,7 @@ import (
 
 type ResumeRepository interface {
 	BaseRepository[models.Resume]
-	GetByUserId(userId uint) ([]models.Resume, error)
+	GetAllByUserID(userId uint) ([]*models.Resume, error)
 }
 
 type resumeRepo struct {
@@ -38,8 +38,8 @@ func (r *resumeRepo) Delete(id uint) error {
 	return r.db.Where("id = ?", id).Delete(&models.Resume{}).Error
 }
 
-func (r *resumeRepo) GetByUserId(userId uint) ([]models.Resume, error) {
-	var resumes []models.Resume
+func (r *resumeRepo) GetAllByUserID(userId uint) ([]*models.Resume, error) {
+	var resumes []*models.Resume
 	if err := r.db.Where("user_id = ?", userId).Find(&resumes).Error; err != nil {
 		return nil, err
 	}

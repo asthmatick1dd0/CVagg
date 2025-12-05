@@ -70,6 +70,8 @@ func ConnectDB() (*gorm.DB, error) {
 				&models.HardSkill{},
 				&models.HardSkillsCatalog{},
 				&models.JobExperience{},
+				&models.Custom{},
+				&models.PersonalData{},
 			); migrateErr != nil {
 				return nil, fmt.Errorf("auto migrate failed: %w", migrateErr)
 			}

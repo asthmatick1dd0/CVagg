@@ -2,11 +2,15 @@
 package routes
 
 import (
+	"github.com/asthmatick1dd0/CVagg/internal/container"
 	"github.com/gofiber/fiber/v2"
 )
 
 func SetupRoutes(app *fiber.App) {
-	ProfileRoutes(app)
-	AuthRoutes(app)
-	EditorRoutes(app)
+	container := container.NewContainer()
+
+	DashboardRoutes(app, container)
+	// добавить контейнер как параметр, после написания хендлеров и добавления их в руты
+	AuthRoutes(app, container)
+	EditorRoutes(app, container)
 }
