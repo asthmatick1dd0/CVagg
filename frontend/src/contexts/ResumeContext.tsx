@@ -42,10 +42,10 @@ export const ResumeProvider = ({ children }: { children: ReactNode }) => {
 
             let personalSource: any = {};
 
-            if (data.items && data.items["PersonalData"] && data.items["PersonalData"].length > 0) {
-                const item = data.items["PersonalData"][0];
-                personalSource = item.PersonalData || item.personal_data || {};
-                console.log("PersonalData внутри items:", personalSource);
+            if (data.items && data.items["personal_data"] && data.items["personal_data"].length > 0) {
+                const item = data.items["personal_data"][0];
+                personalSource = item.personal_data || item.personal_data || {};
+                console.log("personal_data внутри items:", personalSource);
             }
 
             const fullName = personalSource.FullName || personalSource.full_name || "";
@@ -65,7 +65,7 @@ export const ResumeProvider = ({ children }: { children: ReactNode }) => {
                     email: personalSource.Email || personalSource.email || "",
                     phone: personalSource.Phone || personalSource.phone || "",
                     address: personalSource.Address || personalSource.address || "",
-                    jobTitle: "",
+                    jobTitle: personalSource.JobTitle || personalSource.jobTitle || "",
                 }
             }));
             console.groupEnd();
@@ -96,10 +96,11 @@ export const ResumeProvider = ({ children }: { children: ReactNode }) => {
         title: resumeData.title || "Резюме",
         user_id: Number(user.id),
         items: {
-            "PersonalData": [
+            "personal_data": [
                 {
-                    "type": "PersonalData",
+                    "type": "personal_data",
                     "personal_data": { 
+                        "desired_job": resumeData.personalInfo?.jobTitle,
                         "full_name": fullName,
                         "email": resumeData.personalInfo?.email,
                         "phone": resumeData.personalInfo?.phone,

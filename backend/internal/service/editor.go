@@ -94,7 +94,7 @@ func (s *editorService) SaveResume(resume *input.ResumeInput) error {
 					return err
 				}
 			}
-		case "PersonalData":
+		case "personal_data":
 			for _, it := range items {
 				if err := s.SavePersonalData(&it, resumeInput.ID); err != nil {
 					return err
@@ -134,10 +134,11 @@ func (s *editorService) SaveJobExperience(it *input.ItemInput, ID uint) error {
 
 func (s *editorService) SavePersonalData(it *input.ItemInput, ID uint) error {
 	personalDataModel := &models.PersonalData{
-		FullName: it.PersonalData.FullName,
-		Email:    it.PersonalData.Email,
-		Phone:    it.PersonalData.Phone,
-		Address:  it.PersonalData.Address,
+		DesiredJob: it.PersonalData.DesiredJob,
+		FullName:   it.PersonalData.FullName,
+		Email:      it.PersonalData.Email,
+		Phone:      it.PersonalData.Phone,
+		Address:    it.PersonalData.Address,
 	}
 
 	if err := s.personalDataRepo.Create(personalDataModel); err != nil {
@@ -361,21 +362,22 @@ func (s *editorService) GetResumeByID(id uint) (*input.ResumeInput, error) {
 			}, nil
 		},
 
-		"PersonalData": func(itemID uint) (*input.ItemInput, error) {
+		"personal_data": func(itemID uint) (*input.ItemInput, error) {
 			model, err := s.personalDataRepo.GetById(itemID)
 			if err != nil {
 				return nil, err
 			}
 
 			return &input.ItemInput{
-				Type:     "PersonalData",
+				Type:     "personal_data",
 				FieldID:  model.ID,
 				ResumeID: id,
 				PersonalData: &input.PersonalDataInput{
-					FullName: model.FullName,
-					Email:    model.Email,
-					Phone:    model.Phone,
-					Address:  model.Address,
+					DesiredJob: model.DesiredJob,
+					FullName:   model.FullName,
+					Email:      model.Email,
+					Phone:      model.Phone,
+					Address:    model.Address,
 				},
 			}, nil
 		},
@@ -421,7 +423,7 @@ func (s *editorService) ExportResumePDF(id uint) ([]byte, error) {
 	pdf.SetFont("DejaVu", "", 12)
 
 	// Personal data
-	if items, ok := resume.Items["PersonalData"]; ok && len(items) > 0 {
+	if items, ok := resume.Items["personal_data"]; ok && len(items) > 0 {
 		pd := items[0].PersonalData
 		pdf.SetX(marginX)
 		pdf.CellFormat(0, 6, pd.FullName, "", 1, "L", false, 0, "")
@@ -439,6 +441,10 @@ func (s *editorService) ExportResumePDF(id uint) ([]byte, error) {
 		if pd.Address != "" {
 			pdf.SetX(marginX)
 			pdf.CellFormat(0, 6, pd.Address, "", 1, "L", false, 0, "")
+		}
+		if pd.DesiredJob != "" {
+			pdf.SetX(marginX)
+			pdf.CellFormat(0, 6, pd.DesiredJob, "", 1, "L", false, 0, "")
 		}
 		pdf.Ln(2)
 	}
