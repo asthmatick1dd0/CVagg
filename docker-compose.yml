@@ -1,4 +1,3 @@
-version: '3'
 services:
   backend:
     container_name: cvagg-backend
@@ -17,7 +16,7 @@ services:
     container_name: cvagg-nginx
     build: ./frontend
     ports:
-      - "80:80"
+      - "3000:80"
     depends_on:
       - backend
 
