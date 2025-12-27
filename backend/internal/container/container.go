@@ -3,6 +3,7 @@ package container
 import (
 	"log"
 
+	"github.com/asthmatick1dd0/CVagg/auth"
 	"github.com/asthmatick1dd0/CVagg/internal/database"
 	"github.com/asthmatick1dd0/CVagg/internal/handlers"
 	"github.com/asthmatick1dd0/CVagg/internal/repository"
@@ -22,11 +23,11 @@ type Container struct {
 	personalDataRepo  repository.PersonalDataRepository
 
 	dashboardService service.DashboardService
-	authService      service.AuthService
+	authService      auth.AuthService
 	editorService    service.EditorService
 
 	DashboardHandler handlers.DashboardHandler
-	AuthHandler      handlers.AuthHandler
+	AuthHandler      auth.AuthHandler
 	EditorHandler    handlers.EditorHandler
 }
 
@@ -49,7 +50,7 @@ func NewContainer() *Container {
 	log.Printf("Connected to DB successfully")
 
 	_dashboardService := service.NewDashboardService(_resumeRepo)
-	_authService := service.NewAuthService(_userRepo)
+	_authService := auth.NewAuthService(_userRepo)
 	_editorService := service.NewEditorService(
 		_resumeRepo,
 		_resumeItemRepo,
@@ -64,7 +65,7 @@ func NewContainer() *Container {
 	log.Printf("Initialized Resume Service")
 
 	_dashboardHandler := handlers.NewDashboardHandler(_dashboardService)
-	_authHandler := handlers.NewAuthHandler(_authService)
+	_authHandler := auth.NewAuthHandler(_authService)
 	_editorHandler := handlers.NewEditorHandler(_editorService)
 
 	log.Printf("Initialized Resume Handler")

@@ -1,8 +1,8 @@
 package routes
 
 import (
+	authPackage "github.com/asthmatick1dd0/CVagg/auth"
 	"github.com/asthmatick1dd0/CVagg/internal/container"
-	"github.com/asthmatick1dd0/CVagg/internal/service"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -17,7 +17,7 @@ func AuthRoutes(app *fiber.App, cont *container.Container) {
 
 	auth.Post("/signup", cont.AuthHandler.SignUp)
 
-	auth.Post("/logout", service.DeserealizeUser, cont.AuthHandler.LogOut)
+	auth.Post("/logout", authPackage.DeserealizeUser, cont.AuthHandler.LogOut)
 
 	auth.Post("/forgot-password", func(c *fiber.Ctx) error {
 		return c.SendString("forgot-password route")
@@ -27,5 +27,5 @@ func AuthRoutes(app *fiber.App, cont *container.Container) {
 		return c.SendString("refresh route")
 	})
 
-	auth.Get("/me", service.DeserealizeUser, cont.AuthHandler.Me)
+	auth.Get("/me", authPackage.DeserealizeUser, cont.AuthHandler.Me)
 }

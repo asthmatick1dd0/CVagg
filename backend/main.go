@@ -4,6 +4,7 @@ import (
 	"log"
 	"time"
 
+	"github.com/asthmatick1dd0/CVagg/auth"
 	"github.com/asthmatick1dd0/CVagg/internal/database"
 	"github.com/asthmatick1dd0/CVagg/internal/repository"
 	"github.com/asthmatick1dd0/CVagg/internal/routes"
@@ -26,7 +27,7 @@ func main() {
 		c.Locals("resumeService", service.NewDashboardService(repository.NewResumeRepository(db)))
 		c.Locals("userRepo", repository.NewUserRepository(db))
 		repo, _ := c.Locals("userRepo").(repository.UserRepository)
-		c.Locals("authService", service.NewAuthService(repo))
+		c.Locals("authService", auth.NewAuthService(repo))
 
 		c.Locals("JWTExpirationTime", time.Hour*12)
 		c.Locals("JWTSecret", secret)

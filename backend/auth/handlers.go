@@ -1,4 +1,4 @@
-package handlers
+package auth
 
 import (
 	"os"
@@ -7,7 +7,6 @@ import (
 
 	"github.com/asthmatick1dd0/CVagg/internal/models"
 	"github.com/asthmatick1dd0/CVagg/internal/repository"
-	"github.com/asthmatick1dd0/CVagg/internal/service"
 	"github.com/asthmatick1dd0/CVagg/internal/transport/input"
 	internal "github.com/asthmatick1dd0/CVagg/internal/validation"
 	"github.com/gofiber/fiber/v2"
@@ -24,10 +23,10 @@ type AuthHandler interface {
 
 // TODO [CVAGG-45] Написать сервис аунтентификации и сделать небольшой рефактор
 type authHandler struct {
-	s service.AuthService
+	s AuthService
 }
 
-func NewAuthHandler(s service.AuthService) AuthHandler {
+func NewAuthHandler(s AuthService) AuthHandler {
 	return &authHandler{s: s}
 }
 
@@ -80,7 +79,7 @@ func (h *authHandler) SignIn(c *fiber.Ctx) error {
 		}
 	}
 
-	tokenString, err := service.UserToToken(c, user)
+	tokenString, err := UserToToken(c, user)
 
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(err.Error())
