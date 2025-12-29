@@ -103,18 +103,11 @@ func (h *authHandler) SignIn(c *fiber.Ctx) error {
 }
 
 func (h *authHandler) LogOut(c *fiber.Ctx) error {
-	user, err := h.s.UserFromCookie(c)
-	if err != nil {
-		return c.Status(fiber.StatusNetworkAuthenticationRequired).JSON(err.Error())
-	}
-
 	c.Cookie(&fiber.Cookie{
 		Name:    "token",
 		Value:   "",
 		Expires: time.Now().Add(-time.Hour), //небольшая костылизация - возвращается просроченный токен
 	})
-
-	h.s.DeleteFromPool(user.ID)
 
 	return c.SendString("Succesfully logged out")
 }

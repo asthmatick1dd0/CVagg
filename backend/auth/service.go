@@ -15,16 +15,10 @@ import (
 )
 
 type AuthService interface {
-	AddToPool(id uint, user *models.User) error
-	GetFromPool(id uint) (*models.User, error)
-	DeleteFromPool(id uint)
-
 	UserFromCookie(c *fiber.Ctx) (dto.UserResponse, error)
 	RetrieveUserFromToken(t *jwt.Token, c *fiber.Ctx) (dto.UserResponse, error)
 
 	SignInUser(c *fiber.Ctx, input input.SignInInputEmail) (*models.User, error)
-
-	CheckAccess(c *fiber.Ctx, userID uint, resumeID uint) bool
 }
 
 type authService struct {
@@ -34,26 +28,6 @@ type authService struct {
 
 func NewAuthService(repo repository.UserRepository) AuthService {
 	return &authService{repo, make(map[uint]*models.User)} // для быстрого доступа к авторизованным юзерам, хранится только в оперативной памяти хоста
-}
-
-func (as *authService) AddToPool(id uint, user *models.User) error {
-	// if _, ok := as.userPool[id]; ok {
-	// 	return fmt.Errorf("user with id %d already exists in pool", id)
-	// }
-	as.userPool[id] = user
-	return nil
-}
-
-func (as authService) GetFromPool(id uint) (*models.User, error) {
-	user, ok := as.userPool[id]
-	if !ok {
-		return user, fmt.Errorf("user with id %d not found in pool", id)
-	}
-	return user, nil
-}
-
-func (as *authService) DeleteFromPool(id uint) {
-	delete(as.userPool, id)
 }
 
 // / Middleware для нормальной работы хендлеров разлогинивания и личной страницы
@@ -135,7 +109,7 @@ func (as authService) RetrieveUserFromToken(t *jwt.Token, c *fiber.Ctx) (dto.Use
 
 	userID, _ := claims["sub"].(float64)
 
-	user, err := as.GetFromPool(uint(userID))
+	user, err := as.repo.GetById(uint(userID)) // as.GetFromPool(uint(userID))
 	if err != nil {
 		return dto.UserResponse{}, err
 	}
@@ -183,10 +157,6 @@ func (as *authService) SignInUser(c *fiber.Ctx, input input.SignInInputEmail) (*
 		return user, fmt.Errorf("wrong password")
 	}
 
-	if err := as.AddToPool(user.ID, user); err != nil {
-		return user, fmt.Errorf("user %s already authorized", user.Username)
-	}
-
 	return user, nil
 }
 
@@ -203,10 +173,4 @@ func UserToToken(c *fiber.Ctx, user *models.User) (string, error) {
 
 	key, _ := c.Locals("JWTSecret").([]byte)
 	return token.SignedString(key)
-}
-
-// Чекает, есть ли у юзера доступ к резюме, или нет.
-func (as authService) CheckAccess(c *fiber.Ctx, userID uint, resumeID uint) bool {
-
-	return true
 }
