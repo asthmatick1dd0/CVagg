@@ -32,7 +32,7 @@ func NewAuthHandler(s AuthService) AuthHandler {
 
 func (h *authHandler) SignUp(c *fiber.Ctx) error {
 	var input input.SignUpInput
-	err := c.QueryParser(&input)
+	err := c.BodyParser(&input)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(err.Error())
 	}
@@ -60,7 +60,7 @@ func (h *authHandler) SignUp(c *fiber.Ctx) error {
 func (h *authHandler) SignIn(c *fiber.Ctx) error {
 	var input input.SignInInputEmail
 
-	if err := c.QueryParser(&input); err != nil {
+	if err := c.BodyParser(&input); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(err.Error())
 	}
 
