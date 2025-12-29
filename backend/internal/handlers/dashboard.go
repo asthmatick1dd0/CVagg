@@ -3,6 +3,7 @@ package handlers
 import (
 	"strconv"
 
+	"github.com/asthmatick1dd0/CVagg/auth"
 	"github.com/asthmatick1dd0/CVagg/internal/service"
 	"github.com/gofiber/fiber/v2"
 )
@@ -21,19 +22,12 @@ func NewDashboardHandler(s service.DashboardService) DashboardHandler {
 	return &dashboardHandler{s: s}
 }
 
-// TODO [CVAGG-42]: написать middleware для аутентификации и реализовать передачу id через локалс. + убрать логику из хендлера👿
 func parseUserID(c *fiber.Ctx) uint {
-	if val := c.Get("X-User-Id"); val != "" {
-		if id, err := strconv.Atoi(val); err == nil {
-			return uint(id)
-		}
+	res, err := auth.GetUserIDFromCookie(c)
+	if err != nil {
+		return 0
 	}
-	if val := c.Query("user_id"); val != "" {
-		if id, err := strconv.Atoi(val); err == nil {
-			return uint(id)
-		}
-	}
-	return 0
+	return res
 }
 
 func (h *dashboardHandler) GetAllByUserID(c *fiber.Ctx) error {
@@ -60,7 +54,13 @@ func (h *dashboardHandler) GetByID(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"error": err.Error()})
 	}
-	return c.JSON(resume)
+
+	userID := parseUserID(c)
+	if resume.UserID != userID {
+		return c.Status(fiber.StatusForbidden).JSON("this resume is not yours")
+	}
+
+	return c.JSON(userID)
 }
 
 func (h *dashboardHandler) Delete(c *fiber.Ctx) error {
@@ -70,8 +70,19 @@ func (h *dashboardHandler) Delete(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "invalid id"})
 	}
 
+	resume, err := h.s.GetByID(uint(id64))
+	if err != nil {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"error": err.Error()})
+	}
+
+	userID := parseUserID(c)
+	if resume.UserID != userID {
+		return c.Status(fiber.StatusForbidden).JSON("this resume is not yours")
+	}
+
 	if err := h.s.Delete(uint(id64)); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
+
 	return c.SendStatus(fiber.StatusNoContent)
 }

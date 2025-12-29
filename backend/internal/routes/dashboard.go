@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"github.com/asthmatick1dd0/CVagg/auth"
 	"github.com/asthmatick1dd0/CVagg/internal/container"
 	"github.com/gofiber/fiber/v2"
 )
@@ -20,13 +21,13 @@ func DashboardRoutes(app *fiber.App, cont *container.Container) {
 	resumes := dashboard.Group("/resumes")
 
 	// Get all resumes for user
-	resumes.Get("", cont.DashboardHandler.GetAllByUserID)
+	resumes.Get("", auth.DeserealizeUser, cont.DashboardHandler.GetAllByUserID)
 
 	// Get resume by id
-	resumes.Get("/:id", cont.DashboardHandler.GetByID)
+	resumes.Get("/:id", auth.DeserealizeUser, cont.DashboardHandler.GetByID)
 
 	// Delete resume by id
-	resumes.Delete("/:id", cont.DashboardHandler.Delete)
+	resumes.Delete("/:id", auth.DeserealizeUser, cont.DashboardHandler.Delete)
 
 	// /api/v1/profile/settings/...
 	settings := dashboard.Group("/settings")

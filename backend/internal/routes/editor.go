@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"github.com/asthmatick1dd0/CVagg/auth"
 	"github.com/asthmatick1dd0/CVagg/internal/container"
 	"github.com/gofiber/fiber/v2"
 )
@@ -12,9 +13,9 @@ func EditorRoutes(app *fiber.App, cont *container.Container) {
 	// /api/v1/editor/...
 	editor := v1.Group("/editor")
 
-	editor.Post("/save", cont.EditorHandler.CreateResume)
+	editor.Post("/save", auth.DeserealizeUser, cont.EditorHandler.CreateResume)
 
-	editor.Get("/:id", cont.EditorHandler.GetResumeByID)
+	editor.Get("/:id", auth.DeserealizeUser, cont.EditorHandler.GetResumeByID)
 
 	editor.Patch("/:id/save", func(c *fiber.Ctx) error {
 		return c.SendString("save by id route")

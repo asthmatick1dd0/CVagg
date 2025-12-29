@@ -48,6 +48,12 @@ func (h *editorHandler) GetResumeByID(ctx *fiber.Ctx) error {
 	if err != nil {
 		return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{"error": "no such resume"})
 	}
+
+	userID := parseUserID(ctx)
+	if resume.UserID != userID {
+		return ctx.Status(fiber.StatusForbidden).JSON("this resume is not yours")
+	}
+
 	return ctx.JSON(resume)
 }
 

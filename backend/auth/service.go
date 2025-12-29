@@ -23,6 +23,8 @@ type AuthService interface {
 	RetrieveUserFromToken(t *jwt.Token, c *fiber.Ctx) (dto.UserResponse, error)
 
 	SignInUser(c *fiber.Ctx, input input.SignInInputEmail) (*models.User, error)
+
+	CheckAccess(c *fiber.Ctx, userID uint, resumeID uint) bool
 }
 
 type authService struct {
@@ -57,7 +59,6 @@ func (as *authService) DeleteFromPool(id uint) {
 // / Middleware для нормальной работы хендлеров разлогинивания и личной страницы
 func DeserealizeUser(c *fiber.Ctx) error {
 	var token string
-	// authData := c.Get("Authorization")
 	token = c.Cookies("token")
 
 	if token == "" {
@@ -69,7 +70,7 @@ func DeserealizeUser(c *fiber.Ctx) error {
 			return nil, fmt.Errorf("weird signing method: %s", t.Header["alg"])
 		}
 		return c.Locals("JWTSecret").([]byte), nil
-	}) // ОШИБКА вот здесь
+	})
 
 	if err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(err.Error())
@@ -106,6 +107,21 @@ func CookieToToken(cookieStr string, c *fiber.Ctx) (*jwt.Token, error) {
 	}
 
 	return token, err
+}
+
+func GetUserIDFromCookie(c *fiber.Ctx) (uint, error) {
+	cookieStr := c.Cookies("token")
+
+	token, err := CookieToToken(cookieStr, c)
+	if err != nil {
+		return 0, err
+	}
+
+	claims := token.Claims.(jwt.MapClaims)
+
+	userID, _ := claims["sub"].(float64)
+
+	return uint(userID), nil
 }
 
 func (as authService) RetrieveUserFromToken(t *jwt.Token, c *fiber.Ctx) (dto.UserResponse, error) {
@@ -187,4 +203,10 @@ func UserToToken(c *fiber.Ctx, user *models.User) (string, error) {
 
 	key, _ := c.Locals("JWTSecret").([]byte)
 	return token.SignedString(key)
+}
+
+// Чекает, есть ли у юзера доступ к резюме, или нет.
+func (as authService) CheckAccess(c *fiber.Ctx, userID uint, resumeID uint) bool {
+
+	return true
 }
