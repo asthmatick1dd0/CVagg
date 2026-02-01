@@ -4,12 +4,18 @@ services:
     build: ./backend
     ports:
       - "8080:8080"
-    env_file:
-      - .env
+    environment:
+      - DB_HOST=database
+      - DB_PORT=5432
+      - DB_USER=${POSTGRES_USER}
+      - DB_PASSWORD=${POSTGRES_PASSWORD}
+      - DB_NAME=${POSTGRES_DB}
+      - HTTP_PORT=8080
+      - LOG_LEVEL=debug
     depends_on:
-      - database
+      database:
+        condition: service_healthy
     volumes:
-      - ./backend:/app
       - ./assets:/app/assets
 
   nginx:
@@ -28,9 +34,14 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=${POSTGRES_DB}
     ports:
-      - ${POSTGRES_DB_PORT}:5432
+      - ${POSTGRES_DB_PORT}:5433
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     env_file:
       - .env
 

@@ -46,7 +46,7 @@ var ServiceSet = wire.NewSet(
 // Repositories
 var RepositorySet = wire.NewSet(
 	user.NewRepository,
-	dashboard.NewResumeRepository,
+	dashboard.NewRepository,
 	aboutRepo.NewRepository,
 	customRepo.NewRepository,
 	educationRepo.NewRepository,
@@ -75,4 +75,3 @@ func newApp(*viper.Viper, *cvagglog.Logger, *gorm.DB) (App, func(), error) {
 		provideApp,
 	))
 }
-

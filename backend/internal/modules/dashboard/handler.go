@@ -3,7 +3,6 @@ package dashboard
 import (
 	"strconv"
 
-	"github.com/asthmatick1dd0/CVagg/internal/service"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -14,11 +13,11 @@ type Handler interface {
 }
 
 type handler struct {
-	s service.DashboardService
+	dashboardService Service
 }
 
-func NewHandler(s service.DashboardService) Handler {
-	return &handler{s: s}
+func NewHandler(dashboardService Service) Handler {
+	return &handler{dashboardService: dashboardService}
 }
 
 func parseUserID(c *fiber.Ctx) uint {
@@ -41,7 +40,7 @@ func (h *handler) GetAllByUserID(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "missing user_id (query or X-User-Id header)"})
 	}
 
-	resumes, err := h.s.GetAllByUserID(userID)
+	resumes, err := h.dashboardService.GetAllByUserID(userID)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
@@ -55,7 +54,7 @@ func (h *handler) GetByID(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "invalid id"})
 	}
 
-	resume, err := h.s.GetByID(uint(id64))
+	resume, err := h.dashboardService.GetByID(uint(id64))
 	if err != nil {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"error": err.Error()})
 	}
@@ -69,7 +68,7 @@ func (h *handler) Delete(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "invalid id"})
 	}
 
-	if err := h.s.Delete(uint(id64)); err != nil {
+	if err := h.dashboardService.Delete(uint(id64)); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
 	return c.SendStatus(fiber.StatusNoContent)

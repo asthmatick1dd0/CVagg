@@ -6,10 +6,9 @@ import (
 	"time"
 
 	"github.com/asthmatick1dd0/CVagg/internal/models"
-	"github.com/asthmatick1dd0/CVagg/internal/repository"
-	"github.com/asthmatick1dd0/CVagg/internal/service"
+	"github.com/asthmatick1dd0/CVagg/internal/modules/user"
 	"github.com/asthmatick1dd0/CVagg/internal/transport/input"
-	internal "github.com/asthmatick1dd0/CVagg/internal/validation"
+	"github.com/asthmatick1dd0/CVagg/pkg/validation"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
@@ -23,11 +22,11 @@ type Handler interface {
 }
 
 type handler struct {
-	s service.AuthService
+	service Service
 }
 
-func NewHandler(s service.AuthService) Handler {
-	return &handler{s: s}
+func NewHandler(s Service) Handler {
+	return &handler{service: s}
 }
 
 func (h *handler) SignUp(c *fiber.Ctx) error {
@@ -37,12 +36,12 @@ func (h *handler) SignUp(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(err.Error())
 	}
 
-	errs := internal.ValidateStruct(input)
+	errs := validation.ValidateStruct(input)
 	if len(errs) != 0 {
 		return c.Status(fiber.StatusBadRequest).JSON(errs)
 	}
 
-	repo := c.Locals("userRepo").(repository.UserRepository)
+	repo := c.Locals("userRepo").(user.Repository)
 	var user models.User
 	user.Email = input.Email
 	user.Username = input.Username
@@ -64,12 +63,12 @@ func (h *handler) SignIn(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(err.Error())
 	}
 
-	errs := internal.ValidateStruct(input)
+	errs := validation.ValidateStruct(input)
 	if len(errs) != 0 {
 		return c.Status(fiber.StatusBadRequest).JSON(errs)
 	}
 
-	user, err := h.s.SignInUser(c, input)
+	user, err := h.service.SignInUser(c, input)
 	if err != nil {
 		if strings.HasPrefix(err.Error(), "DB Issues") {
 			return c.Status(fiber.StatusInternalServerError).JSON(err.Error())
@@ -78,7 +77,7 @@ func (h *handler) SignIn(c *fiber.Ctx) error {
 		}
 	}
 
-	tokenString, err := service.UserToToken(c, user)
+	tokenString, err := h.service.UserToToken(c, user)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(err.Error())
 	}
@@ -101,7 +100,7 @@ func (h *handler) SignIn(c *fiber.Ctx) error {
 }
 
 func (h *handler) LogOut(c *fiber.Ctx) error {
-	user, err := h.s.UserFromCookie(c)
+	user, err := h.service.UserFromCookie(c)
 	if err != nil {
 		return c.Status(fiber.StatusNetworkAuthenticationRequired).JSON(err.Error())
 	}
@@ -112,7 +111,7 @@ func (h *handler) LogOut(c *fiber.Ctx) error {
 		Expires: time.Now().Add(-time.Hour),
 	})
 
-	h.s.DeleteFromPool(user.ID)
+	h.service.DeleteFromPool(user.ID)
 
 	return c.SendString("Succesfully logged out")
 }
@@ -131,7 +130,7 @@ func (h *handler) Me(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(err.Error())
 	}
 
-	resp, err := h.s.RetrieveUserFromToken(token, c)
+	resp, err := h.service.RetrieveUserFromToken(token, c)
 	if err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(err)
 	}

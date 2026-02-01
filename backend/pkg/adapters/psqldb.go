@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 
+	_ "github.com/lib/pq"
 	"github.com/asthmatick1dd0/CVagg/pkg/helpers/cvagglog"
 	"github.com/pressly/goose"
 	"github.com/spf13/viper"
@@ -24,11 +25,11 @@ type pqData struct {
 
 func importData(conf *viper.Viper) *pqData {
 	return &pqData{
-		Host:     conf.GetString("pq.host"),
-		Port:     conf.GetInt("pq.port"),
-		User:     conf.GetString("pq.user"),
-		Password: conf.GetString("pq.pass"),
-		Name:     conf.GetString("pq.name"),
+		Host:     conf.GetString("DB_HOST"),
+		Port:     conf.GetInt("DB_PORT"),
+		User:     conf.GetString("DB_USER"),
+		Password: conf.GetString("DB_PASSWORD"),
+		Name:     conf.GetString("DB_NAME"),
 	}
 }
 

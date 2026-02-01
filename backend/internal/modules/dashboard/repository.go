@@ -19,7 +19,7 @@ type resumeRepo struct {
 	logger *cvagglog.Logger
 }
 
-func NewResumeRepository(db *gorm.DB, logger *cvagglog.Logger) Repository {
+func NewRepository(db *gorm.DB, logger *cvagglog.Logger) Repository {
 	return &resumeRepo{
 		db:     db,
 		logger: logger,

@@ -22,7 +22,7 @@ type userRepository struct {
 	logger *cvagglog.Logger
 }
 
-func NewUserRepository(db *gorm.DB, logger *cvagglog.Logger) Repository {
+func NewRepository(db *gorm.DB, logger *cvagglog.Logger) Repository {
 	return &userRepository{
 		db:     db,
 		logger: logger,

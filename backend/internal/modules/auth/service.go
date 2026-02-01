@@ -23,6 +23,7 @@ type Service interface {
 	RetrieveUserFromToken(t *jwt.Token, c *fiber.Ctx) (dto.UserResponse, error)
 
 	SignInUser(c *fiber.Ctx, input input.SignInInputEmail) (*models.User, error)
+	UserToToken(c *fiber.Ctx, user *models.User) (string, error)
 }
 
 type authService struct {
@@ -172,7 +173,7 @@ func (as *authService) SignInUser(c *fiber.Ctx, input input.SignInInputEmail) (*
 	return user, nil
 }
 
-func UserToToken(c *fiber.Ctx, user *models.User) (string, error) {
+func (s *authService) UserToToken(c *fiber.Ctx, user *models.User) (string, error) {
 	// ВСЕ числовые значения по непонятной причине приводятся к float64 при записи в JWT
 	token := jwt.New(jwt.SigningMethodHS256)
 	now := time.Now().UTC()

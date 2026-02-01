@@ -1,25 +1,43 @@
-FROM golang:1.25-alpine
+FROM golang:1.25-alpine AS builder
 
 WORKDIR /app
+
+# Устанавливаем зависимости для сборки
+RUN apk add --no-cache git
+
+# Копируем go.mod и go.sum для кеширования зависимостей
 COPY go.mod go.sum ./
 RUN go mod download
 
+# Устанавливаем Wire
+RUN go install github.com/google/wire/cmd/wire@latest
+
+# Копируем весь проект
 COPY . .
+
+# Генерируем Wire код
+RUN cd cmd && wire
+
+# Собираем приложение
+RUN CGO_ENABLED=0 GOOS=linux go build -o /cvagg ./cmd
+
+# Финальный образ
+FROM alpine:latest
+
+WORKDIR /app
+
+# Устанавливаем ca-certificates для HTTPS
+RUN apk --no-cache add ca-certificates
+
+# Копируем бинарник из builder
+COPY --from=builder /cvagg .
+
+# Копируем миграции
+COPY db/migrate ./db/migrate
+
+# Копируем .env (опционально, лучше через docker-compose)
+COPY .env .env
+
 EXPOSE 8080
 
-CMD ["go", "run", "."]
-
-
-# !!ДЛЯ ПРОДАКШЕНА!!
-# FROM golang:1.25-alpine AS build
-# WORKDIR /app
-# COPY . .
-# RUN go mod tidy
-# RUN go build -o main .
-
-# FROM alpine:latest
-# WORKDIR /app
-# COPY --from=build /app/main .
-# RUN chmod +x ./main
-# EXPOSE 8080
-# CMD ["./main"]
+CMD ["./cvagg"]

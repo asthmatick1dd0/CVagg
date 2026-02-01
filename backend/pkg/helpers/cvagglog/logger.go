@@ -8,7 +8,6 @@ import (
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-	"gopkg.in/natefinch/lumberjack.v2"
 )
 
 type Logger struct {
@@ -22,17 +21,8 @@ func NewLogger(conf *viper.Viper) *Logger {
 }
 
 func initZap(conf *viper.Viper) *zap.Logger {
-	logFile := conf.GetString("log.filename")
-	logLevel := conf.GetString("log.level")
+	logLevel := conf.GetString("LOG_LEVEL")
 	zapLevel := getLevel(logLevel)
-
-	hook := lumberjack.Logger{
-		Filename:   logFile,                        //
-		MaxSize:    conf.GetInt("log.max_size"),    //
-		MaxBackups: conf.GetInt("log.max_backups"), //
-		MaxAge:     conf.GetInt("log.max_age"),     //
-		Compress:   conf.GetBool("log.compress"),   //
-	}
 
 	encoderConfig := zapcore.EncoderConfig{
 		TimeKey:        "time",
@@ -47,9 +37,9 @@ func initZap(conf *viper.Viper) *zap.Logger {
 	encoder := zapcore.NewConsoleEncoder(encoderConfig)
 
 	core := zapcore.NewCore(
-		encoder, //
-		zapcore.NewMultiWriteSyncer(zapcore.AddSync(os.Stdout), zapcore.AddSync(&hook)), //
-		zapLevel, //
+		encoder,
+		zapcore.NewMultiWriteSyncer(zapcore.AddSync(os.Stdout)),
+		zapLevel,
 	)
 	return zap.New(core, zap.Development(), zap.AddCaller(), zap.AddStacktrace(zap.ErrorLevel))
 }
