@@ -1,4 +1,4 @@
-package editor
+package base
 
 import (
 	"github.com/asthmatick1dd0/CVagg/pkg/helpers/cvagglog"
@@ -9,8 +9,8 @@ type ResumeItemRepository[T any] interface {
 	Create(entity *T) error
 	Delete(id uint) error
 	Update(entity *T) error
-	GetById(id uint) (*T, error)
-	GetAllByResumeID(resumeId uint) ([]*T, error)
+	GetByID(id uint) (*T, error)
+	GetAllByResumeID(resumeID uint) ([]*T, error)
 }
 
 type resumeItemRepo[T any] struct {
@@ -38,7 +38,7 @@ func (r *resumeItemRepo[T]) Update(entity *T) error {
 	return r.db.Save(entity).Error
 }
 
-func (r *resumeItemRepo[T]) GetById(id uint) (*T, error) {
+func (r *resumeItemRepo[T]) GetByID(id uint) (*T, error) {
 	var entity T
 	if err := r.db.First(&entity, id).Error; err != nil {
 		return nil, err
