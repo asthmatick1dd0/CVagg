@@ -3,14 +3,11 @@ package database
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"time"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-
-	"github.com/asthmatick1dd0/CVagg/internal/models"
 )
 
 func ConnectDB() (*gorm.DB, error) {
@@ -56,30 +53,6 @@ func ConnectDB() (*gorm.DB, error) {
 	sqlDB.SetMaxOpenConns(25)
 	sqlDB.SetMaxIdleConns(25)
 	sqlDB.SetConnMaxLifetime(5 * time.Minute)
-
-	// Простая проверка ping с retry
-	for i := 0; i < 5; i++ {
-		if err = sqlDB.Ping(); err == nil {
-			// Connected — perform auto-migration then return
-			if migrateErr := db.AutoMigrate(
-				&models.User{},
-				&models.Resume{},
-				&models.ResumeItem{},
-				&models.About{},
-				&models.Education{},
-				&models.HardSkill{},
-				&models.HardSkillsCatalog{},
-				&models.JobExperience{},
-				&models.Custom{},
-				&models.PersonalData{},
-			); migrateErr != nil {
-				return nil, fmt.Errorf("auto migrate failed: %w", migrateErr)
-			}
-			return db, nil
-		}
-		log.Printf("db ping failed (attempt %d): %v", i+1, err)
-		time.Sleep(2 * time.Second)
-	}
 
 	return nil, fmt.Errorf("db ping failed after retries: %w", err)
 }
