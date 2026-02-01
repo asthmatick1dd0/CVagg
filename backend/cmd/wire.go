@@ -4,10 +4,24 @@
 package main
 
 import (
+	"github.com/asthmatick1dd0/CVagg/http/server"
+	"github.com/asthmatick1dd0/CVagg/internal/modules/auth"
+	authService "github.com/asthmatick1dd0/CVagg/internal/modules/auth"
+	"github.com/asthmatick1dd0/CVagg/internal/modules/dashboard"
+	dashboardService "github.com/asthmatick1dd0/CVagg/internal/modules/dashboard"
+	"github.com/asthmatick1dd0/CVagg/internal/modules/editor"
+	aboutRepo "github.com/asthmatick1dd0/CVagg/internal/modules/editor/entity/about"
+	customRepo "github.com/asthmatick1dd0/CVagg/internal/modules/editor/entity/custom"
+	educationRepo "github.com/asthmatick1dd0/CVagg/internal/modules/editor/entity/education"
+	hardSkillRepo "github.com/asthmatick1dd0/CVagg/internal/modules/editor/entity/hard_skill"
+	jobExpRepo "github.com/asthmatick1dd0/CVagg/internal/modules/editor/entity/job_experience"
+	personalDataRepo "github.com/asthmatick1dd0/CVagg/internal/modules/editor/entity/personal_data"
+	resumeItemRepo "github.com/asthmatick1dd0/CVagg/internal/modules/editor/entity/resume_item"
+	"github.com/asthmatick1dd0/CVagg/internal/modules/user"
+	"github.com/asthmatick1dd0/CVagg/pkg/helpers/cvagglog"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/wire"
 	"github.com/spf13/viper"
-	"github.com/vertica/vertica-sql-go/logger"
 	"gorm.io/gorm"
 )
 
@@ -15,19 +29,35 @@ type App struct {
 	Fiber *fiber.App
 }
 
-var ServerSet = wire.NewSet(server.NewServerHTTP)
-
+// Handlers
 var HandlerSet = wire.NewSet(
-	userHandler.NewHandler,
+	auth.NewHandler,
+	dashboard.NewHandler,
+	editor.NewHandler,
 )
 
+// Services
 var ServiceSet = wire.NewSet(
-	userSvc.NewService,
+	authService.NewAuthService,
+	dashboardService.NewDashboardService,
+	editor.NewService,
 )
 
+// Repositories
 var RepositorySet = wire.NewSet(
-	userRepo.NewRepository,
+	user.NewRepository,
+	dashboard.NewResumeRepository,
+	aboutRepo.NewRepository,
+	customRepo.NewRepository,
+	educationRepo.NewRepository,
+	hardSkillRepo.NewRepository,
+	jobExpRepo.NewRepository,
+	personalDataRepo.NewRepository,
+	resumeItemRepo.NewRepository,
 )
+
+// Server
+var ServerSet = wire.NewSet(server.NewServerHTTP)
 
 func provideApp(app *fiber.App) (App, func()) {
 	cleanup := func() {
@@ -36,7 +66,7 @@ func provideApp(app *fiber.App) (App, func()) {
 	return App{Fiber: app}, cleanup
 }
 
-func newApp(*viper.Viper, *logger.Logger, *gorm.DB) (App, func(), error) {
+func newApp(*viper.Viper, *cvagglog.Logger, *gorm.DB) (App, func(), error) {
 	panic(wire.Build(
 		ServerSet,
 		HandlerSet,
@@ -45,3 +75,4 @@ func newApp(*viper.Viper, *logger.Logger, *gorm.DB) (App, func(), error) {
 		provideApp,
 	))
 }
+
