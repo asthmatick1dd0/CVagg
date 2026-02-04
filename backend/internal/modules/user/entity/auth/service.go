@@ -31,7 +31,7 @@ type authService struct {
 	userPool map[uint]*models.User
 }
 
-func NewAuthService(repo user.Repository) Service {
+func NewService(repo user.Repository) Service {
 	return &authService{repo, make(map[uint]*models.User)} // для быстрого доступа к авторизованным юзерам, хранится только в оперативной памяти хоста
 }
 
@@ -43,7 +43,7 @@ func (as *authService) AddToPool(id uint, user *models.User) error {
 	return nil
 }
 
-func (as authService) GetFromPool(id uint) (*models.User, error) {
+func (as *authService) GetFromPool(id uint) (*models.User, error) {
 	user, ok := as.userPool[id]
 	if !ok {
 		return user, fmt.Errorf("user with id %d not found in pool", id)
@@ -108,7 +108,7 @@ func CookieToToken(cookieStr string, c *fiber.Ctx) (*jwt.Token, error) {
 	return token, err
 }
 
-func (as authService) RetrieveUserFromToken(t *jwt.Token, c *fiber.Ctx) (dto.UserResponse, error) {
+func (as *authService) RetrieveUserFromToken(t *jwt.Token, c *fiber.Ctx) (dto.UserResponse, error) {
 	claims := t.Claims.(jwt.MapClaims)
 
 	created, _ := claims["iat"].(float64)
@@ -136,7 +136,7 @@ func (as authService) RetrieveUserFromToken(t *jwt.Token, c *fiber.Ctx) (dto.Use
 	return resp, nil
 }
 
-func (as authService) UserFromCookie(c *fiber.Ctx) (dto.UserResponse, error) {
+func (as *authService) UserFromCookie(c *fiber.Ctx) (dto.UserResponse, error) {
 	cookieStr := c.Cookies("token")
 
 	token, err := CookieToToken(cookieStr, c)
@@ -149,15 +149,14 @@ func (as authService) UserFromCookie(c *fiber.Ctx) (dto.UserResponse, error) {
 
 // Записывает в кукис авторизационный токен при успешной авторизации
 func (as *authService) SignInUser(c *fiber.Ctx, input input.SignInInputEmail) (*models.User, error) {
-	repo := c.Locals("userRepo").(user.Repository)
 	var user *models.User
 
-	ok, err := repo.ExistsByEmail(input.Email)
+	ok, err := as.repo.ExistsByEmail(input.Email)
 	if err != nil || !ok {
-		return user, fmt.Errorf("user not found by email %s", input.Email)
+		return user, fmt.Errorf("user with email %s does not exist", input.Email)
 	}
 
-	user, err = repo.GetByEmail(input.Email)
+	user, err = as.repo.GetByEmail(input.Email)
 	if err != nil {
 		return user, fmt.Errorf("DB issues, can not get user by email %s", user.Email)
 	}
@@ -181,7 +180,7 @@ func (s *authService) UserToToken(c *fiber.Ctx, user *models.User) (string, erro
 	claims["sub"] = user.ID
 	claims["iat"] = now.Unix()
 	claims["nbf"] = now.Unix()
-	claims["exp"] = now.Add(c.Locals("JWTExpirationTime").(time.Duration)).Unix()
+	// claims["exp"] = now.Add(c.Locals("JWTExpirationTime").(time.Duration)).Unix()
 	fmt.Println(claims["iat"])
 
 	key, _ := c.Locals("JWTSecret").([]byte)

@@ -1,5 +1,5 @@
-// Package cvagger provides custom error handling
-package cvagger
+// Package cvaggerr provides custom error handling
+package cvaggerr
 
 type Error interface {
 	Error() string

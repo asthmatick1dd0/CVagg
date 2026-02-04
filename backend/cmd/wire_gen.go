@@ -8,7 +8,6 @@ package main
 
 import (
 	"github.com/asthmatick1dd0/CVagg/http/server"
-	"github.com/asthmatick1dd0/CVagg/internal/modules/auth"
 	"github.com/asthmatick1dd0/CVagg/internal/modules/dashboard"
 	"github.com/asthmatick1dd0/CVagg/internal/modules/editor"
 	"github.com/asthmatick1dd0/CVagg/internal/modules/editor/entity/about"
@@ -19,6 +18,7 @@ import (
 	"github.com/asthmatick1dd0/CVagg/internal/modules/editor/entity/personal_data"
 	"github.com/asthmatick1dd0/CVagg/internal/modules/editor/entity/resume_item"
 	"github.com/asthmatick1dd0/CVagg/internal/modules/user"
+	"github.com/asthmatick1dd0/CVagg/internal/modules/user/entity/auth"
 	"github.com/asthmatick1dd0/CVagg/pkg/helpers/cvagglog"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/wire"
@@ -30,8 +30,8 @@ import (
 
 func newApp(viperViper *viper.Viper, logger *cvagglog.Logger, db *gorm.DB) (App, func(), error) {
 	repository := user.NewRepository(db, logger)
-	service := auth.NewAuthService(repository)
-	handler := auth.NewHandler(service)
+	service := auth.NewService(repository)
+	handler := auth.NewHandler(service, repository)
 	dashboardRepository := dashboard.NewRepository(db, logger)
 	dashboardService := dashboard.NewDashboardService(dashboardRepository)
 	dashboardHandler := dashboard.NewHandler(dashboardService)
@@ -61,7 +61,7 @@ type App struct {
 var HandlerSet = wire.NewSet(auth.NewHandler, dashboard.NewHandler, editor.NewHandler)
 
 // Services
-var ServiceSet = wire.NewSet(auth.NewAuthService, dashboard.NewDashboardService, editor.NewService)
+var ServiceSet = wire.NewSet(auth.NewService, dashboard.NewDashboardService, editor.NewService)
 
 // Repositories
 var RepositorySet = wire.NewSet(user.NewRepository, dashboard.NewRepository, about.NewRepository, custom.NewRepository, education.NewRepository, hard_skill.NewRepository, job_experience.NewRepository, personal_data.NewRepository, resume_item.NewRepository)

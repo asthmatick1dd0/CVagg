@@ -5,8 +5,6 @@ package main
 
 import (
 	"github.com/asthmatick1dd0/CVagg/http/server"
-	"github.com/asthmatick1dd0/CVagg/internal/modules/auth"
-	authService "github.com/asthmatick1dd0/CVagg/internal/modules/auth"
 	"github.com/asthmatick1dd0/CVagg/internal/modules/dashboard"
 	dashboardService "github.com/asthmatick1dd0/CVagg/internal/modules/dashboard"
 	"github.com/asthmatick1dd0/CVagg/internal/modules/editor"
@@ -18,6 +16,7 @@ import (
 	personalDataRepo "github.com/asthmatick1dd0/CVagg/internal/modules/editor/entity/personal_data"
 	resumeItemRepo "github.com/asthmatick1dd0/CVagg/internal/modules/editor/entity/resume_item"
 	"github.com/asthmatick1dd0/CVagg/internal/modules/user"
+	"github.com/asthmatick1dd0/CVagg/internal/modules/user/entity/auth"
 	"github.com/asthmatick1dd0/CVagg/pkg/helpers/cvagglog"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/wire"
@@ -38,7 +37,7 @@ var HandlerSet = wire.NewSet(
 
 // Services
 var ServiceSet = wire.NewSet(
-	authService.NewAuthService,
+	auth.NewService,
 	dashboardService.NewDashboardService,
 	editor.NewService,
 )

@@ -22,11 +22,12 @@ type Handler interface {
 }
 
 type handler struct {
-	service Service
+	service  Service
+	userRepo user.Repository
 }
 
-func NewHandler(s Service) Handler {
-	return &handler{service: s}
+func NewHandler(s Service, userRepo user.Repository) Handler {
+	return &handler{service: s, userRepo: userRepo}
 }
 
 func (h *handler) SignUp(c *fiber.Ctx) error {
@@ -41,7 +42,6 @@ func (h *handler) SignUp(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(errs)
 	}
 
-	repo := c.Locals("userRepo").(user.Repository)
 	var user models.User
 	user.Email = input.Email
 	user.Username = input.Username
@@ -50,7 +50,7 @@ func (h *handler) SignUp(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(err)
 	}
 	user.PasswordHash = string(passwordHash)
-	if err := repo.Create(&user); err != nil {
+	if err := h.userRepo.Create(&user); err != nil {
 		return c.Status(fiber.StatusInsufficientStorage).JSON(err)
 	}
 	return c.Status(fiber.StatusAccepted).JSON(input)
@@ -87,10 +87,10 @@ func (h *handler) SignIn(c *fiber.Ctx) error {
 		domain = "localhost"
 	}
 	c.Cookie(&fiber.Cookie{
-		Name:     "token",
-		Value:    tokenString,
-		Path:     "/",
-		MaxAge:   c.Locals("JWTMaxAge").(int),
+		Name:  "token",
+		Value: tokenString,
+		Path:  "/",
+		// MaxAge:   c.Locals("JWTMaxAge").(int),
 		Secure:   false,
 		HTTPOnly: true,
 		Domain:   domain,

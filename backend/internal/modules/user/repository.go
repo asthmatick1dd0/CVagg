@@ -30,7 +30,8 @@ func NewRepository(db *gorm.DB, logger *cvagglog.Logger) Repository {
 }
 
 func (r *userRepository) Create(user *models.User) error {
-	return r.db.Create(user).Error
+	return r.db.Table("users.profile").
+		Create(user).Error
 }
 
 func (r *userRepository) GetByID(id uint) (*models.User, error) {
@@ -52,7 +53,7 @@ func (r *userRepository) Delete(id uint) error {
 // Для проверки существования пользователя по email
 func (r *userRepository) ExistsByEmail(email string) (bool, error) {
 	var count int64
-	if err := r.db.Model(&models.User{}).Where("email = ?", email).Count(&count).Error; err != nil {
+	if err := r.db.Table("users.profile").Where("email = ?", email).Count(&count).Error; err != nil {
 		return false, err
 	}
 	return count > 0, nil
@@ -61,7 +62,7 @@ func (r *userRepository) ExistsByEmail(email string) (bool, error) {
 // Получаем entity для проверки пароля допустим
 func (r *userRepository) GetByEmail(email string) (*models.User, error) {
 	var user models.User
-	if err := r.db.Where("email = ?", email).First(&user).Error; err != nil {
+	if err := r.db.Table("users.profile").Where("email = ?", email).First(&user).Error; err != nil {
 		return nil, err
 	}
 	return &user, nil

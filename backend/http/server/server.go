@@ -2,9 +2,9 @@ package server
 
 import (
 	"github.com/asthmatick1dd0/CVagg/http/server/routes"
-	"github.com/asthmatick1dd0/CVagg/internal/modules/auth"
 	"github.com/asthmatick1dd0/CVagg/internal/modules/dashboard"
 	"github.com/asthmatick1dd0/CVagg/internal/modules/editor"
+	"github.com/asthmatick1dd0/CVagg/internal/modules/user/entity/auth"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
@@ -23,14 +23,15 @@ func NewServerHTTP(
 	app.Use(recover.New())
 
 	api := app.Group("/api")
+	v1 := api.Group("/v1")
 	{
-		api.Get("/check_alive", func(c *fiber.Ctx) error {
+		v1.Get("/check_alive", func(c *fiber.Ctx) error {
 			return c.JSON(fiber.Map{"status": "ok"})
 		})
 
-		routes.AuthGroup(api, authHandler)
-		routes.DashboardGroup(api, dashboardHandler)
-		routes.EditorGroup(api, editorHandler)
+		routes.AuthGroup(v1, authHandler)
+		routes.DashboardGroup(v1, dashboardHandler)
+		routes.EditorGroup(v1, editorHandler)
 	}
 
 	return app
