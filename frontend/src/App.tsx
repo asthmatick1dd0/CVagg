@@ -34,6 +34,10 @@ function App() {
         <Route 
         path="/editor/:id" 
         element={user ? <EditorPage /> : <Navigate to="/login" replace />} 
+        /> 
+        <Route 
+        path="/" 
+        element={<EditorPage />} 
         />
       </Routes>
     </ResumeProvider>
