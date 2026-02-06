@@ -23,7 +23,7 @@ type Handler interface {
 
 type handler struct {
 	service  Service
-	userRepo user.Repository
+	userRepo user.Repository // снести репо нахй отсюда
 }
 
 func NewHandler(s Service, userRepo user.Repository) Handler {
@@ -82,6 +82,7 @@ func (h *handler) SignIn(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(err.Error())
 	}
 
+	//TODO: вынести то шо внизу в сервис
 	domain := os.Getenv("COOKIE_DOMAIN")
 	if domain == "" {
 		domain = "localhost"

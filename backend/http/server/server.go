@@ -5,6 +5,7 @@ import (
 	"github.com/asthmatick1dd0/CVagg/internal/modules/dashboard"
 	"github.com/asthmatick1dd0/CVagg/internal/modules/editor"
 	"github.com/asthmatick1dd0/CVagg/internal/modules/user/entity/auth"
+	"github.com/asthmatick1dd0/CVagg/pkg/config"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
@@ -21,6 +22,8 @@ func NewServerHTTP(
 
 	app.Use(logger.New())
 	app.Use(recover.New())
+
+	config.ConfigJWT(app)
 
 	api := app.Group("/api")
 	v1 := api.Group("/v1")

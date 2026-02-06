@@ -2,6 +2,10 @@
 package config
 
 import (
+	"crypto/rand"
+	"time"
+
+	"github.com/gofiber/fiber/v2"
 	"github.com/spf13/viper"
 )
 
@@ -28,4 +32,21 @@ func NewConfig() *viper.Viper {
 	conf.SetDefault("LOG_LEVEL", "debug")
 
 	return conf
+}
+
+// Setting up JWT config for server
+func GenerateJWTSecret() []byte {
+	token := make([]byte, 32)
+	rand.Read(token)
+	return token
+}
+
+func ConfigJWT(app *fiber.App) {
+	secret := GenerateJWTSecret()
+	app.Use(func(c *fiber.Ctx) error {
+		c.Locals("JWTExpirationTime", time.Hour*12)
+		c.Locals("JWTSecret", secret)
+		c.Locals("JWTMaxAge", 1440)
+		return c.Next()
+	})
 }
