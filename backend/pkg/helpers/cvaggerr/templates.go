@@ -9,7 +9,6 @@ type generalErrors struct {
 	DataBase       Error
 }
 
-// Absolutely everything related to auth
 type authErrors struct {
 	WrongCredentials  Error
 	UserAlreadyExists Error
@@ -18,12 +17,12 @@ type authErrors struct {
 	BadToken          Error
 }
 
-// Errors related to accessing different parts of app, mostly resumes
 type accessErrors struct {
 	NotFound  Error
 	Forbidden Error
 }
 
+// All errors that don't fit into other categories
 var GeneralErrors *generalErrors = &generalErrors{
 	Validation: New(
 		"Provided data didn't pass validation",
@@ -39,6 +38,7 @@ var GeneralErrors *generalErrors = &generalErrors{
 		fiber.StatusServiceUnavailable),
 }
 
+// Absolutely everything related to auth
 var AuthErrors *authErrors = &authErrors{
 	WrongCredentials: New(
 		"Incorrect email address or password",
@@ -62,6 +62,7 @@ var AuthErrors *authErrors = &authErrors{
 		fiber.StatusBadRequest),
 }
 
+// Errors related to accessing different parts of app, mostly resumes
 var AccessErrors *accessErrors = &accessErrors{
 	NotFound: New(
 		"The sought things be not found, nor here, nor now, at the last",
