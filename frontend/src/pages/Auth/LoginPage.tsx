@@ -1,5 +1,6 @@
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import { useState } from "react";
 import { Card, CardHeader, CardFooter, CardTitle, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -18,21 +19,31 @@ const validationSchema = Yup.object({
 
 function LoginPage() {
     const { login } = useAuth();
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const formik = useFormik({
             initialValues: {
                 email: "",
                 password: ""
             },
             validationSchema: validationSchema,
-            validateOnBlur: false,
-            validateOnChange: false,
+            validateOnBlur: true,
+            validateOnChange: true,
             onSubmit: async (values, { setSubmitting }) => {
                 try {
                     await login(values.email, values.password);
                 } catch (err: any) {
-                    // TODO: Обработка ошибок с бэка
-                    const errorMessage = err.response?.data?.message || "Ошибка входа";
-                    alert(errorMessage); 
+                    const data = err.response?.data || {};
+                    if (data && data.includes("wrong password")) {
+                        setErrorMessage("Неверный пароль");
+                        setSubmitting(false);
+                        return;
+                    }
+                    if (data && data.includes("user not found by email")) {
+                        setErrorMessage("Пользователь с таким email не найден");
+                        setSubmitting(false);
+                        return;
+                    }
+                    setErrorMessage("Произошла ошибка при входе. Попробуйте позже.");
                 } finally {
                     setSubmitting(false);
                 }
@@ -57,7 +68,11 @@ function LoginPage() {
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
                                 required
+                                className={formik.touched.email && formik.errors.email ? "border-red-500 focus-visible:ring-red-500" : ""}
                             />
+                            {formik.touched.email && formik.errors.email && (
+                                <div className="text-red-500 text-sm mt-1">{formik.errors.email}</div>
+                            )}
                         </div>
                         <div className="">
                             <label htmlFor="password">Пароль</label>
@@ -69,8 +84,18 @@ function LoginPage() {
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
                                 required
+                                className={formik.touched.password && formik.errors.password ? "border-red-500 focus-visible:ring-red-500" : ""}
                             />
+                            {formik.touched.password && formik.errors.password && (
+                                <div className="text-red-500 text-sm mt-1">{formik.errors.password}</div>
+                            )}
                         </div>
+
+                        {errorMessage && (
+                            <div className="text-red-500 text-sm mt-4 text-center">
+                                {errorMessage}
+                            </div>
+                        )}
 
                         <CardFooter className="flex flex-col w-full mt-12">
                             <Button type="submit" className="px-12" disabled={formik.isSubmitting}>

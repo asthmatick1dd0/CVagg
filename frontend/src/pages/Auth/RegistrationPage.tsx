@@ -1,5 +1,6 @@
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import { useState } from "react";
 import { Card, CardHeader, CardFooter, CardTitle, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -24,6 +25,7 @@ const validationSchema = Yup.object({
 
 function RegistrationPage(){
     const { register } = useAuth();
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const formik = useFormik({
         initialValues: {
             username: "",
@@ -32,15 +34,43 @@ function RegistrationPage(){
             confirmPassword: ""
         },
         validationSchema: validationSchema,
-        validateOnBlur: false,
-        validateOnChange: false,
+        validateOnBlur: true,
+        validateOnChange: true,
         onSubmit: async (values, { setSubmitting }) => {
             try {
                 await register(values.username, values.email, values.password);
             } catch (err: any) {
-                // TODO: Обработка ошибок с бэка
-                const errorMessage = err.response?.data?.message || "Ошибка регистрации";
-                alert(errorMessage); 
+                const status = err.response?.status;
+                const data = err.response?.data || {};
+                // дополнительная проверка на дублирование ключа в бд, ибо сервер может возвращать разные коды статусов((
+                const isDuplicateKey = 
+                    data.Code === "23505" || 
+                    (data.Message && data.Message.includes("duplicate key")) ||
+                    (data.message && data.message.includes("duplicate key")); 
+
+                if (isDuplicateKey) {
+                    const detail = data.Detail || data.detail || "";
+                    if (detail.includes("email") || data.ConstraintName?.includes("email")) {
+                        setErrorMessage("Этот email уже зарегистрирован");
+                        setSubmitting(false);
+                        return;
+                    } 
+                    if (detail.includes("username") || data.ConstraintName?.includes("username")) {
+                        setErrorMessage("Этот логин уже занят");
+                        setSubmitting(false);
+                        return;
+                    }
+                }
+                switch (status) {
+                    case 400:
+                        setErrorMessage("Некорректные данные. Проверьте введённую информацию.");
+                        break;
+                    case 409:
+                        setErrorMessage("Пользователь с таким email уже существует.");
+                        break;
+                    default:
+                        setErrorMessage(err.response?.data?.message || "Ошибка регистрации. Попробуйте позже.");
+                }
             } finally {
                 setSubmitting(false);
             }
@@ -66,7 +96,11 @@ function RegistrationPage(){
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
                             required
+                            className={formik.touched.username && formik.errors.username ? "border-red-500 focus-visible:ring-red-500" : ""}
                         />
+                        {formik.touched.username && formik.errors.username && (
+                            <div className="text-red-500 text-sm mt-1">{formik.errors.username}</div>
+                        )}
                     </div>
 
                     <div className="pb-2">
@@ -79,7 +113,11 @@ function RegistrationPage(){
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
                             required
+                            className={formik.touched.email && formik.errors.email ? "border-red-500 focus-visible:ring-red-500" : ""}
                         />
+                        {formik.touched.email && formik.errors.email && (
+                            <div className="text-red-500 text-sm mt-1">{formik.errors.email}</div>
+                        )}
                     </div>
 
                     <div className="pb-2">
@@ -92,10 +130,14 @@ function RegistrationPage(){
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
                             required
+                            className={formik.touched.password && formik.errors.password ? "border-red-500 focus-visible:ring-red-500" : ""}
                         />
+                        {formik.touched.password && formik.errors.password && (
+                                <div className="text-red-500 text-sm mt-1">{formik.errors.password}</div>
+                            )}
                     </div>
 
-                        <div className="">
+                    <div className="">
                         <label htmlFor="confirmPassword">Повторите пароль</label>
                         <Input
                             id="confirmPassword"
@@ -105,8 +147,19 @@ function RegistrationPage(){
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
                             required
+                            className={formik.touched.confirmPassword && formik.errors.confirmPassword ? "border-red-500 focus-visible:ring-red-500" : ""}
                         />
+                        {formik.touched.confirmPassword && formik.errors.confirmPassword && (
+                            <div className="text-red-500 text-sm mt-1">{formik.errors.confirmPassword}</div>
+                        )}
                     </div>
+
+                    {errorMessage && (
+                            <div className="text-red-500 text-sm mt-4 text-center">
+                                {errorMessage}
+                            </div>
+                        )}
+
                     <CardFooter className="flex flex-col w-full mt-12">
                         <Button type="submit" className="px-8" disabled={formik.isSubmitting || !formik.isValid}>
                             {formik.isSubmitting ? "Регистрация..." : "Зарегистрироваться"}
