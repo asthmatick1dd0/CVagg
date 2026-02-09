@@ -14,7 +14,7 @@ func ErrorValidation() Error {
 func ErrorInternalServer() Error {
 	return New(
 		"Internal server error",
-		"Внутренния ошибка сервера",
+		"Внутренняя ошибка сервера",
 		fiber.StatusInternalServerError,
 	)
 }
