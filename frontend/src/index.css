@@ -18,7 +18,7 @@ font-family: "Noto Sans", monospace;
   -moz-osx-font-smoothing: grayscale;
   --radius: 0.625rem;
   --background: #0A0A0A;
-  --foreground: #dbdbdb;
+  --foreground: #FAFAFA;
   --card: #141414;
   --card-foreground: #989898;
   --popover: oklch(100% 0.00011 271.152);
