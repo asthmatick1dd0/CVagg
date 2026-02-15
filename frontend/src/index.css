@@ -45,6 +45,12 @@ font-family: "Noto Sans", monospace;
   --sidebar-ring: oklch(0.708 0 0);
 }
 
+::selection {
+
+background: #ed1b265d; 
+
+}
+
 .font-inter {
   font-family: "Inter", serif;
 }

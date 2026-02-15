@@ -135,6 +135,7 @@ function RegistrationPage(){
                         {formik.touched.password && formik.errors.password && (
                                 <div className="text-red-500 text-sm mt-1">{formik.errors.password}</div>
                             )}
+                        
                     </div>
 
                     <div className="">
