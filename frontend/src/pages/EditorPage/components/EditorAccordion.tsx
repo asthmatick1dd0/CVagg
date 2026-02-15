@@ -15,11 +15,11 @@ export function AccordionDemo() {
       className="w-full"
     >
       <AccordionItem value="education">
-        <AccordionTrigger className="group [&>svg]:hidden">
+        <AccordionTrigger className="group [&>svg]:hidden hover:cursor-pointer">
           <div className="flex items-center justify-between w-full pr-4">
             <span className="font-medium">Образование</span>
             <div className="w-6 h-6 flex items-center justify-center rounded-full border-2 border-white transition-all duration-200 group-data-[state=open]:bg-white group-data-[state=open]:rotate-45">
-              <span className="text-lg font-bold  duration-200">+</span>
+              <span className="text-lg font-bold  duration-200 ">+</span>
             </div>
           </div>
         </AccordionTrigger>
@@ -30,7 +30,7 @@ export function AccordionDemo() {
         </AccordionContent>
       </AccordionItem>
       <AccordionItem value="experience">
-        <AccordionTrigger className="group [&>svg]:hidden">
+        <AccordionTrigger className="group [&>svg]:hidden hover:cursor-pointer">
           <div className="flex items-center justify-between w-full pr-4">
             <span className="font-medium">Опыт работы</span>
             <div className="w-6 h-6 flex items-center justify-center rounded-full border-2 border-white transition-all duration-200 group-data-[state=open]:bg-white group-data-[state=open]:rotate-45">
@@ -45,7 +45,7 @@ export function AccordionDemo() {
         </AccordionContent>
       </AccordionItem>
       <AccordionItem value="hardskills">
-        <AccordionTrigger className="group [&>svg]:hidden">
+        <AccordionTrigger className="group [&>svg]:hidden hover:cursor-pointer">
           <div className="flex items-center justify-between w-full pr-4">
             <span className="font-medium">Навыки</span>
             <div className="w-6 h-6 flex items-center justify-center rounded-full border-2 border-white transition-all duration-200 group-data-[state=open]:bg-white group-data-[state=open]:rotate-45">
@@ -60,7 +60,7 @@ export function AccordionDemo() {
         </AccordionContent>
       </AccordionItem>
       <AccordionItem value="custom">
-        <AccordionTrigger className="group [&>svg]:hidden">
+        <AccordionTrigger className="group [&>svg]:hidden hover:cursor-pointer">
           <div className="flex items-center justify-between w-full pr-4">
             <span className="font-medium">Дополнительная информация</span>
             <div className="w-6 h-6 flex items-center justify-center rounded-full border-2 border-white transition-all duration-200 group-data-[state=open]:bg-white group-data-[state=open]:rotate-45">

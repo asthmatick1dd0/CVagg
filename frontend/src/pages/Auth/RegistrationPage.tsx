@@ -161,13 +161,13 @@ function RegistrationPage(){
                         )}
 
                     <CardFooter className="flex flex-col w-full mt-12">
-                        <Button type="submit" className="px-8" disabled={formik.isSubmitting || !formik.isValid}>
+                        <Button type="submit" className="px-8 hover:cursor-pointer" disabled={formik.isSubmitting || !formik.isValid}>
                             {formik.isSubmitting ? "Регистрация..." : "Зарегистрироваться"}
                         </Button>
                     </CardFooter>
                 </form>
                 <a href="/login" className="flex flex-col w-full">
-                    <Button variant="link">
+                    <Button variant="link" className="hover:cursor-pointer">
                     
                         <i>Уже есть аккаунт?</i>
                     </Button>

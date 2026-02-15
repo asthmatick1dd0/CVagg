@@ -27,13 +27,13 @@ export function EditorInputs() {
       >
         <FieldGroup>
           <FieldSet className="gap-4">
-            <FieldLegend className="pb-6">Персональная информация</FieldLegend>
+            <FieldLegend className="pb-6 ">Персональная информация</FieldLegend>
 
             <FieldGroup className="grid grid-cols-[auto_1fr] gap-4 max-md:grid-cols-1">
               <Field className="gap-1">
                 <div className="relative group flex flex-col gap-1">
-                  <p className="text-sm font-medium">Фото</p>
-                  <div className="w-[111px] h-[111px] rounded-sm overflow-hidden bg-gray-50 dark:bg-gray-900">
+                  <p className="text-sm font-medium ">Фото</p>
+                  <div className="w-[111px] h-[111px] rounded-sm overflow-hidden bg-gray-50 dark:bg-gray-900 hover:cursor-pointer">
                     <img src={DemoAvatar} alt="User avatar" className="w-full h-full object-cover" />
                   </div>
                   <Button variant="secondary" size="sm" className="absolute bottom-2 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -117,7 +117,7 @@ export function EditorInputs() {
           <AccordionDemo />
         </div>
 
-        <Button type="submit" className="mt-6 w-full" disabled={loading}>
+        <Button type="submit" className="mt-6 w-full hover:cursor-pointer" disabled={loading} >
           {loading ? "Сохранение..." : "Сохранить резюме"}
         </Button>
       </form>
