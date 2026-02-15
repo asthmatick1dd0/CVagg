@@ -1,8 +1,14 @@
 import * as React from "react"
+import { useState } from "react"
+import {Icon} from 'react-icons-kit'
+import {eyeOff} from 'react-icons-kit/feather/eyeOff'
+import {eye} from 'react-icons-kit/feather/eye'
 
 import { cn } from "@/lib/utils"
 
+
 function Input({ className, type, ...props }: React.ComponentProps<"input">) {
+
   return (
     <input
       type={type}
@@ -13,6 +19,7 @@ function Input({ className, type, ...props }: React.ComponentProps<"input">) {
         "aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-gray-700/40",
         "text-foreground read-only:text-foreground disabled:text-muted-foreground/0",
         className
+
       )}
       {...props}
     />

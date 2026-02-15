@@ -5,6 +5,7 @@ import { Card, CardHeader, CardFooter, CardTitle, CardContent } from "@/componen
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
+import { Eye, EyeOff } from "lucide-react";
 
 const validationSchema = Yup.object({
   email: Yup.string()
@@ -20,6 +21,12 @@ const validationSchema = Yup.object({
 function LoginPage() {
     const { login } = useAuth();
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const [showPassword, setShowPassword] = useState(false);
+
+    const togglePasswordVisibility = () => { 
+        setShowPassword(!showPassword);
+    };   
+
     const formik = useFormik({
             initialValues: {
                 email: "",
@@ -74,11 +81,12 @@ function LoginPage() {
                                 <div className="text-red-500 text-sm mt-1">{formik.errors.email}</div>
                             )}
                         </div>
-                        <div className="">
+                        <div className="relative">
                             <label htmlFor="password">Пароль</label>
+                            <div className="relative">
                             <Input
                                 id="password"
-                                type="password"
+                                type={showPassword ? "text" : "password"}
                                 placeholder="••••••••"
                                 value={formik.values.password}
                                 onChange={formik.handleChange}
@@ -86,9 +94,18 @@ function LoginPage() {
                                 required
                                 className={formik.touched.password && formik.errors.password ? "border-red-500 focus-visible:ring-red-500" : ""}
                             />
+                            <button
+                                type="button"
+                                onClick={togglePasswordVisibility}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
+                                >
+                                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                            </button>
+                             </div>
                             {formik.touched.password && formik.errors.password && (
                                 <div className="text-red-500 text-sm mt-1">{formik.errors.password}</div>
                             )}
+                           
                         </div>
 
                         {errorMessage && (
