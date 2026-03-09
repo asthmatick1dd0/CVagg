@@ -4,8 +4,8 @@
 -- создание схему resumes
 CREATE SCHEMA IF NOT EXISTS resumes;
 
--- создаем таблицу resumes.resume
-CREATE TABLE IF NOT EXISTS resumes.resume (
+-- создаем таблицу resumes.profile
+CREATE TABLE IF NOT EXISTS resumes.profile (
     id SERIAL PRIMARY KEY,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
@@ -17,6 +17,6 @@ CREATE TABLE IF NOT EXISTS resumes.resume (
 
 -- +goose Down
 -- +goose StatementBegin
-DROP TABLE IF EXISTS resumes.resume;
+DROP TABLE IF EXISTS resumes.profile;
 DROP SCHEMA IF EXISTS resumes CASCADE;
 -- +goose StatementEnd

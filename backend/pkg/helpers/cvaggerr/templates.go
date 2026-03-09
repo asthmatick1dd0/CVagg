@@ -4,83 +4,83 @@ import "github.com/gofiber/fiber/v2"
 
 // General
 func ErrorValidation() Error {
-	return New(
-		"Provided data didn't pass validation",
-		"Данные не прошли валидацию",
-		fiber.StatusBadRequest,
-	)
+	return &err{
+		English:   "Provided data didn't pass validation",
+		Russian:   "Данные не прошли валидацию",
+		errorCode: fiber.StatusBadRequest,
+	}
 }
 
 func ErrorInternalServer() Error {
-	return New(
-		"Internal server error",
-		"Внутренняя ошибка сервера",
-		fiber.StatusInternalServerError,
-	)
+	return &err{
+		English:   "Internal server error",
+		Russian:   "Внутренняя ошибка сервера",
+		errorCode: fiber.StatusInternalServerError,
+	}
 }
 
 func ErrorDataBase() Error {
-	return New(
-		"Database error",
-		"Ошибка в работе базы данных",
-		fiber.StatusServiceUnavailable,
-	)
+	return &err{
+		English:   "Database error",
+		Russian:   "Ошибка в работе базы данных",
+		errorCode: fiber.StatusServiceUnavailable,
+	}
 }
 
 // Auth
 func ErrorWrongCredentials() Error {
-	return New(
-		"Incorrect email address or password",
-		"Неправильные адрес почты или пароль",
-		fiber.StatusBadRequest,
-	)
+	return &err{
+		English:   "Incorrect email address or password",
+		Russian:   "Неправильные адрес почты или пароль",
+		errorCode: fiber.StatusBadRequest,
+	}
 }
 
 func ErrorUserAlreadyExists() Error {
-	return New(
-		"User with such email exists already",
-		"Пользователь с такой почтой уже существует",
-		fiber.StatusConflict,
-	)
+	return &err{
+		English:   "User with such email exists already",
+		Russian:   "Пользователь с такой почтой уже существует",
+		errorCode: fiber.StatusConflict,
+	}
 }
 
 func ErrorAlreadySignedIn() Error {
-	return New(
-		"Already signed in, to sign in once again log out first",
-		"Повторная авторизация возможна только после разлогинивания",
-		fiber.StatusForbidden,
-	)
+	return &err{
+		English:   "Already signed in, to sign in once again log out first",
+		Russian:   "Повторная авторизация возможна только после разлогинивания",
+		errorCode: fiber.StatusForbidden,
+	}
 }
 
 func ErrorSignInFirst() Error {
-	return New(
-		"Following content is not available for unauthorized access",
-		"Данный контент недоступен неавторизованным пользователям",
-		fiber.StatusUnauthorized,
-	)
+	return &err{
+		English:   "Following content is not available for unauthorized access",
+		Russian:   "Данный контент недоступен неавторизованным пользователям",
+		errorCode: fiber.StatusUnauthorized,
+	}
 }
 
 func ErrorBadToken() Error {
-	return New(
-		"JWT auth token does not exist, is empty, invalid or expired",
-		"JWT токен не существует, пуст, невалиден либо просрочен",
-		fiber.StatusBadRequest,
-	)
+	return &err{
+		English:   "JWT auth token does not exist, is empty, invalid or expired",
+		Russian:   "JWT токен не существует, пуст, невалиден либо просрочен",
+		errorCode: fiber.StatusBadRequest,
+	}
 }
 
 // Access
 func ErrorNotFound() Error {
-	return New(
-		"The sought things be not found, nor here, nor now, at the last",
-		"По данному запросу ничего не найдено",
-		fiber.StatusNotFound,
-	)
+	return &err{
+		English:   "The sought things be not found, nor here, nor now, at the last",
+		Russian:   "По данному запросу ничего не найдено",
+		errorCode: fiber.StatusNotFound,
+	}
 }
 
 func ErrorForbidden() Error {
-	return New(
-		"Access to this content for this user is restricted",
-		"К данному контенту доступ ограничен для этого пользователя",
-		fiber.StatusForbidden,
-	)
+	return &err{
+		English:   "Access to this content for this user is restricted",
+		Russian:   "К данному контенту доступ ограничен для этого пользователя",
+		errorCode: fiber.StatusForbidden,
+	}
 }
