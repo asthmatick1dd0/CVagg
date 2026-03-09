@@ -91,15 +91,16 @@ function RegistrationPage(){
     };
 
     return (
-    <div className="min-h-screen flex items-center justify-start custom-bg">
-        <Card className="min-h-screen w-full min-md:w-[600px] flex flex-col items-center justify-center">
+    <div className="min-h-screen w-screen justify-start custom-bg">
+        <Card className="min-md:w-[400px] flex flex-col justify-center items-center">
             <CardHeader className="flex flex-col items-center"> 
                 <CardTitle className="text-4xl">Регистрация</CardTitle>
             </CardHeader>
-
-            <CardContent className="">
+            <CardContent className="flex flex-col justify-center items-center w-full">
                 <form onSubmit={formik.handleSubmit}>
-                    <div className="py-2">
+                    <div className="gap-2">
+                        <div className="flex flex-col gap-2 items-center">
+                            <div className="pt-2 w-[280px]">
                         <label htmlFor="username">Логин</label>
                         <Input 
                             id="username" 
@@ -116,7 +117,7 @@ function RegistrationPage(){
                         )}
                     </div>
 
-                    <div className="pb-2">
+                    <div className="w-[280px]">
                         <label htmlFor="email">Электронная почта</label>
                         <Input
                             id="email"
@@ -133,7 +134,7 @@ function RegistrationPage(){
                         )}
                     </div>
 
-                    <div className="pb-2 relative">
+                    <div className="w-[280px]">
                         <label htmlFor="password">Пароль</label>
                         <div className="relative">   
                             <Input
@@ -160,7 +161,7 @@ function RegistrationPage(){
                             )}
                     </div>
 
-                    <div className="relative">
+                    <div className="pb-2 w-[280px]">
                         <label htmlFor="confirmPassword">Повторите пароль</label>
                         <div className="relative">
                             <Input
@@ -184,6 +185,8 @@ function RegistrationPage(){
                         {formik.touched.confirmPassword && formik.errors.confirmPassword && (
                             <div className="text-red-500 text-sm mt-1">{formik.errors.confirmPassword}</div>
                         )}
+                    </div>
+                        </div>
                     </div>
 
                     {errorMessage && (

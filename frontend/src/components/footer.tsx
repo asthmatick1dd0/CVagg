@@ -15,7 +15,7 @@ const Footer = () => {
             alt="CVaggregator logo"
             className="w-9 h-8 rounded-md"
           />
-          <p className="font-inter font-semibold text-primary-foreground text-lg">
+          <p className="font-inter font-semibold text-white text-lg">
             CVaggregator
           </p>
         </div>

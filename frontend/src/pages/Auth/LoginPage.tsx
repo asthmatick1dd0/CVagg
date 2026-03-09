@@ -57,56 +57,61 @@ function LoginPage() {
             },
         });
 
+    
     return (
-        <div className="min-h-screen flex items-center justify-start custom-bg">
-            <Card className="w-full min-md:w-[600px] flex flex-col justify-center items-center py-auto">
-                <CardHeader className="flex flex-col items-center w-full ">
+        <div className="min-h-screen w-screen justify-start custom-bg">
+            <Card className="min-md:w-[400px] flex flex-col justify-center items-center">
+                <CardHeader className="flex flex-col items-center">
                     <CardTitle className="text-4xl ">Войти в аккаунт</CardTitle>
                 </CardHeader>
-                <CardContent className="">
+                <CardContent className="flex flex-col justify-center items-center w-full">
                     <form onSubmit={formik.handleSubmit}>
-                        <div className="py-2">
-                            <label htmlFor="email">Электронная почта</label>
-                            <Input
-                                id="email"
-                                type="email"
-                                placeholder="you@example.com"
-                                value={formik.values.email}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                                required
-                                className={formik.touched.email && formik.errors.email ? "border-red-500 focus-visible:ring-red-500" : ""}
-                            />
-                            {formik.touched.email && formik.errors.email && (
-                                <div className="text-red-500 text-sm mt-1">{formik.errors.email}</div>
-                            )}
+                        <div className="gap-2">
+                            <div className="flex flex-col gap-2 items-center">
+                                <div className="pt-2 w-[280px]">
+                                    <label htmlFor="email">Электронная почта</label>
+                                    <Input
+                                        id="email"
+                                        type="email"
+                                        placeholder="you@example.com"
+                                        value={formik.values.email}
+                                        onChange={formik.handleChange}
+                                        onBlur={formik.handleBlur}
+                                        required
+                                        className={formik.touched.email && formik.errors.email ? "border-red-500 focus-visible:ring-red-500" : ""}
+                                    />
+                                    {formik.touched.email && formik.errors.email && (
+                                        <div className="text-red-500 text-sm mt-1">{formik.errors.email}</div>
+                                    )}
+                                </div>
+                                <div className="pb-2 w-[280px]">
+                                    <label htmlFor="password">Пароль</label>
+                                    <div className="relative">
+                                        <Input
+                                            id="password"
+                                            type={showPassword ? "text" : "password"}
+                                            placeholder="••••••••"
+                                            value={formik.values.password}
+                                            onChange={formik.handleChange}
+                                            onBlur={formik.handleBlur}
+                                            required
+                                            className={formik.touched.password && formik.errors.password ? "border-red-500 focus-visible:ring-red-500" : ""}
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={togglePasswordVisibility}
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
+                                        >
+                                            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                                        </button>
+                                    </div>
+                                    {formik.touched.password && formik.errors.password && (
+                                        <div className="text-red-500 text-sm mt-1">{formik.errors.password}</div>
+                                    )}
+                                </div>
+                            </div>
                         </div>
-                        <div className="relative">
-                            <label htmlFor="password">Пароль</label>
-                            <div className="relative">
-                            <Input
-                                id="password"
-                                type={showPassword ? "text" : "password"}
-                                placeholder="••••••••"
-                                value={formik.values.password}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                                required
-                                className={formik.touched.password && formik.errors.password ? "border-red-500 focus-visible:ring-red-500" : ""}
-                            />
-                            <button
-                                type="button"
-                                onClick={togglePasswordVisibility}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
-                                >
-                                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                            </button>
-                             </div>
-                            {formik.touched.password && formik.errors.password && (
-                                <div className="text-red-500 text-sm mt-1">{formik.errors.password}</div>
-                            )}
-                           
-                        </div>
+                        
 
                         {errorMessage && (
                             <div className="text-red-500 text-sm mt-4 text-center">

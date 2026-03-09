@@ -1,8 +1,4 @@
 import * as React from "react"
-import { useState } from "react"
-import {Icon} from 'react-icons-kit'
-import {eyeOff} from 'react-icons-kit/feather/eyeOff'
-import {eye} from 'react-icons-kit/feather/eye'
 
 import { cn } from "@/lib/utils"
 
