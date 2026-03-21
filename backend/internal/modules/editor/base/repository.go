@@ -9,7 +9,7 @@ import (
 type ResumeItemRepository[T any] interface {
 	Create(tx *gorm.DB, entity *T, table string) cvaggerr.Error
 	Delete(tx *gorm.DB, id uint, table string) cvaggerr.Error
-	Update(tx *gorm.DB, entity *T, table string) cvaggerr.Error
+	Update(tx *gorm.DB, entity *T, table string, entityId uint) cvaggerr.Error
 	GetByID(tx *gorm.DB, id uint, table string) (*T, cvaggerr.Error)
 	GetAllByResumeID(tx *gorm.DB, resumeID uint, table string) ([]*T, cvaggerr.Error)
 }
@@ -43,9 +43,9 @@ func (r *resumeItemRepo[T]) Delete(tx *gorm.DB, id uint, table string) cvaggerr.
 	return nil
 }
 
-func (r *resumeItemRepo[T]) Update(tx *gorm.DB, entity *T, table string) cvaggerr.Error {
+func (r *resumeItemRepo[T]) Update(tx *gorm.DB, entity *T, table string, entityId uint) cvaggerr.Error {
 	db := r.getDB(tx)
-	if err := db.Table(table).Save(entity).Error; err != nil {
+	if err := db.Table(table).Where("id = ?", entityId).Updates(entity).Error; err != nil {
 		return cvaggerr.ErrorDataBase()
 	}
 	return nil
