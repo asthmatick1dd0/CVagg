@@ -27,5 +27,5 @@ func (s *customService) SaveResumeCustom(tx *gorm.DB, resume *input.CustomInput)
 		Content: resume.Content,
 	}
 
-	return s.repo.Create(tx, customModel)
+	return s.repo.Create(tx, customModel, "resume_item.custom")
 }

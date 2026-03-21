@@ -32,5 +32,5 @@ func (s *educationService) SaveResumeEducation(tx *gorm.DB, resume *input.Educat
 		Finished:   resume.Finished,
 	}
 
-	return s.repo.Create(tx, educationModel)
+	return s.repo.Create(tx, educationModel, "resume_item.education")
 }
