@@ -13,6 +13,7 @@ import {
   SelectValue 
 } from "@/components/ui/select"
 import { Trash2, Check, Plus, Pencil } from "lucide-react"
+import { useResumeContext } from "@/contexts/ResumeContext"
 
 export interface Education {
   ID?: number;
@@ -40,58 +41,65 @@ const currentYear = new Date().getFullYear();
 const years = Array.from({ length: 50 }, (_, i) => (currentYear - i).toString());
 
 export default function EducationManager() {
-  // Список элементов с состоянием редактирования
-  const [items, setItems] = useState<EducationItemState[]>([
-    {
+  const {resumeData, updateEducation} = useResumeContext(); 
+  const [items, setItems] = useState<EducationItemState[]>(() => {
+    const globalEducation = resumeData.education || [];
+    if (globalEducation.length > 0) {
+      return globalEducation.map((ed, index) => ({
+        localId: Date.now() + index,
+        data: ed,
+        isEditing: false
+      }));
+    }
+    return [{
       localId: Date.now(),
       data: {
-        university: "",
-        faculty: "",
-        degree: "",
-        major: "",
-        start_date: new Date().toISOString(),
-        end_date: null,
-        finished: false,
+        university: "", faculty: "", degree: "", major: "",
+        start_date: new Date().toISOString(), end_date: null, finished: false,
       },
-      isEditing: true 
-    }
-  ])
+      isEditing: true
+    }];
+  });
+
+  // Хелпер для синхронизации с глобальным стейтом
+  const syncToGlobal = (currentItems: EducationItemState[]) => {
+    const cleanData = currentItems.map(item => item.data);
+    updateEducation(cleanData);
+  };
 
   const addNewItem = () => {
-    setItems([
-      ...items,
-      {
+    const newItem = {
         localId: Date.now() + Math.random(),
         data: {
-          university: "",
-          faculty: "",
-          degree: "",
-          major: "",
-          start_date: new Date().toISOString(),
-          end_date: null,
-          finished: false,
+          university: "", faculty: "", degree: "", major: "",
+          start_date: new Date().toISOString(), end_date: null, finished: false,
         },
         isEditing: true
-      }
-    ])
-  }
-
-  // Обновить данные в родительском стейте
-  const updateItemData = (index: number, newData: Education) => {
-    const newItems = [...items];
-    newItems[index].data = newData;
+    };
+    
+    const newItems = [...items, newItem];
     setItems(newItems);
   }
 
-  // Переключить режим (Просмотр <-> Редактирование)
+  const updateItemData = (index: number, newData: Education) => {
+    const newItems = [...items];
+    newItems[index].data = newData;
+    newItems[index].isEditing = false;
+    
+    setItems(newItems);
+    syncToGlobal(newItems); 
+  }
+
+  const removeItem = (index: number) => {
+    const newItems = items.filter((_, i) => i !== index);
+    setItems(newItems);
+    syncToGlobal(newItems);
+  }
+
   const toggleEditMode = (index: number, isEditing: boolean) => {
     const newItems = [...items];
     newItems[index].isEditing = isEditing;
     setItems(newItems);
-  }
-
-  const removeItem = (index: number) => {
-    setItems(items.filter((_, i) => i !== index));
   }
 
   return (
@@ -104,9 +112,9 @@ export default function EducationManager() {
           onDelete={() => removeItem(index)}
           onSave={(updatedData) => {
             updateItemData(index, updatedData);
-            toggleEditMode(index, false); // Закрыть после сохранения
+            toggleEditMode(index, false);
           }}
-          onEdit={() => toggleEditMode(index, true)} // Открыть для редактирования
+          onEdit={() => toggleEditMode(index, true)}
         />
       ))}
 
