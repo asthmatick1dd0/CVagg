@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input"
 import EducationForm from "./forms/EducationForm"
 import ExperienceForm from "./forms/ExperienceForm"
 import PersonalForm from "./forms/PersonalForm"
+import CustomForm from "./forms/CustomForm"
 
 
 export function AccordionDemo() {
@@ -84,9 +85,7 @@ export function AccordionDemo() {
           </div>
         </AccordionTrigger>
         <AccordionContent className="flex flex-col gap-4 text-balance">
-          <Field className="gap-1">
-                <Input id="custom" placeholder="Специализированный ввод в следующей версии" className="placeholder:text-xs placeholder:text-white"/>
-            </Field>
+          <CustomForm />
         </AccordionContent>
       </AccordionItem>
     </Accordion>
