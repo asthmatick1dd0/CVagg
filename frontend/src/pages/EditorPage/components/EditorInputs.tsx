@@ -31,12 +31,13 @@ export function EditorInputs() {
 
             <FieldGroup className="grid grid-cols-[auto_1fr] gap-4 max-md:grid-cols-1">
               <Field className="gap-1">
-                <div className="relative group flex flex-col gap-1">
+                <div className="relative group flex flex-col items-center gap-1">
                   <p className="text-sm font-medium ">Фото</p>
-                  <div className="w-[111px] h-[111px] rounded-sm overflow-hidden bg-gray-50 dark:bg-gray-900 hover:cursor-pointer">
+                  <div className="w-[111px] h-[111px] rounded-sm overflow-hidden bg-gray-50 dark:bg-gray-900">
                     <img src={DemoAvatar} alt="User avatar" className="w-full h-full object-cover" />
                   </div>
-                  <Button variant="secondary" size="sm" className="absolute bottom-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  {/* TODO: добавить логику загрузки изображения */}
+                  <Button variant="secondary" size="sm" className="absolute bottom-2 opacity-0 max-md:opacity-100  group-hover:opacity-100 transition-opacity hover:cursor-pointer" type="button" onClick={(e) => e.preventDefault()}> 
                     Загрузить
                   </Button>
                 </div>
