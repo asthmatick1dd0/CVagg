@@ -28,7 +28,7 @@ func (h *handler) CreateResume(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "invalid request"})
 	}
 
-	err := h.s.SaveResume(&input)
+	err := h.s.SaveResume(nil, &input)
 	if err != nil {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "internal server error"})
 	}
@@ -42,7 +42,7 @@ func (h *handler) GetResumeByID(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "invalid id"})
 	}
 
-	resume, err := h.s.GetResumeByID(uint(ID64))
+	resume, err := h.s.GetResumeByID(nil, uint(ID64))
 	if err != nil {
 		return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{"error": "no such resume"})
 	}
@@ -56,7 +56,7 @@ func (h *handler) ExportResumePDF(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "invalid id"})
 	}
 
-	b, err := h.s.ExportResumePDF(uint(id64))
+	b, err := h.s.ExportResumePDF(nil, uint(id64))
 	if err != nil {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}

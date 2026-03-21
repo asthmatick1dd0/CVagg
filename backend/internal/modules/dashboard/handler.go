@@ -68,7 +68,7 @@ func (h *handler) Delete(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "invalid id"})
 	}
 
-	if err := h.dashboardService.Delete(uint(id64)); err != nil {
+	if err := h.dashboardService.Delete(nil, uint(id64)); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
 	return c.SendStatus(fiber.StatusNoContent)
