@@ -10,4 +10,5 @@ func EditorGroup(r fiber.Router, editorHandler editor.Handler) {
 	editorRoutes.Post("/resume", editorHandler.CreateResume)
 	editorRoutes.Get("/resume/:id", editorHandler.GetResumeByID)
 	editorRoutes.Get("/resume/:id/export", editorHandler.ExportResumePDF)
+	editorRoutes.Patch("/resume/update", editorHandler.UpdateResume)
 }
