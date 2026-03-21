@@ -71,6 +71,16 @@ CREATE TABLE IF NOT EXISTS resume_item.job_experiences (
     end_date BIGINT
 );
 
+CREATE TABLE IF NOT EXISTS resume_item.item (
+    id SERIAL PRIMARY KEY,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP WITH TIME ZONE,
+    resume_id INTEGER NOT NULL,
+    item_type TEXT NOT NULL,
+    item_id INTEGER NOT NULL
+)
+
 
 -- +goose StatementEnd
 

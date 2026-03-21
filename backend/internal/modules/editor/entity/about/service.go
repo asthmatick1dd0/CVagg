@@ -26,5 +26,5 @@ func (s *aboutService) SaveResumeAbout(tx *gorm.DB, resume *input.AboutInput) cv
 		About: resume.About,
 	}
 
-	return s.repo.Create(tx, aboutModel)
+	return s.repo.Create(tx, aboutModel, "resume_item.about")
 }

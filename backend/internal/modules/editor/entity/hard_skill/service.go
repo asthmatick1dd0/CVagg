@@ -26,5 +26,5 @@ func (s *hardSkillService) SaveResumeHardSkill(tx *gorm.DB, resume *input.HardSk
 		SkillId: resume.SkillID,
 	}
 
-	return s.repo.Create(tx, hardSkillModel)
+	return s.repo.Create(tx, hardSkillModel, "resume_item.hard_skills")
 }
