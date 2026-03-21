@@ -12,6 +12,7 @@ type Handler interface {
 	CreateResume(ctx *fiber.Ctx) error
 	GetResumeByID(ctx *fiber.Ctx) error
 	ExportResumePDF(ctx *fiber.Ctx) error
+	UpdateResume(ctx *fiber.Ctx) error
 }
 
 type handler struct {
@@ -65,6 +66,19 @@ func (h *handler) ExportResumePDF(ctx *fiber.Ctx) error {
 	ctx.Response().Header.Set("Content-Disposition", fmt.Sprintf("attachment; filename=resume-%d.pdf", id64))
 	if _, err := ctx.Response().BodyWriter().Write(b); err != nil {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "failed to write pdf"})
+	}
+	return nil
+}
+
+func (h *handler) UpdateResume(ctx *fiber.Ctx) error {
+	var input input.ResumeInput
+	if err := ctx.BodyParser(&input); err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "invalid request"})
+	}
+
+	err := h.s.UpdateResume(nil, &input)
+	if err != nil {
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "internal server error"})
 	}
 	return nil
 }
