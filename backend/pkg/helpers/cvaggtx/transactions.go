@@ -1,3 +1,4 @@
+// Package cvaggtx provides helper functions for managing database transactions using GORM
 package cvaggtx
 
 import "gorm.io/gorm"
