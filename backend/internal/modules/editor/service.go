@@ -15,12 +15,13 @@ import (
 	resumeItemRepo "github.com/asthmatick1dd0/CVagg/internal/modules/editor/entity/resume_item"
 	"github.com/asthmatick1dd0/CVagg/internal/transport/input"
 	"github.com/jung-kurt/gofpdf"
+	"gorm.io/gorm"
 )
 
 type Service interface {
-	SaveResume(resume *input.ResumeInput) error
-	GetResumeByID(id uint) (*input.ResumeInput, error)
-	ExportResumePDF(id uint) ([]byte, error)
+	SaveResume(tx *gorm.DB, resume *input.ResumeInput) error
+	GetResumeByID(tx *gorm.DB, id uint) (*input.ResumeInput, error)
+	ExportResumePDF(tx *gorm.DB, id uint) ([]byte, error)
 }
 
 type service struct {
@@ -56,12 +57,12 @@ func NewService(
 	}
 }
 
-func (s *service) SaveResume(resume *input.ResumeInput) error {
+func (s *service) SaveResume(tx *gorm.DB, resume *input.ResumeInput) error {
 	resumeInput := &models.Resume{
 		Title:  resume.Title,
 		UserID: resume.UserID,
 	}
-	if err := s.resumeRepo.Create(resumeInput); err != nil {
+	if err := s.resumeRepo.Create(tx, resumeInput); err != nil {
 		return err
 	}
 
@@ -73,37 +74,37 @@ func (s *service) SaveResume(resume *input.ResumeInput) error {
 			// здесь проходимся по массиву Items
 			// поскольку в одном резюме может быть множество, допустим, опыта работы, то у нас в каждой секции лежит массив
 			for _, it := range items {
-				if err := s.SaveJobExperience(&it, resumeInput.ID); err != nil {
+				if err := s.SaveJobExperience(tx, &it, resumeInput.ID); err != nil {
 					return err
 				}
 			}
 		case "education":
 			for _, it := range items {
-				if err := s.SaveEducation(&it, resumeInput.ID); err != nil {
+				if err := s.SaveEducation(tx, &it, resumeInput.ID); err != nil {
 					return err
 				}
 			}
 		case "hardskill":
 			for _, it := range items {
-				if err := s.SaveHardSkill(&it, resumeInput.ID); err != nil {
+				if err := s.SaveHardSkill(tx, &it, resumeInput.ID); err != nil {
 					return err
 				}
 			}
 		case "about":
 			for _, it := range items {
-				if err := s.SaveAbout(&it, resumeInput.ID); err != nil {
+				if err := s.SaveAbout(tx, &it, resumeInput.ID); err != nil {
 					return err
 				}
 			}
 		case "custom":
 			for _, it := range items {
-				if err := s.SaveCustom(&it, resumeInput.ID); err != nil {
+				if err := s.SaveCustom(tx, &it, resumeInput.ID); err != nil {
 					return err
 				}
 			}
 		case "personal_data":
 			for _, it := range items {
-				if err := s.SavePersonalData(&it, resumeInput.ID); err != nil {
+				if err := s.SavePersonalData(tx, &it, resumeInput.ID); err != nil {
 					return err
 				}
 			}
@@ -114,7 +115,7 @@ func (s *service) SaveResume(resume *input.ResumeInput) error {
 
 // TODO [CVAGG-56] Сделать отдельную функцию SaveResumeItem чтобы много раз не повторяться
 
-func (s *service) SaveJobExperience(it *input.ItemInput, ID uint) error {
+func (s *service) SaveJobExperience(tx *gorm.DB, it *input.ItemInput, ID uint) error {
 	jobExpModel := &models.JobExperience{
 		Company:   it.JobExperience.Company,
 		Position:  it.JobExperience.Position,
@@ -122,7 +123,7 @@ func (s *service) SaveJobExperience(it *input.ItemInput, ID uint) error {
 		EndDate:   it.JobExperience.EndDate,
 	}
 
-	if err := s.jobExpRepo.Create(jobExpModel); err != nil {
+	if err := s.jobExpRepo.Create(tx, jobExpModel, "resume_item.job_experience"); err != nil {
 		return err
 	}
 
@@ -132,14 +133,14 @@ func (s *service) SaveJobExperience(it *input.ItemInput, ID uint) error {
 
 		ResumeId: ID,
 	}
-	if err := s.resumeItemRepo.Create(resumeItemModel); err != nil {
+	if err := s.resumeItemRepo.Create(tx, resumeItemModel, "resume_item.item"); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (s *service) SavePersonalData(it *input.ItemInput, ID uint) error {
+func (s *service) SavePersonalData(tx *gorm.DB, it *input.ItemInput, ID uint) error {
 	personalDataModel := &models.PersonalData{
 		DesiredJob: it.PersonalData.DesiredJob,
 		FullName:   it.PersonalData.FullName,
@@ -148,7 +149,7 @@ func (s *service) SavePersonalData(it *input.ItemInput, ID uint) error {
 		Address:    it.PersonalData.Address,
 	}
 
-	if err := s.personalDataRepo.Create(personalDataModel); err != nil {
+	if err := s.personalDataRepo.Create(tx, personalDataModel, "resume_item.personal_data"); err != nil {
 		return err
 	}
 
@@ -158,14 +159,14 @@ func (s *service) SavePersonalData(it *input.ItemInput, ID uint) error {
 
 		ResumeId: ID,
 	}
-	if err := s.resumeItemRepo.Create(resumeItemModel); err != nil {
+	if err := s.resumeItemRepo.Create(tx, resumeItemModel, "resume_item.item"); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (s *service) SaveEducation(it *input.ItemInput, ID uint) error {
+func (s *service) SaveEducation(tx *gorm.DB, it *input.ItemInput, ID uint) error {
 	educationModel := &models.Education{
 		University: it.Education.University,
 		Faculty:    it.Education.Faculty,
@@ -176,7 +177,7 @@ func (s *service) SaveEducation(it *input.ItemInput, ID uint) error {
 		Finished:   it.Education.Finished,
 	}
 
-	if err := s.educationRepo.Create(educationModel); err != nil {
+	if err := s.educationRepo.Create(tx, educationModel, "resume_item.educations"); err != nil {
 		return err
 	}
 
@@ -186,19 +187,19 @@ func (s *service) SaveEducation(it *input.ItemInput, ID uint) error {
 
 		ResumeId: ID,
 	}
-	if err := s.resumeItemRepo.Create(resumeItemModel); err != nil {
+	if err := s.resumeItemRepo.Create(tx, resumeItemModel, "resume_item.item"); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (s *service) SaveHardSkill(it *input.ItemInput, ID uint) error {
+func (s *service) SaveHardSkill(tx *gorm.DB, it *input.ItemInput, ID uint) error {
 	hardSkillModel := &models.HardSkill{
 		SkillId: it.HardSkill.SkillID,
 	}
 
-	if err := s.hardSkillRepo.Create(hardSkillModel); err != nil {
+	if err := s.hardSkillRepo.Create(tx, hardSkillModel, "resume_item.hard_skills"); err != nil {
 		return err
 	}
 
@@ -208,19 +209,19 @@ func (s *service) SaveHardSkill(it *input.ItemInput, ID uint) error {
 
 		ResumeId: ID,
 	}
-	if err := s.resumeItemRepo.Create(resumeItemModel); err != nil {
+	if err := s.resumeItemRepo.Create(tx, resumeItemModel, "resume_item.item"); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (s *service) SaveAbout(it *input.ItemInput, ID uint) error {
+func (s *service) SaveAbout(tx *gorm.DB, it *input.ItemInput, ID uint) error {
 	aboutModel := &models.About{
 		About: it.About.About,
 	}
 
-	if err := s.aboutRepo.Create(aboutModel); err != nil {
+	if err := s.aboutRepo.Create(tx, aboutModel, "resume_item.about"); err != nil {
 		return err
 	}
 
@@ -230,20 +231,20 @@ func (s *service) SaveAbout(it *input.ItemInput, ID uint) error {
 
 		ResumeId: ID,
 	}
-	if err := s.resumeItemRepo.Create(resumeItemInput); err != nil {
+	if err := s.resumeItemRepo.Create(tx, resumeItemInput, "resume_item.item"); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (s *service) SaveCustom(it *input.ItemInput, ID uint) error {
+func (s *service) SaveCustom(tx *gorm.DB, it *input.ItemInput, ID uint) error {
 	customModel := &models.Custom{
 		Title:   it.Custom.Title,
 		Content: it.Custom.Content,
 	}
 
-	if err := s.customRepo.Create(customModel); err != nil {
+	if err := s.customRepo.Create(tx, customModel, "resume_item.custom"); err != nil {
 		return err
 	}
 
@@ -253,14 +254,14 @@ func (s *service) SaveCustom(it *input.ItemInput, ID uint) error {
 
 		ResumeId: ID,
 	}
-	if err := s.resumeItemRepo.Create(resumeItemModel); err != nil {
+	if err := s.resumeItemRepo.Create(tx, resumeItemModel, "resume_item.item"); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (s *service) GetResumeByID(id uint) (*input.ResumeInput, error) {
+func (s *service) GetResumeByID(tx *gorm.DB, id uint) (*input.ResumeInput, error) {
 	resumeModel, err := s.resumeRepo.GetByID(id)
 	if err != nil {
 		return nil, err
@@ -273,14 +274,14 @@ func (s *service) GetResumeByID(id uint) (*input.ResumeInput, error) {
 		Items:  make(map[string][]input.ItemInput),
 	}
 
-	items, err := s.resumeItemRepo.GetAllByResumeID(id)
+	items, err := s.resumeItemRepo.GetAllByResumeID(tx, id, "resume_item.item")
 	if err != nil {
 		return nil, err
 	}
 
 	loaders := map[string]func(itemID uint) (*input.ItemInput, error){
 		"jobexperience": func(itemID uint) (*input.ItemInput, error) {
-			model, err := s.jobExpRepo.GetByID(itemID)
+			model, err := s.jobExpRepo.GetByID(tx, itemID, "resume_item.job_experiences")
 			if err != nil {
 				return nil, err
 			}
@@ -299,7 +300,7 @@ func (s *service) GetResumeByID(id uint) (*input.ResumeInput, error) {
 		},
 
 		"education": func(itemID uint) (*input.ItemInput, error) {
-			model, err := s.educationRepo.GetByID(itemID)
+			model, err := s.educationRepo.GetByID(tx, itemID, "resume_item.educations")
 			if err != nil {
 				return nil, err
 			}
@@ -321,7 +322,7 @@ func (s *service) GetResumeByID(id uint) (*input.ResumeInput, error) {
 		},
 
 		"hardskill": func(itemID uint) (*input.ItemInput, error) {
-			model, err := s.hardSkillRepo.GetByID(itemID)
+			model, err := s.hardSkillRepo.GetByID(tx, itemID, "resume_item.hard_skills")
 			if err != nil {
 				return nil, err
 			}
@@ -337,7 +338,7 @@ func (s *service) GetResumeByID(id uint) (*input.ResumeInput, error) {
 		},
 
 		"about": func(itemID uint) (*input.ItemInput, error) {
-			model, err := s.aboutRepo.GetByID(itemID)
+			model, err := s.aboutRepo.GetByID(tx, itemID, "resume_item.about")
 			if err != nil {
 				return nil, err
 			}
@@ -353,7 +354,7 @@ func (s *service) GetResumeByID(id uint) (*input.ResumeInput, error) {
 		},
 
 		"custom": func(itemID uint) (*input.ItemInput, error) {
-			model, err := s.customRepo.GetByID(itemID)
+			model, err := s.customRepo.GetByID(tx, itemID, "resume_item.custom")
 			if err != nil {
 				return nil, err
 			}
@@ -370,7 +371,7 @@ func (s *service) GetResumeByID(id uint) (*input.ResumeInput, error) {
 		},
 
 		"personal_data": func(itemID uint) (*input.ItemInput, error) {
-			model, err := s.personalDataRepo.GetByID(itemID)
+			model, err := s.personalDataRepo.GetByID(tx, itemID, "resume_item.personal_data")
 			if err != nil {
 				return nil, err
 			}
@@ -407,8 +408,8 @@ func (s *service) GetResumeByID(id uint) (*input.ResumeInput, error) {
 	return resume, nil
 }
 
-func (s *service) ExportResumePDF(id uint) ([]byte, error) {
-	resume, err := s.GetResumeByID(id)
+func (s *service) ExportResumePDF(tx *gorm.DB, id uint) ([]byte, error) {
+	resume, err := s.GetResumeByID(tx, id)
 	if err != nil {
 		return nil, err
 	}
