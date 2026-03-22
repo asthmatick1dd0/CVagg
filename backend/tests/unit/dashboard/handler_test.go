@@ -5,13 +5,12 @@ import (
 	"testing"
 
 	mockService "github.com/asthmatick1dd0/CVagg/pkg/helpers/cvaggtest/mock/service/dashboard"
-	dashboardHandler "github.com/asthmatick1dd0/CVagg/internal/modules/dashboard"
+	mockService "github.com/asthmatick1dd0/CVagg/pkg/helpers/cvaggtest/mock/service/dashboard"
 	"github.com/gofiber/fiber/v2"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestGetByIDHandler(t *testing.T) {
-
 	app := fiber.New()
 
 	mockSvc := new(mockService.MockService)
@@ -28,57 +27,55 @@ func TestGetByIDHandler(t *testing.T) {
 
 	resp, err := app.Test(req)
 
-	 assert.NoError(t, err)
-     assert.Equal(t, 200, resp.StatusCode)
+	assert.NoError(t, err)
+	assert.Equal(t, 200, resp.StatusCode)
 
-	 mockSvc.AssertExpectations(t)
+	mockSvc.AssertExpectations(t)
 }
 
 func setupHandler() (*fiber.App, *mockService.MockService) {
+	app := fiber.New()
 
- app := fiber.New()
+	mockSvc := new(mockService.MockService)
 
- mockSvc := new(mockService.MockService)
+	h := dashboardHandler.NewHandler(mockSvc)
 
- h := dashboardHandler.NewHandler(mockSvc)
+	app.Get("/dashboard/:id", h.GetByID)
 
- app.Get("/dashboard/:id", h.GetByID)
-
- return app, mockSvc
+	return app, mockSvc
 }
 
 func TestGetByIDHandler_Success(t *testing.T) {
+	app, mockSvc := setupHandler()
 
- app, mockSvc := setupHandler()
+	mockSvc.
+		On("GetByID", uint(1)).
+		Return(nil, nil)
 
- mockSvc.
-  On("GetByID", uint(1)).
-  Return(nil, nil)
+	req := httptest.NewRequest("GET", "/dashboard/1", nil)
 
- req := httptest.NewRequest("GET", "/dashboard/1", nil)
+	resp, err := app.Test(req)
 
- resp, err := app.Test(req)
+	assert.NoError(t, err)
+	assert.Equal(t, 200, resp.StatusCode)
 
- assert.NoError(t, err)
- assert.Equal(t, 200, resp.StatusCode)
-
- mockSvc.AssertExpectations(t)
+	mockSvc.AssertExpectations(t)
 }
 
 func TestGetByIDHandler_ServiceError(t *testing.T) {
+	app, mockSvc := setupHandler()
 
- app, mockSvc := setupHandler()
+	mockSvc.
+		On("GetByID", uint(1)).
+		Return(nil, fiber.ErrInternalServerError)
 
- mockSvc.
-  On("GetByID", uint(1)).
-  Return(nil, fiber.ErrInternalServerError)
+	req := httptest.NewRequest("GET", "/dashboard/1", nil)
 
- req := httptest.NewRequest("GET", "/dashboard/1", nil)
+	resp, err := app.Test(req)
 
- resp, err := app.Test(req)
+	assert.NoError(t, err)
+	assert.Equal(t, 500, resp.StatusCode)
 
- assert.NoError(t, err)
- assert.Equal(t, 500, resp.StatusCode)
-
- mockSvc.AssertExpectations(t)
+	mockSvc.AssertExpectations(t)
 }
+
