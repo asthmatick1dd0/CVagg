@@ -11,7 +11,6 @@ interface User {
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  error: string | null;
   register: (username: string, email: string, password: string) => Promise<string | null>;
   login: (email: string, password: string) => Promise<string | null>;
   logout: () => Promise<void>;
@@ -23,18 +22,9 @@ const AuthContext = createContext<AuthContextType>(null!);
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   const navigate = useNavigate();
 
-  const handleError = (err: unknown): string => {
-    console.error("AUTH ERROR:", err);
-    if ((err as any)?.response?.data?.message) return (err as any).response.data.message;
-    if ((err as any)?.message) return (err as any).message;
-    return "Произошла неизвестная ошибка";
-  };
-
-  // Updated refreshUser to accept a token directly or from storage
   const refreshUser = async (tokenOverride?: string): Promise<User | null> => {
     try {
       // 1. Get token from Argument OR LocalStorage
@@ -79,7 +69,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const register = async (username: string, email: string, password: string) => {
-    try {
       await api.post(
         `/auth/signup?Username=${encodeURIComponent(username)}&Email=${encodeURIComponent(email)}&Password=${encodeURIComponent(password)}`,
         {},
@@ -87,15 +76,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       );
       navigate("/login");
       return null;
-    } catch (err) {
-      const msg = handleError(err);
-      setError(msg);
-      return msg;
-    }
   };
 
   const login = async (email: string, password: string) => {
-    try {
       const res = await api.get(
         `/auth/signin?Email=${encodeURIComponent(email)}&Password=${encodeURIComponent(password)}`,
         { withCredentials: true }
@@ -107,10 +90,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         throw new Error("Сервер не вернул токен (tokenString missing)");
       }
 
-      // 1. SAVE TOKEN
       localStorage.setItem("token", token);
-
-      // 2. LOAD USER using the new token
       const loggedInUser = await refreshUser(token);
 
       if (!loggedInUser) {
@@ -119,11 +99,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
       navigate("/dashboard");
       return null;
-    } catch (err) {
-      const msg = handleError(err);
-      setError(msg);
-      return msg;
-    }
   };
 
   const logout = async () => {
@@ -137,7 +112,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         );
       }
     } catch (err) {
-      console.error("Logout API failed:", handleError(err));
+      console.error("Logout API failed:", err);
     } finally {
       localStorage.removeItem("token");
       setUser(null);
@@ -154,7 +129,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       value={{
         user,
         loading,
-        error,
         register,
         login,
         logout,
