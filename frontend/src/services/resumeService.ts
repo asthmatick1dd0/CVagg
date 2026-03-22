@@ -25,12 +25,15 @@ export const resumeApi = {
         );
         return response.data;
     },
-    // на будущее! обновление существующего резюме
     updateResume: async (id: number, data: Partial<Resume>, userId: number): Promise<Resume> => {
-        const response = await api.patch(
-            `/editor/resume/${id}?user_id=${userId}${getTokenQuery()}`,
-            { ...data, user_id: userId }
-        );
+    const response = await api.patch(
+        `/editor/resume/update?user_id=${userId}${getTokenQuery()}`, 
+        { 
+            ...data, 
+            id: id,
+            user_id: userId 
+        }
+    );
         return response.data;
     }
 };
