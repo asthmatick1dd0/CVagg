@@ -3,6 +3,7 @@ package dashboard
 import (
 	"github.com/asthmatick1dd0/CVagg/internal/models"
 	"github.com/stretchr/testify/mock"
+	"gorm.io/gorm"
 )
 
 type MockService struct {
@@ -29,7 +30,7 @@ func (m *MockService) GetByID(id uint) (*models.Resume, error) {
 	return args.Get(0).(*models.Resume), args.Error(1)
 }
 
-func (m *MockService) Delete(id uint) error {
-	args := m.Called(id)
+func (m *MockService) Delete(tx *gorm.DB, id uint) error {
+	args := m.Called(tx, id)
 	return args.Error(0)
 }
