@@ -1,11 +1,11 @@
 package dashboard_test
 
 import (
-	"errors"
 	"testing"
 
 	"github.com/asthmatick1dd0/CVagg/internal/models"
 	dashboardService "github.com/asthmatick1dd0/CVagg/internal/modules/dashboard"
+	"github.com/asthmatick1dd0/CVagg/pkg/helpers/cvaggerr"
 	mockRepo "github.com/asthmatick1dd0/CVagg/pkg/helpers/cvaggtest/mock/repository/dashboard"
 	"github.com/stretchr/testify/assert"
 	"gorm.io/gorm"
@@ -61,7 +61,7 @@ func TestService_GetByID_NotFound(t *testing.T) {
 
 	mockRepository.
 		On("GetByID", uint(1)).
-		Return(nil, errors.New("not found"))
+		Return(nil, cvaggerr.New("not found", "не найдено", 404))
 
 	result, err := service.GetByID(1)
 

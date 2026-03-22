@@ -16,6 +16,17 @@ type err struct {
 	data      interface{}
 }
 
+func NewD(er error) Error {
+	if er == nil {
+		return nil
+	}
+	return &err{
+		English:   er.Error(),
+		Russian:   er.Error(),
+		errorCode: -1,
+	}
+}
+
 func New(eng, rus string, code int) Error {
 	return &err{
 		English:   eng,
