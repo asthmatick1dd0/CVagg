@@ -45,8 +45,8 @@ export default function EducationManager() {
   const [items, setItems] = useState<EducationItemState[]>(() => {
     const globalEducation = resumeData.education || [];
     if (globalEducation.length > 0) {
-      return globalEducation.map((ed, index) => ({
-        localId: Date.now() + index,
+      return globalEducation.map(ed => ({
+        localId: Date.now() + Math.random(),
         data: ed,
         isEditing: false
       }));
@@ -54,8 +54,13 @@ export default function EducationManager() {
     return [{
       localId: Date.now(),
       data: {
-        university: "", faculty: "", degree: "", major: "",
-        start_date: new Date().toISOString(), end_date: null, finished: false,
+        university: "", 
+        faculty: "", 
+        degree: "", 
+        major: "",
+        start_date: new Date().toISOString(), 
+        end_date: null, 
+        finished: false,
       },
       isEditing: true
     }];
@@ -71,8 +76,13 @@ export default function EducationManager() {
     const newItem = {
         localId: Date.now() + Math.random(),
         data: {
-          university: "", faculty: "", degree: "", major: "",
-          start_date: new Date().toISOString(), end_date: null, finished: false,
+          university: "", 
+          faculty: "", 
+          degree: "",
+          major: "",
+          start_date: new Date().toISOString(), 
+          end_date: null, 
+          finished: false,
         },
         isEditing: true
     };
@@ -124,7 +134,7 @@ export default function EducationManager() {
         className="w-full rounded-xl border-dashed  py-6"
         type="button"
       >
-        <Plus className="w-5 h-5 mr-2" /> Добавить еще место обучения
+        <Plus className="w-5 h-5 mr-2" /> Добавить место обучения
       </Button>
     </div>
   )

@@ -6,12 +6,12 @@ import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Trash2, Check, Plus, Pencil, FileText } from "lucide-react"
-
+import { useResumeContext } from "@/contexts/ResumeContext"
 
 export interface CustomItem {
   ID?: number;
-  Title: string;
-  Content: string;
+  title: string;
+  content: string;
 }
 
 interface CustomItemState {
@@ -21,43 +21,60 @@ interface CustomItemState {
 }
 
 export default function CustomManager() {
-
-  const [items, setItems] = useState<CustomItemState[]>([
-    {
+  const { resumeData, updateCustom } = useResumeContext();
+  const [items, setItems] = useState<CustomItemState[]>(() => {
+    const globalCustom = resumeData.custom || [];
+    if (globalCustom.length > 0) {
+      return globalCustom.map(custom => ({
+        localId: Date.now() + Math.random(),
+        data: custom,
+        isEditing: false
+      }));
+    }
+    return [{
       localId: Date.now(),
       data: {
-        Title: "",
-        Content: "",
+        title: "",
+        content: "",
       },
       isEditing: true
-    }
-  ])
+    }];
+  });
+
+  const syncToGlobal = (currentItems: CustomItemState[]) => {
+    const cleanData = currentItems.map(item => item.data);
+    updateCustom(cleanData);
+  };
 
   const addNewItem = () => {
-    setItems([
-      ...items,
-      {
-        localId: Date.now() + Math.random(),
-        data: { Title: "", Content: "" },
-        isEditing: true
-      }
-    ])
+    const newItem: CustomItemState = {
+      localId: Date.now() + Math.random(),
+      data: { title: "", content: "" },
+      isEditing: true
+    };
+    const newItems = [...items, newItem];
+    setItems(newItems);
   }
 
   const updateItemData = (index: number, newData: CustomItem) => {
     const newItems = [...items];
     newItems[index].data = newData;
+    newItems[index].isEditing = false;
+
     setItems(newItems);
+    syncToGlobal(newItems);
+  }
+
+  const removeItem = (index: number) => {
+    const newItems = items.filter((_, i) => i !== index);
+    setItems(newItems);
+    syncToGlobal(newItems);
   }
 
   const toggleEditMode = (index: number, isEditing: boolean) => {
     const newItems = [...items];
     newItems[index].isEditing = isEditing;
     setItems(newItems);
-  }
-
-  const removeItem = (index: number) => {
-    setItems(items.filter((_, i) => i !== index));
   }
 
   return (
@@ -117,11 +134,11 @@ function CustomCard({ initialData, isEditing, onDelete, onSave, onEdit }: CardPr
         <div className="flex flex-col gap-1">
           <span className="text-white font-medium text-lg flex items-center gap-2">
             <FileText size={18} className="text-white/70" />
-            {draft.Title || "Поле без названия"}
+            {draft.title || "Поле без названия"}
           </span>
-          {draft.Content && (
+          {draft.content && (
              <span className="text-white/60 text-sm ml-6 whitespace-pre-wrap">
-                {draft.Content}
+                {draft.content}
              </span>
           )}
         </div>
@@ -146,8 +163,8 @@ function CustomCard({ initialData, isEditing, onDelete, onSave, onEdit }: CardPr
       <div className="space-y-1.5">
         <Label className="text-white font-medium">Название</Label>
         <Input 
-          value={draft.Title}
-          onChange={(e) => updateDraft("Title", e.target.value)}
+          value={draft.title}
+          onChange={(e) => updateDraft("title", e.target.value)}
           placeholder="Водительские права" 
           className="bg-gray-50/50 border-gray-200" 
         />
@@ -157,8 +174,8 @@ function CustomCard({ initialData, isEditing, onDelete, onSave, onEdit }: CardPr
       <div className="space-y-1.5">
         <Label className="text-white font-medium">Содержание</Label>
         <Textarea 
-          value={draft.Content}
-          onChange={(e) => updateDraft("Content", e.target.value)}
+          value={draft.content}
+          onChange={(e) => updateDraft("content", e.target.value)}
           placeholder="Любая информация, которую вы хотите добавить"
           className="bg-gray-50/50 border-gray-200 min-h-[80px]" 
         />

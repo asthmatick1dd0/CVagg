@@ -13,8 +13,8 @@ import {
   SelectValue 
 } from "@/components/ui/select"
 import { Trash2, Check, Plus, Pencil, Briefcase } from "lucide-react"
+import { useResumeContext } from "@/contexts/ResumeContext"
 
-// --- ТИПЫ ДАННЫХ ---
 export interface Experience {
   ID?: number;
   company: string;
@@ -40,9 +40,17 @@ const currentYear = new Date().getFullYear();
 const years = Array.from({ length: 50 }, (_, i) => (currentYear - i).toString());
 
 export default function ExperienceManager() {
-  // Список элементов
-  const [items, setItems] = useState<ExperienceItemState[]>([
-    {
+    const {resumeData, updateExperience} = useResumeContext(); 
+  const [items, setItems] = useState<ExperienceItemState[]>(() => {
+    const globalExperience = resumeData.experience || [];
+    if (globalExperience.length > 0) {
+      return globalExperience.map(exp => ({
+        localId: Date.now() + Math.random(),
+        data: exp,
+        isEditing: false
+      }));
+    }
+    return [{
       localId: Date.now(),
       data: {
         company: "",
@@ -53,13 +61,15 @@ export default function ExperienceManager() {
         finished: false,
       },
       isEditing: true
-    }
-  ])
+    }]});
+
+  const syncToGlobal = (currentItems: ExperienceItemState[]) => {
+    const cleanData = currentItems.map(item => item.data);
+    updateExperience(cleanData);
+  };
 
   const addNewItem = () => {
-    setItems([
-      ...items,
-      {
+    const newItem = {
         localId: Date.now() + Math.random(),
         data: {
             company: "",
@@ -71,24 +81,31 @@ export default function ExperienceManager() {
         },
         isEditing: true
       }
-    ])
+      
+    const newItems = [...items, newItem];
+    setItems(newItems);
   }
 
   const updateItemData = (index: number, newData: Experience) => {
     const newItems = [...items];
     newItems[index].data = newData;
-    setItems(newItems);
-  }
+    newItems[index].isEditing = false;
 
-  const toggleEditMode = (index: number, isEditing: boolean) => {
-    const newItems = [...items];
-    newItems[index].isEditing = isEditing;
     setItems(newItems);
+    syncToGlobal(newItems);
   }
 
   const removeItem = (index: number) => {
-    setItems(items.filter((_, i) => i !== index));
+    const newItems = items.filter((_, i) => i !== index);
+    setItems(newItems);
+    syncToGlobal(newItems);
   }
+
+  const toggleEditMode = (index: number, isEditing: boolean) => {
+      const newItems = [...items];
+      newItems[index].isEditing = isEditing;
+      setItems(newItems);
+    }
 
   return (
     <div className="w-full max-w-3xl space-y-6">
@@ -117,8 +134,6 @@ export default function ExperienceManager() {
     </div>
   )
 }
-
-// --- КАРТОЧКА ---
 
 interface CardProps {
   initialData: Experience;
@@ -168,7 +183,6 @@ function ExperienceCard({ initialData, isEditing, onDelete, onSave, onEdit }: Ca
     onSave(draft);
   };
 
-  // --- ВАРИАНТ 1: СВЕРНУТЫЙ ВИД ---
   if (!isEditing) {
     return (
       <div className="border border-gray-200 rounded-xl p-4 flex items-center justify-between bg-white/5 animate-in fade-in duration-300">
@@ -179,7 +193,7 @@ function ExperienceCard({ initialData, isEditing, onDelete, onSave, onEdit }: Ca
           </span>
           {draft.company && (
              <span className="text-white/60 text-sm ml-6">
-                {draft.company}
+                {[draft.company, draft.position].filter(Boolean).join(" — ")}
              </span>
           )}
         </div>
@@ -197,7 +211,6 @@ function ExperienceCard({ initialData, isEditing, onDelete, onSave, onEdit }: Ca
     )
   }
 
-  // --- ВАРИАНТ 2: ФОРМА РЕДАКТИРОВАНИЯ ---
   return (
     <div className="border border-gray-200 rounded-xl p-6 shadow-sm space-y-5 animate-in fade-in zoom-in-95 duration-200 bg-white/5">
       
