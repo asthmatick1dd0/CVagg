@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate } from "react-router-dom"
-import LandingPage from "./pages/LandingPage/LandingPage"
+/*import LandingPage from "./pages/LandingPage/LandingPage"*/
 import DashboardPage from "./pages/Dashboard/DashboardPage";
 import LoginPage from "./pages/Auth/LoginPage";
 import RegistrationPage from "./pages/Auth/RegistrationPage";
@@ -18,7 +18,7 @@ function App() {
     <>
     <ResumeProvider>
       <Routes>
-        <Route path="/" element={<LandingPage/>} />
+        <Route path="/" element={<EditorPage/>} />
         <Route
         path="/login"
         element={user ? <Navigate to="/dashboard" replace /> : <LoginPage />}
