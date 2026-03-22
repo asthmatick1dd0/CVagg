@@ -1,5 +1,5 @@
 import React from 'react';
-import { Page, Text, View, Document, StyleSheet, Image, Font } from '@react-pdf/renderer';
+import { Page, Text, View, Document, StyleSheet, Font } from '@react-pdf/renderer';
 import type { Resume } from "@/types/resume.types";
 import { WebIcon, CalendarIcon, MailIcon, PhoneIcon, MapPinIcon, GithubIcon } from "@/assets/PdfIcons";
 
@@ -225,10 +225,7 @@ const ResumeDocument: React.FC<ResumeDocumentProps> = ({ data }) => {
           {/* HEADER */}
           <View style={styles.headerBox}>
             <View style={styles.avatarContainer}>
-              <Image 
-                src={personalInfo?.avatar || "https://via.placeholder.com/150"} 
-                style={styles.avatarImage} 
-              />
+              <View style={{ width: 100, height: 100, backgroundColor: '#ccc' }}></View>
             </View>
             <View style={styles.headerTextContainer}>
               <Text style={styles.name}>
