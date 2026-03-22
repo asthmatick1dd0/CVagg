@@ -5,7 +5,7 @@ import (
 	"strconv"
 
 	"github.com/asthmatick1dd0/CVagg/internal/transport/input"
-	"github.com/asthmatick1dd0/CVagg/pkg/adapters/llm/client/yandex"
+	"github.com/asthmatick1dd0/CVagg/pkg/adapters/llm"
 	"github.com/asthmatick1dd0/CVagg/pkg/adapters/llm/model"
 	"github.com/asthmatick1dd0/CVagg/pkg/helpers/cvaggerr"
 	"github.com/asthmatick1dd0/CVagg/pkg/http/resp"
@@ -21,11 +21,14 @@ type Handler interface {
 
 type handler struct {
 	s        Service
-	aiClient yandex.Client
+	aiClient llm.LLMClient
 }
 
-func NewHandler(s Service) Handler {
-	return &handler{s: s}
+func NewHandler(s Service, llm llm.LLMClient) Handler {
+	return &handler{
+		s:        s,
+		aiClient: llm,
+	}
 }
 
 func (h *handler) CreateResume(ctx *fiber.Ctx) error {

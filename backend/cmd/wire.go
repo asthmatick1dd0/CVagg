@@ -17,6 +17,8 @@ import (
 	resumeItemRepo "github.com/asthmatick1dd0/CVagg/internal/modules/editor/entity/resume_item"
 	"github.com/asthmatick1dd0/CVagg/internal/modules/user"
 	"github.com/asthmatick1dd0/CVagg/internal/modules/user/entity/auth"
+	"github.com/asthmatick1dd0/CVagg/pkg/adapters/llm"
+	"github.com/asthmatick1dd0/CVagg/pkg/adapters/llm/client/yandex"
 	"github.com/asthmatick1dd0/CVagg/pkg/helpers/cvagglog"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/wire"
@@ -26,6 +28,10 @@ import (
 
 type App struct {
 	Fiber *fiber.App
+}
+
+func provideYandexClient(v *viper.Viper) llm.LLMClient {
+	return yandex.New(v.GetString("YANDEX_API_KEY"), v.GetString("YANDEX_FOLDER_ID"))
 }
 
 // Handlers
@@ -72,5 +78,6 @@ func newApp(*viper.Viper, *cvagglog.Logger, *gorm.DB) (App, func(), error) {
 		ServiceSet,
 		RepositorySet,
 		provideApp,
+		provideYandexClient,
 	))
 }
