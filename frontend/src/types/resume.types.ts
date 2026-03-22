@@ -48,6 +48,9 @@ export interface Resume {
     phone?: string;
     address?: string;
     avatar?: string;
+    birthDate?: string;
+    website?: string;
+    github?: string;
   };
 
   education?: EducationItem[];
