@@ -4,7 +4,6 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	mockService "github.com/asthmatick1dd0/CVagg/pkg/helpers/cvaggtest/mock/service/dashboard"
 	dashboardHandler "github.com/asthmatick1dd0/CVagg/internal/modules/dashboard"
 	mockService "github.com/asthmatick1dd0/CVagg/pkg/helpers/cvaggtest/mock/service/dashboard"
 	"github.com/gofiber/fiber/v2"
@@ -35,7 +34,7 @@ func TestGetByIDHandler(t *testing.T) {
 }
 
 func setupHandler() (*fiber.App, *mockService.MockService) {
-  app := fiber.New()
+	app := fiber.New()
 
 	mockSvc := new(mockService.MockService)
 
@@ -63,8 +62,6 @@ func TestGetByIDHandler_Success(t *testing.T) {
 }
 
 func TestGetByIDHandler_ServiceError(t *testing.T) {
-	app, mockSvc := setupHandler()
-
 	app, mockSvc := setupHandler()
 
 	mockSvc.

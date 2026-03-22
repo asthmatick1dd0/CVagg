@@ -94,6 +94,8 @@ func (h *handler) Analyze(ctx *fiber.Ctx) error {
 	}
 
 	return resp.HandleSuccess(ctx, res)
+}
+
 func (h *handler) UpdateResume(ctx *fiber.Ctx) error {
 	var input input.ResumeInput
 	if err := ctx.BodyParser(&input); err != nil {
