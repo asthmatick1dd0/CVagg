@@ -4,30 +4,30 @@ import "github.com/asthmatick1dd0/CVagg/pkg/adapters/llm/constants"
 
 // Request — это внутренняя модель, описывающая задачу для LLM-адаптера.
 type Request struct {
-	Mode constants.Mode
+	Mode constants.Mode `json:"mode"`
 
 	// Сценарий 1 (полный анализ) и 2 (анализ поля)
-	Resume *Resume
+	Resume *Resume `json:"resume"`
 
 	// Сценарий 2 (анализ поля)
-	Field *Field
+	Field *Field `json:"field"`
 
 	// Сценарий 3 (вопрос-ответ)
-	Question string
+	Question string `json:"question"`
 }
 
 // Resume содержит данные резюме.
 type Resume struct {
-	Summary    string
-	Experience string
-	Skills     []string
+	Summary    string   `json:"summary"`
+	Experience string   `json:"experience"`
+	Skills     []string `json:"skills"`
 }
 
 // Field описывает конкретное поле для анализа.
 type Field struct {
-	Type  constants.FieldType
-	Name  string
-	Value string
+	Type  constants.FieldType `json:"type"`
+	Name  string              `json:"name"`
+	Value string              `json:"value"`
 }
 
 // --- Модели для Yandex API ---

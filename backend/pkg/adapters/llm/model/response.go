@@ -4,10 +4,10 @@ import "github.com/asthmatick1dd0/CVagg/pkg/adapters/llm/constants"
 
 // Response — это унифицированный внутренний ответ от LLM-адаптера.
 type Response struct {
-	Mode         constants.Mode
-	Message      string        // Для сценария 3 (вопрос-ответ)
-	Analysis     *Analysis     // Для сценария 1 (полный анализ)
-	FieldSuggest *FieldSuggest // Для сценария 2 (анализ поля)
+	Mode         constants.Mode `json:"mode"`
+	Message      string         `json:"message"`       // Для сценария 3 (вопрос-ответ)
+	Analysis     *Analysis      `json:"analysis"`      // Для сценария 1 (полный анализ)
+	FieldSuggest *FieldSuggest  `json:"field_suggest"` // Для сценария 2 (анализ поля)
 }
 
 // Analysis содержит детальный разбор резюме.
