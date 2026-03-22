@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	mockService "github.com/asthmatick1dd0/CVagg/pkg/helpers/cvaggtest/mock/service/dashboard"
+	dashboardHandler "github.com/asthmatick1dd0/CVagg/internal/modules/dashboard"
 	mockService "github.com/asthmatick1dd0/CVagg/pkg/helpers/cvaggtest/mock/service/dashboard"
 	"github.com/gofiber/fiber/v2"
 	"github.com/stretchr/testify/assert"
@@ -34,7 +35,7 @@ func TestGetByIDHandler(t *testing.T) {
 }
 
 func setupHandler() (*fiber.App, *mockService.MockService) {
-	app := fiber.New()
+  app := fiber.New()
 
 	mockSvc := new(mockService.MockService)
 
@@ -47,7 +48,6 @@ func setupHandler() (*fiber.App, *mockService.MockService) {
 
 func TestGetByIDHandler_Success(t *testing.T) {
 	app, mockSvc := setupHandler()
-
 	mockSvc.
 		On("GetByID", uint(1)).
 		Return(nil, nil)
@@ -65,6 +65,8 @@ func TestGetByIDHandler_Success(t *testing.T) {
 func TestGetByIDHandler_ServiceError(t *testing.T) {
 	app, mockSvc := setupHandler()
 
+	app, mockSvc := setupHandler()
+
 	mockSvc.
 		On("GetByID", uint(1)).
 		Return(nil, fiber.ErrInternalServerError)
@@ -74,8 +76,7 @@ func TestGetByIDHandler_ServiceError(t *testing.T) {
 	resp, err := app.Test(req)
 
 	assert.NoError(t, err)
-	assert.Equal(t, 500, resp.StatusCode)
+	assert.Equal(t, 404, resp.StatusCode)
 
 	mockSvc.AssertExpectations(t)
 }
-

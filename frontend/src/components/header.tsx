@@ -15,7 +15,7 @@ const Header = () => {
             />
         </a>
         <div className="flex flex-row items-center gap-2">
-          <Button variant="link" className="flex items-center justify-center h-16 w-16" onClick={() => logout()}>
+          <Button variant="link" className="flex items-center justify-center h-16 w-16 hover:cursor-pointer" onClick={() => logout()}>
             <img src={LogOutIcon} alt="Log out" className="scale-110" />
           </Button>
         </div>

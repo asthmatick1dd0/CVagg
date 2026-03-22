@@ -7,11 +7,11 @@ import (
 )
 
 type ResumeItemRepository[T any] interface {
-	Create(tx *gorm.DB, entity *T) cvaggerr.Error
-	Delete(tx *gorm.DB, id uint) cvaggerr.Error
-	Update(tx *gorm.DB, entity *T) cvaggerr.Error
-	GetByID(tx *gorm.DB, id uint) (*T, cvaggerr.Error)
-	GetAllByResumeID(tx *gorm.DB, resumeID uint) ([]*T, cvaggerr.Error)
+	Create(tx *gorm.DB, entity *T, table string) cvaggerr.Error
+	Delete(tx *gorm.DB, id uint, table string) cvaggerr.Error
+	Update(tx *gorm.DB, entity *T, table string, entityId uint) cvaggerr.Error
+	GetByID(tx *gorm.DB, id uint, table string) (*T, cvaggerr.Error)
+	GetAllByResumeID(tx *gorm.DB, resumeID uint, table string) ([]*T, cvaggerr.Error)
 }
 
 type resumeItemRepo[T any] struct {
@@ -26,44 +26,44 @@ func NewResumeItemRepository[T any](db *gorm.DB, logger *cvagglog.Logger) Resume
 	}
 }
 
-func (r *resumeItemRepo[T]) Create(tx *gorm.DB, entity *T) cvaggerr.Error {
+func (r *resumeItemRepo[T]) Create(tx *gorm.DB, entity *T, table string) cvaggerr.Error {
 	db := r.getDB(tx)
-	if err := db.Create(entity).Error; err != nil {
+	if err := db.Table(table).Create(entity).Error; err != nil {
 		return cvaggerr.ErrorDataBase()
 	}
 	return nil
 }
 
-func (r *resumeItemRepo[T]) Delete(tx *gorm.DB, id uint) cvaggerr.Error {
+func (r *resumeItemRepo[T]) Delete(tx *gorm.DB, id uint, table string) cvaggerr.Error {
 	var entity T
 	db := r.getDB(tx)
-	if err := db.Delete(&entity, id).Error; err != nil {
+	if err := db.Table(table).Delete(&entity, id).Error; err != nil {
 		return cvaggerr.ErrorDataBase()
 	}
 	return nil
 }
 
-func (r *resumeItemRepo[T]) Update(tx *gorm.DB, entity *T) cvaggerr.Error {
+func (r *resumeItemRepo[T]) Update(tx *gorm.DB, entity *T, table string, entityId uint) cvaggerr.Error {
 	db := r.getDB(tx)
-	if err := db.Save(entity).Error; err != nil {
+	if err := db.Table(table).Where("id = ?", entityId).Updates(entity).Error; err != nil {
 		return cvaggerr.ErrorDataBase()
 	}
 	return nil
 }
 
-func (r *resumeItemRepo[T]) GetByID(tx *gorm.DB, id uint) (*T, cvaggerr.Error) {
+func (r *resumeItemRepo[T]) GetByID(tx *gorm.DB, id uint, table string) (*T, cvaggerr.Error) {
 	var entity T
 	db := r.getDB(tx)
-	if err := db.First(&entity, id).Error; err != nil {
+	if err := db.Table(table).First(&entity, id).Error; err != nil {
 		return nil, cvaggerr.ErrorDataBase()
 	}
 	return &entity, nil
 }
 
-func (r *resumeItemRepo[T]) GetAllByResumeID(tx *gorm.DB, resumeId uint) ([]*T, cvaggerr.Error) {
+func (r *resumeItemRepo[T]) GetAllByResumeID(tx *gorm.DB, resumeId uint, table string) ([]*T, cvaggerr.Error) {
 	var entities []*T
 	db := r.getDB(tx)
-	if err := db.Where("resume_id = ?", resumeId).Find(&entities).Error; err != nil {
+	if err := db.Table(table).Where("resume_id = ?", resumeId).Find(&entities).Error; err != nil {
 		return nil, cvaggerr.ErrorDataBase()
 	}
 	return entities, nil

@@ -30,5 +30,5 @@ func (s *personalDataService) SaveResumePersonalData(tx *gorm.DB, resume *input.
 		Address:    resume.Address,
 	}
 
-	return s.repo.Create(tx, personalDataModel)
+	return s.repo.Create(tx, personalDataModel, "resume_item.personal_data")
 }

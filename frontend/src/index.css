@@ -18,17 +18,17 @@ font-family: "Noto Sans", monospace;
   -moz-osx-font-smoothing: grayscale;
   --radius: 0.625rem;
   --background: #0A0A0A;
-  --foreground: #A3A3A3;
+  --foreground: #FAFAFA;
   --card: #141414;
-  --card-foreground: #A3A3A3;
+  --card-foreground: #989898;
   --popover: oklch(100% 0.00011 271.152);
   --popover-foreground: #A3A3A3;
-  --primary: #ED1B24;
-  --primary-foreground: #ffffff;
+  --primary: #ed1b26;
+  --primary-foreground: #ff0000;
   --secondary: #ffffff;
   --secondary-foreground: #0A0A0A;
   --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
+  --muted-foreground: #989898;
   --accent: oklch(0.97 0 0);
   --accent-foreground: #0A0A0A;
   --destructive: oklch(0.577 0.245 27.325);
@@ -43,6 +43,12 @@ font-family: "Noto Sans", monospace;
   --sidebar-accent-foreground: #0A0A0A;
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+}
+
+::selection {
+
+background: #ed1b265d; 
+
 }
 
 .font-inter {
