@@ -3,33 +3,35 @@ package dashboard
 import (
 	"github.com/asthmatick1dd0/CVagg/internal/models"
 	"github.com/stretchr/testify/mock"
+	"gorm.io/gorm"
 )
 
 type MockService struct {
 	mock.Mock
 }
 
-func (m *MockService) GetAllByUserID(id uint) ([]*models.Resume, error) {
-	args := m.Called(id)
-
-	if args.Get(0) == nil {
-		return nil, args.Error(1)
-	}
-
-	return args.Get(0).([]*models.Resume), args.Error(1)
-}
-
+// GetByID теперь принимает id только
 func (m *MockService) GetByID(id uint) (*models.Resume, error) {
 	args := m.Called(id)
 
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
-
 	return args.Get(0).(*models.Resume), args.Error(1)
 }
 
-func (m *MockService) Delete(id uint) error {
+// GetAllByUserID возвращает слайс резюме
+func (m *MockService) GetAllByUserID(id uint) ([]*models.Resume, error) {
 	args := m.Called(id)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).([]*models.Resume), args.Error(1)
+}
+
+// Delete ожидает tx *gorm.DB и id
+func (m *MockService) Delete(tx *gorm.DB, id uint) error {
+	args := m.Called(tx, id)
 	return args.Error(0)
 }
