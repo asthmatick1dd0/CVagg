@@ -93,10 +93,12 @@ export const ResumeProvider = ({ children }: { children: ReactNode }) => {
                   end_date: exp.job_experience?.end_date || exp.EndDate || ""
               })) || [],
 
-                /*skills: data.items?.hard_skills?.map((s: any) => ({
-                    ID: s.ID,
-                    SkillId: s.SkillId || s.skill_id 
-                })) || [],*/
+                skills: (data.items?.hardskill || []).map((s: any) => {
+                  return {
+                    field_id: s.field_id || 0,
+                    SkillId: s.hard_skill?.skill_id || 0
+                  };
+                }),
 
                 custom: (data.items?.custom || []).map((c: any) => ({
                     field_id: c.field_id || c.FieldID || c.ID || 0,
