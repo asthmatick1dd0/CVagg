@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
@@ -151,6 +151,7 @@ interface CardProps {
 function ExperienceCard({ initialData, isEditing, onDelete, onSave, onEdit }: CardProps) {
   
   const [draft, setDraft] = useState<Experience>(initialData);
+  const [dateError, setDateError] = useState<string | null>(null);
 
   const updateDraft = (field: keyof Experience, value: any) => {
     setDraft(prev => ({ ...prev, [field]: value }));
@@ -167,6 +168,35 @@ function ExperienceCard({ initialData, isEditing, onDelete, onSave, onEdit }: Ca
   const [start, setStart] = useState(parseDate(draft.start_date));
   const [end, setEnd] = useState(parseDate(draft.end_date));
 
+  // Валидация дат
+  const validateDates = (startDate: { month: string; year: string }, endDate: { month: string; year: string }, isFinished: boolean): string | null => {
+    if (!isFinished) return null;
+    
+    if (endDate.month === "" || endDate.year === "") return null;
+    
+    if (startDate.month === "" || startDate.year === "") return null;
+
+    const startYear = parseInt(startDate.year);
+    const startMonth = parseInt(startDate.month);
+    const endYear = parseInt(endDate.year);
+    const endMonth = parseInt(endDate.month);
+
+    if (endYear < startYear) {
+      return "Дата окончания не может быть раньше даты начала";
+    }
+    
+    if (endYear === startYear && endMonth < startMonth) {
+      return "Дата окончания не может быть раньше даты начала";
+    }
+
+    return null;
+  };
+
+  useEffect(() => {
+    const error = validateDates(start, end, draft.finished);
+    setDateError(error);
+  }, [start, end, draft.finished]);
+
   const updateDateState = (type: 'start' | 'end', part: 'month' | 'year', val: string) => {
     const current = type === 'start' ? { ...start } : { ...end };
     if (part === 'month') current.month = val;
@@ -176,17 +206,23 @@ function ExperienceCard({ initialData, isEditing, onDelete, onSave, onEdit }: Ca
     else setEnd(current);
 
     if (current.month !== "" && current.year !== "") {
-        const dateObj = new Date(Date.UTC(parseInt(current.year), parseInt(current.month), 1));
-        const fieldName = type === 'start' ? 'start_date' : 'end_date';
-        updateDraft(fieldName, dateObj.toISOString());
+      const dateObj = new Date(Date.UTC(parseInt(current.year), parseInt(current.month), 1));
+      const fieldName = type === 'start' ? 'start_date' : 'end_date';
+      updateDraft(fieldName, dateObj.toISOString());
     }
   };
 
   const onSaveClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    
+    const error = validateDates(start, end, draft.finished);
+    if (error) {
+      setDateError(error);
+      return;
+    }
     onSave(draft);
-  };
+  }
 
   if (!isEditing) {
     return (
@@ -302,6 +338,12 @@ function ExperienceCard({ initialData, isEditing, onDelete, onSave, onEdit }: Ca
         </div>
       </div>
 
+      {dateError && (
+            <div className="items-center gap-2 text-primary text-sm text-center -mt-5">
+              <span>{dateError}</span>
+            </div>
+          )}
+
       {/*
       <div className="space-y-1.5">
           <Label className="text-white font-medium">Обязанности и достижения</Label>
@@ -330,7 +372,7 @@ function ExperienceCard({ initialData, isEditing, onDelete, onSave, onEdit }: Ca
             onClick={onSaveClick}
             variant={"default"}
             type="button"
-            className="hover:cursor-pointer"
+            className={dateError ? "cursor-not-allowed opacity-50" : "hover:cursor-pointer"}
         >
             <Check size={16} />
             Сохранить
