@@ -4,12 +4,11 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
-import { Field } from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
 import EducationForm from "./forms/EducationForm"
 import ExperienceForm from "./forms/ExperienceForm"
 import PersonalForm from "./forms/PersonalForm"
 import CustomForm from "./forms/CustomForm"
+import HardskillForm from "./forms/HardskillForm"
 
 
 export function AccordionDemo() {
@@ -70,9 +69,7 @@ export function AccordionDemo() {
           </div>
         </AccordionTrigger>
         <AccordionContent className="flex flex-col gap-4 text-balance">
-          <Field className="gap-1">
-                <Input id="hardskills" placeholder="Специализированный ввод в следующей версии" className="placeholder:text-xs placeholder:text-white"/>
-            </Field>
+          <HardskillForm />
         </AccordionContent>
       </AccordionItem>
       <AccordionItem value="custom">

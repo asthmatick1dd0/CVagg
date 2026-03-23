@@ -74,24 +74,37 @@ export const ResumeProvider = ({ children }: { children: ReactNode }) => {
                     jobTitle: personalSource.desired_job || personalSource.DesiredJob || personalSource.JobTitle || "",
                 },
                 
-                education: {
-                    ...(data.items?.education || []).map((ed: any) => ({
-                        university: ed.education?.university || ed.University || "",
-                        faculty: ed.education?.faculty || ed.Faculty || "", 
-                        degree: ed.education?.degree || ed.Degree || "",
-                        major: ed.education?.major || ed.Major || "",
-                        start_date: ed.education?.start_date || ed.StartDate || "",
-                        end_date: ed.education?.end_date || ed.EndDate || "",   
-                        finished: ed.education?.finished || ed.Finished || false
-                    })) || []
-                },
+                education: (data.items?.education || []).map((ed: any) => ({
+                  field_id: ed.field_id || ed.FieldID || ed.ID || 0,
+                  university: ed.education?.university || ed.University || "",
+                  faculty: ed.education?.faculty || ed.Faculty || "", 
+                  degree: ed.education?.degree || ed.Degree || "",
+                  major: ed.education?.major || ed.Major || "",
+                  start_date: ed.education?.start_date || ed.StartDate || "",
+                  end_date: ed.education?.end_date || ed.EndDate || "",   
+                  finished: ed.education?.finished || ed.Finished || false
+              })) || [],
                 
-                /*skills: data.items?.hard_skills?.map((s: any) => ({
-                    ID: s.ID,
-                    SkillId: s.SkillId || s.skill_id 
-                })) || [],*/
+                experience: (data.items?.jobexperience || []).map((exp: any) => ({
+                  field_id: exp.field_id || exp.FieldID || exp.ID || 0,
+                  company: exp.job_experience?.company || exp.Company || "",
+                  position: exp.job_experience?.position || exp.Position || "",
+                  start_date: exp.job_experience?.start_date || exp.StartDate || "",
+                  end_date: exp.job_experience?.end_date || exp.EndDate || ""
+              })) || [],
 
-                custom: data.items?.custom || []
+                skills: (data.items?.hardskill || []).map((s: any) => {
+                  return {
+                    field_id: s.field_id || 0,
+                    SkillId: s.hard_skill?.skill_id || 0
+                  };
+                }),
+
+                custom: (data.items?.custom || []).map((c: any) => ({
+                    field_id: c.field_id || c.FieldID || c.ID || 0,
+                    title: c.custom?.title || c.Title || "",
+                    content: c.custom?.content || c.Content || ""
+            })) || []
             }));
             console.groupEnd();
         })
@@ -134,6 +147,8 @@ export const ResumeProvider = ({ children }: { children: ReactNode }) => {
     setLoading(true);
     try {
       const currentResumeId = Number(resumeData.id || resumeData.ID || 0);
+      const isEditing = currentResumeId > 0;
+
       const fullName = `${resumeData.personalInfo?.name || ""} ${resumeData.personalInfo?.surname || ""}`.trim();
 
       const educationList = Array.isArray(resumeData.education) ? resumeData.education : [];
@@ -161,6 +176,7 @@ export const ResumeProvider = ({ children }: { children: ReactNode }) => {
             
             "education": educationList.map(ed => ({
               "type": "education",
+              "field_id": ed.field_id || 0,
               "education": {
                   "resume_id": currentResumeId,
                   "university": ed.university,
@@ -168,13 +184,14 @@ export const ResumeProvider = ({ children }: { children: ReactNode }) => {
                   "degree": ed.degree,
                   "major": ed.major,
                   "start_date": ed.start_date,
-                  "end_date": ed.end_date,
+                  "end_date": ed.end_date == "" ? null : ed.end_date,
                   "finished": ed.finished
                 },
             })),
 
             "jobexperience": experienceList.map(exp => ({
-              type: "jobexperience", 
+              "type": "jobexperience", 
+              "field_id": exp.field_id || 0,
               "job_experience": {
                 "resume_id": currentResumeId,
                 "company": exp.company,
@@ -185,7 +202,8 @@ export const ResumeProvider = ({ children }: { children: ReactNode }) => {
             })),
 
             "hardskill": skillsList.map(skill => ({
-              type: "hardskill",
+              "type": "hardskill",
+              "field_id": skill.field_id || 0,
               "hard_skill": {
                 "resume_id": currentResumeId,
                 "skill_id": skill.SkillId
@@ -193,7 +211,8 @@ export const ResumeProvider = ({ children }: { children: ReactNode }) => {
             })),
 
             "custom": customList.map(c => ({
-              type: "custom",
+              "type": "custom",
+              "field_id": c.field_id || 0,
               "custom": {
                 "resume_id": currentResumeId,
                 "title": c.title,
@@ -205,9 +224,14 @@ export const ResumeProvider = ({ children }: { children: ReactNode }) => {
 
       console.log("Payload:", JSON.stringify(payload, null, 2));
 
-      await resumeApi.saveResume(payload, Number(user.id));
+      if (isEditing) {
+        await resumeApi.updateResume(currentResumeId, payload, Number(user.id));
+        alert("Резюме успешно обновлено!");
+      } else {
 
-      alert("Резюме успешно сохранено!");
+        await resumeApi.saveResume(payload, Number(user.id));
+        alert("Резюме успешно создано!");
+      }
       navigate("/dashboard");
 
     } catch (error) {

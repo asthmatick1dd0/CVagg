@@ -16,7 +16,7 @@ import { Trash2, Check, Plus, Pencil } from "lucide-react"
 import { useResumeContext } from "@/contexts/ResumeContext"
 
 export interface Education {
-  ID?: number;
+  field_id?: number;
   university: string;
   faculty: string;
   degree: string;
@@ -47,13 +47,17 @@ export default function EducationManager() {
     if (globalEducation.length > 0) {
       return globalEducation.map(ed => ({
         localId: Date.now() + Math.random(),
-        data: ed,
+        data: {
+          field_id: ed.field_id || 0,
+          ...ed,
+        },
         isEditing: false
       }));
     }
     return [{
       localId: Date.now(),
       data: {
+        field_id: 0,
         university: "", 
         faculty: "", 
         degree: "", 
@@ -76,6 +80,7 @@ export default function EducationManager() {
     const newItem = {
         localId: Date.now() + Math.random(),
         data: {
+          field_id: 0,
           university: "", 
           faculty: "", 
           degree: "",
@@ -293,7 +298,7 @@ function EducationCard({ initialData, isEditing, onDelete, onSave, onEdit }: Car
              <Label className="text-white font-medium">Дата окончания</Label>
              <div className="flex items-center gap-2">
                 <Switch
-                  id={`finished-${draft.ID || Math.random()}`}
+                  id={`finished-${draft.field_id || Math.random()}`}
                   className="scale-75 data-[state=checked]:bg-red-300"
                   checked={!draft.finished}
                   onCheckedChange={(checked) => {
@@ -301,7 +306,7 @@ function EducationCard({ initialData, isEditing, onDelete, onSave, onEdit }: Car
                       if (checked) updateDraft("end_date", null);
                   }}
                 />
-                <Label htmlFor={`finished-${draft.ID}`} className="text-white text-xs font-light cursor-pointer select-none">
+                <Label htmlFor={`finished-${draft.field_id}`} className="text-white text-xs font-light cursor-pointer select-none">
                     Сейчас
                 </Label>
              </div>

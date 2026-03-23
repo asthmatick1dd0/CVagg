@@ -2,6 +2,7 @@ import React from 'react';
 import { Page, Text, View, Document, StyleSheet, Font } from '@react-pdf/renderer';
 import type { Resume } from "@/types/resume.types";
 import { WebIcon, CalendarIcon, MailIcon, PhoneIcon, MapPinIcon, GithubIcon } from "@/assets/PdfIcons";
+import { getSkillName } from "@/constants/skills";
 
 Font.register({
   family: 'Open Sans',
@@ -197,10 +198,11 @@ const ResumeDocument: React.FC<ResumeDocumentProps> = ({ data }) => {
                {skills.map((skill, index) => (
                  <View key={index} style={styles.skillContainer}>
                    <Text style={styles.skillText}>
-                     Skill ID: {skill.SkillId} 
+                     {getSkillName(skill.SkillId)}
                    </Text>
                    <View style={styles.progressBarBg}>
-                     <View style={{ ...styles.progressBarFill, width: '80%' }} />
+                    {/* TODO: Implement progress bar logic */}
+                     <View style={{ ...styles.progressBarFill, width: '100%' }} />
                    </View>
                  </View>
                ))}
