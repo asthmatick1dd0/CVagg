@@ -75,6 +75,7 @@ export const ResumeProvider = ({ children }: { children: ReactNode }) => {
                 },
                 
                 education: (data.items?.education || []).map((ed: any) => ({
+                  field_id: ed.field_id || ed.FieldID || ed.ID || 0,
                   university: ed.education?.university || ed.University || "",
                   faculty: ed.education?.faculty || ed.Faculty || "", 
                   degree: ed.education?.degree || ed.Degree || "",
@@ -85,6 +86,7 @@ export const ResumeProvider = ({ children }: { children: ReactNode }) => {
               })) || [],
                 
                 experience: (data.items?.jobexperience || []).map((exp: any) => ({
+                  field_id: exp.field_id || exp.FieldID || exp.ID || 0,
                   company: exp.job_experience?.company || exp.Company || "",
                   position: exp.job_experience?.position || exp.Position || "",
                   start_date: exp.job_experience?.start_date || exp.StartDate || "",
@@ -97,6 +99,7 @@ export const ResumeProvider = ({ children }: { children: ReactNode }) => {
                 })) || [],*/
 
                 custom: (data.items?.custom || []).map((c: any) => ({
+                    field_id: c.field_id || c.FieldID || c.ID || 0,
                     title: c.custom?.title || c.Title || "",
                     content: c.custom?.content || c.Content || ""
             })) || []
@@ -171,6 +174,7 @@ export const ResumeProvider = ({ children }: { children: ReactNode }) => {
             
             "education": educationList.map(ed => ({
               "type": "education",
+              "field_id": ed.field_id || 0,
               "education": {
                   "resume_id": currentResumeId,
                   "university": ed.university,
@@ -185,6 +189,7 @@ export const ResumeProvider = ({ children }: { children: ReactNode }) => {
 
             "jobexperience": experienceList.map(exp => ({
               "type": "jobexperience", 
+              "field_id": exp.field_id || 0,
               "job_experience": {
                 "resume_id": currentResumeId,
                 "company": exp.company,
@@ -196,6 +201,7 @@ export const ResumeProvider = ({ children }: { children: ReactNode }) => {
 
             "hardskill": skillsList.map(skill => ({
               "type": "hardskill",
+              "field_id": skill.field_id || 0,
               "hard_skill": {
                 "resume_id": currentResumeId,
                 "skill_id": skill.SkillId
@@ -204,6 +210,7 @@ export const ResumeProvider = ({ children }: { children: ReactNode }) => {
 
             "custom": customList.map(c => ({
               "type": "custom",
+              "field_id": c.field_id || 0,
               "custom": {
                 "resume_id": currentResumeId,
                 "title": c.title,

@@ -1,5 +1,5 @@
 export interface EducationItem {
-  id?: number;
+  field_id?: number;
   university: string;
   faculty: string;
   degree: string;
@@ -10,7 +10,7 @@ export interface EducationItem {
 }
 
 export interface ExperienceItem {
-  id?: number;
+  field_id?: number;
   company: string;
   position: string;
   description: string;
@@ -20,13 +20,13 @@ export interface ExperienceItem {
 }
 
 export interface SkillItem {
-  id?: number;
+  field_id?: number;
   SkillId: number; 
   SkillName?: string; 
 }
 
 export interface CustomFieldItem {
-  id?: number;
+  field_id?: number;
   title: string;
   content: string;
 }

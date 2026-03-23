@@ -16,7 +16,7 @@ import { Trash2, Check, Plus, Pencil, Briefcase } from "lucide-react"
 import { useResumeContext } from "@/contexts/ResumeContext"
 
 export interface Experience {
-  ID?: number;
+  field_id?: number;
   company: string;
   position: string;
   description: string;
@@ -46,13 +46,17 @@ export default function ExperienceManager() {
     if (globalExperience.length > 0) {
       return globalExperience.map(exp => ({
         localId: Date.now() + Math.random(),
-        data: exp,
+        data: {
+          field_id: exp.field_id || 0,
+          ...exp,
+        },
         isEditing: false
       }));
     }
     return [{
       localId: Date.now(),
       data: {
+        field_id: 0,
         company: "",
         position: "",
         description: "",
@@ -72,6 +76,7 @@ export default function ExperienceManager() {
     const newItem = {
         localId: Date.now() + Math.random(),
         data: {
+          field_id: 0,
             company: "",
             position: "",
             description: "",
@@ -266,7 +271,7 @@ function ExperienceCard({ initialData, isEditing, onDelete, onSave, onEdit }: Ca
              <Label className="text-white font-medium">Дата окончания</Label>
              <div className="flex items-center gap-2">
                 <Switch
-                  id={`exp-finished-${draft.ID || Math.random()}`}
+                  id={`exp-finished-${draft.field_id || Math.random()}`}
                   className="scale-75 data-[state=checked]:bg-red-300"
                   checked={!draft.finished}
                   onCheckedChange={(checked) => {
@@ -274,7 +279,7 @@ function ExperienceCard({ initialData, isEditing, onDelete, onSave, onEdit }: Ca
                       if (checked) updateDraft("end_date", null);
                   }}
                 />
-                <Label htmlFor={`exp-finished-${draft.ID}`} className="text-white text-xs font-light cursor-pointer select-none">
+                <Label htmlFor={`exp-finished-${draft.field_id}`} className="text-white text-xs font-light cursor-pointer select-none">
                     Сейчас 
                 </Label>
              </div>

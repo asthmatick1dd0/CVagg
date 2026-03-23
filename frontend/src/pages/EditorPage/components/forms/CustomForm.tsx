@@ -9,7 +9,7 @@ import { Trash2, Check, Plus, Pencil, FileText } from "lucide-react"
 import { useResumeContext } from "@/contexts/ResumeContext"
 
 export interface CustomItem {
-  ID?: number;
+  field_id?: number;
   title: string;
   content: string;
 }
@@ -27,13 +27,17 @@ export default function CustomManager() {
     if (globalCustom.length > 0) {
       return globalCustom.map(custom => ({
         localId: Date.now() + Math.random(),
-        data: custom,
+        data: {
+          field_id: custom.field_id,
+          ...custom,
+        },
         isEditing: false
       }));
     }
     return [{
       localId: Date.now(),
       data: {
+        field_id: 0,
         title: "",
         content: "",
       },
@@ -49,7 +53,10 @@ export default function CustomManager() {
   const addNewItem = () => {
     const newItem: CustomItemState = {
       localId: Date.now() + Math.random(),
-      data: { title: "", content: "" },
+      data: { 
+        field_id: 0,
+        title: "", 
+        content: "" },
       isEditing: true
     };
     const newItems = [...items, newItem];
