@@ -32,6 +32,10 @@ export const resumeApi = {
             { ...data, user_id: userId }
         );
         return response.data;
+    },
+
+    deleteResume: async (id: number, userId: number): Promise<void> => {
+        await api.delete(`/dashboard/resumes/${id}?user_id=${userId}${getTokenQuery()}`);
     }
 };
 
