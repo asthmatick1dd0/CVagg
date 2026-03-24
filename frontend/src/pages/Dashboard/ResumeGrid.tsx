@@ -4,7 +4,7 @@ import { ResumeCard } from "./ResumeCard";
 import { NewResumeCard } from "./NewResumeCard";
 import { Button } from "@/components/ui/button";
 import trashIcon from "@/assets/icons/trash.svg";
-import exportIcon from "@/assets/icons/export.svg";
+// import exportIcon from "@/assets/icons/export.svg";
 import { resumeApi } from "@/services/resumeService";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -91,11 +91,11 @@ export function ResumeGrid({ resumes, onCreate, onRefresh }: ResumeGridProps) {
     }
   };
 
-  // Экспорт (заглушка)
+  /* Экспорт (заглушка)
   const handleExport = () => {
     if (selectedIds.size === 0) return;
     alert(`Экспорт ${selectedIds.size} резюме (в разработке)`);
-  };
+  }; */
 
   return (
     <section className="flex flex-col justify-center items-center rounded-4xl bg-primary/60 pt-10 pb-18 px-3 gap-12 min-w-sm">
@@ -157,7 +157,7 @@ export function ResumeGrid({ resumes, onCreate, onRefresh }: ResumeGridProps) {
             </div>
           )}
 
-          {/* Кнопка экспорта */}
+          {/* Кнопка экспорта НЕ РАБОТАЕТ!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
           <Button 
             variant="secondary" 
             className={`
@@ -173,6 +173,7 @@ export function ResumeGrid({ resumes, onCreate, onRefresh }: ResumeGridProps) {
           >
             <img src={exportIcon} alt="Export" className="absolute scale-85" />
           </Button>
+           */}
 
           {/* Кнопка режима выделения */}
           <Button 
