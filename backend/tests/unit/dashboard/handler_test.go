@@ -11,7 +11,6 @@ import (
 )
 
 func TestGetByIDHandler(t *testing.T) {
-
 	app := fiber.New()
 
 	mockSvc := new(mockService.MockService)
@@ -35,7 +34,6 @@ func TestGetByIDHandler(t *testing.T) {
 }
 
 func setupHandler() (*fiber.App, *mockService.MockService) {
-
 	app := fiber.New()
 
 	mockSvc := new(mockService.MockService)
@@ -48,9 +46,7 @@ func setupHandler() (*fiber.App, *mockService.MockService) {
 }
 
 func TestGetByIDHandler_Success(t *testing.T) {
-
 	app, mockSvc := setupHandler()
-
 	mockSvc.
 		On("GetByID", uint(1)).
 		Return(nil, nil)
@@ -66,7 +62,6 @@ func TestGetByIDHandler_Success(t *testing.T) {
 }
 
 func TestGetByIDHandler_ServiceError(t *testing.T) {
-
 	app, mockSvc := setupHandler()
 
 	mockSvc.

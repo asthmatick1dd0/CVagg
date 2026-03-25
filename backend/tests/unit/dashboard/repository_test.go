@@ -11,9 +11,8 @@ import (
 )
 
 func TestMockRepository_GetByID(t *testing.T) {
-
 	repo := new(mockRepo.MockRepository)
-
+  
 	resume := &models.Resume{}
 	resume.ID = 1
 
@@ -30,9 +29,7 @@ func TestMockRepository_GetByID(t *testing.T) {
 }
 
 func TestMockRepository_Delete(t *testing.T) {
-
 	repo := new(mockRepo.MockRepository)
-
 	repo.
 		On("Delete", (*gorm.DB)(nil), uint(1)).
 		Return(nil)

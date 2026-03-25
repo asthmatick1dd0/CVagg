@@ -19,6 +19,8 @@ import (
 	"github.com/asthmatick1dd0/CVagg/internal/modules/editor/entity/resume_item"
 	"github.com/asthmatick1dd0/CVagg/internal/modules/user"
 	"github.com/asthmatick1dd0/CVagg/internal/modules/user/entity/auth"
+	"github.com/asthmatick1dd0/CVagg/pkg/adapters/llm"
+	"github.com/asthmatick1dd0/CVagg/pkg/adapters/llm/client/yandex"
 	"github.com/asthmatick1dd0/CVagg/pkg/helpers/cvagglog"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/wire"
@@ -43,7 +45,8 @@ func newApp(viperViper *viper.Viper, logger *cvagglog.Logger, db *gorm.DB) (App,
 	customRepository := custom.NewRepository(db, logger)
 	personal_dataRepository := personal_data.NewRepository(db, logger)
 	editorService := editor.NewService(dashboardRepository, resume_itemRepository, job_experienceRepository, educationRepository, hard_skillRepository, aboutRepository, customRepository, personal_dataRepository)
-	editorHandler := editor.NewHandler(editorService)
+	llmClient := provideYandexClient(viperViper)
+	editorHandler := editor.NewHandler(editorService, llmClient)
 	app := server.NewServerHTTP(handler, dashboardHandler, editorHandler)
 	mainApp, cleanup := provideApp(app)
 	return mainApp, func() {
@@ -55,6 +58,10 @@ func newApp(viperViper *viper.Viper, logger *cvagglog.Logger, db *gorm.DB) (App,
 
 type App struct {
 	Fiber *fiber.App
+}
+
+func provideYandexClient(v *viper.Viper) llm.LLMClient {
+	return yandex.New(v.GetString("YANDEX_API_KEY"), v.GetString("YANDEX_FOLDER_ID"))
 }
 
 // Handlers

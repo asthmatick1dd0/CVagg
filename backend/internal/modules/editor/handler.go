@@ -5,6 +5,10 @@ import (
 	"strconv"
 
 	"github.com/asthmatick1dd0/CVagg/internal/transport/input"
+	"github.com/asthmatick1dd0/CVagg/pkg/adapters/llm"
+	"github.com/asthmatick1dd0/CVagg/pkg/adapters/llm/model"
+	"github.com/asthmatick1dd0/CVagg/pkg/helpers/cvaggerr"
+	"github.com/asthmatick1dd0/CVagg/pkg/http/resp"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -12,15 +16,20 @@ type Handler interface {
 	CreateResume(ctx *fiber.Ctx) error
 	GetResumeByID(ctx *fiber.Ctx) error
 	ExportResumePDF(ctx *fiber.Ctx) error
+	Analyze(ctx *fiber.Ctx) error
 	UpdateResume(ctx *fiber.Ctx) error
 }
 
 type handler struct {
-	s Service
+	s        Service
+	aiClient llm.LLMClient
 }
 
-func NewHandler(s Service) Handler {
-	return &handler{s: s}
+func NewHandler(s Service, llm llm.LLMClient) Handler {
+	return &handler{
+		s:        s,
+		aiClient: llm,
+	}
 }
 
 func (h *handler) CreateResume(ctx *fiber.Ctx) error {
@@ -68,6 +77,23 @@ func (h *handler) ExportResumePDF(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "failed to write pdf"})
 	}
 	return nil
+}
+
+func (h *handler) Analyze(ctx *fiber.Ctx) error {
+	var req model.Request
+
+	if err := ctx.BodyParser(&req); err != nil {
+		// TODO: добавить новые ошибки и заменить этот ужас мне просто лень
+		return resp.HandleError(ctx, cvaggerr.ErrorValidation())
+	}
+
+	res, err := h.aiClient.Chat(ctx.Context(), req)
+	if err != nil {
+		// TODO: этот ужас тоже поменять иначе я повешусь
+		return resp.HandleError(ctx, cvaggerr.ErrorInternalServer())
+	}
+
+	return resp.HandleSuccess(ctx, res)
 }
 
 func (h *handler) UpdateResume(ctx *fiber.Ctx) error {
