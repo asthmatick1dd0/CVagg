@@ -2,6 +2,7 @@ package editor
 
 import (
 	"fmt"
+	"log"
 	"strconv"
 
 	"github.com/asthmatick1dd0/CVagg/internal/transport/input"
@@ -83,12 +84,16 @@ func (h *handler) Analyze(ctx *fiber.Ctx) error {
 	var req model.Request
 
 	if err := ctx.BodyParser(&req); err != nil {
+		log.Printf("[editor:analyze] body parse failed: %v", err)
 		// TODO: добавить новые ошибки и заменить этот ужас мне просто лень
 		return resp.HandleError(ctx, cvaggerr.ErrorValidation())
 	}
 
+	log.Printf("[editor:analyze] request mode=%q has_resume=%t has_field=%t question_len=%d", req.Mode, req.Resume != nil, req.Field != nil, len(req.Question))
+
 	res, err := h.aiClient.Chat(ctx.Context(), req)
 	if err != nil {
+		log.Printf("[editor:analyze] llm chat failed: %v", err)
 		// TODO: этот ужас тоже поменять иначе я повешусь
 		return resp.HandleError(ctx, cvaggerr.ErrorInternalServer())
 	}

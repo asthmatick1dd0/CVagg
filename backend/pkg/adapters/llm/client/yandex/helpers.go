@@ -24,6 +24,12 @@ func buildPrompts(req model.Request) (instructions, input string) {
 		return
 
 	case constants.ModeFieldAnalyze:
+		if req.Field == nil {
+			instructions = baseInstructions + " Проанализируй одно поле в резюме."
+			input = "Ошибка входных данных: поле для анализа не передано."
+			return
+		}
+
 		instructions = baseInstructions + " Проанализируй одно поле в резюме. " +
 			"Твой ответ должен быть JSON-объектом СТРОГО следующей структуры: " +
 			`{"message": "", "suggested_text": ""}.`
@@ -56,25 +62,56 @@ func formatResume(r *model.Resume) string {
 // parseResponse парсит текстовый ответ от API в нужную внутреннюю структуру.
 func parseResponse(text string, mode constants.Mode) (model.Response, error) {
 	resp := model.Response{Mode: mode}
+	raw := normalizeJSONText(text)
 
 	switch mode {
 	case constants.ModeResumeAnalyze:
 		var analysis model.Analysis
-		if err := json.Unmarshal([]byte(text), &analysis); err != nil {
+		if err := json.Unmarshal([]byte(raw), &analysis); err != nil {
 			return model.Response{}, fmt.Errorf("ошибка парсинга анализа резюме: %w. Ответ API: %s", err, text)
 		}
 		resp.Analysis = &analysis
 
 	case constants.ModeFieldAnalyze:
-		var suggest model.FieldSuggest
-		if err := json.Unmarshal([]byte(text), &suggest); err != nil {
+		var suggest struct {
+			Message       string `json:"message"`
+			SuggestText   string `json:"suggest_text"`
+			SuggestedText string `json:"suggested_text"`
+		}
+		if err := json.Unmarshal([]byte(raw), &suggest); err != nil {
 			return model.Response{}, fmt.Errorf("ошибка парсинга предложения по полю: %w. Ответ API: %s", err, text)
 		}
-		resp.FieldSuggest = &suggest
+		out := &model.FieldSuggest{
+			Message:       suggest.Message,
+			SuggestedText: suggest.SuggestText,
+		}
+		if out.SuggestedText == "" {
+			out.SuggestedText = suggest.SuggestedText
+		}
+		resp.FieldSuggest = out
 
 	case constants.ModeAnswer:
 		resp.Message = text
 	}
 
 	return resp, nil
+}
+
+func normalizeJSONText(text string) string {
+	s := strings.TrimSpace(text)
+
+	// LLM часто оборачивает JSON в markdown-блоки ```json ... ```
+	s = strings.TrimPrefix(s, "```json")
+	s = strings.TrimPrefix(s, "```JSON")
+	s = strings.TrimPrefix(s, "```")
+	s = strings.TrimSuffix(s, "```")
+	s = strings.TrimSpace(s)
+
+	start := strings.Index(s, "{")
+	end := strings.LastIndex(s, "}")
+	if start >= 0 && end >= 0 && end >= start {
+		return s[start : end+1]
+	}
+
+	return s
 }
