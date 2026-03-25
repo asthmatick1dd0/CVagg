@@ -82,15 +82,15 @@ func (h *handler) ExportResumePDF(ctx *fiber.Ctx) error {
 func (h *handler) Analyze(ctx *fiber.Ctx) error {
 	var req model.Request
 
-	if err := ctx.BodyParser(req); err != nil {
+	if err := ctx.BodyParser(&req); err != nil {
 		// TODO: добавить новые ошибки и заменить этот ужас мне просто лень
-		resp.HandleError(ctx, cvaggerr.ErrorValidation())
+		return resp.HandleError(ctx, cvaggerr.ErrorValidation())
 	}
 
 	res, err := h.aiClient.Chat(ctx.Context(), req)
 	if err != nil {
 		// TODO: этот ужас тоже поменять иначе я повешусь
-		resp.HandleError(ctx, cvaggerr.ErrorInternalServer())
+		return resp.HandleError(ctx, cvaggerr.ErrorInternalServer())
 	}
 
 	return resp.HandleSuccess(ctx, res)

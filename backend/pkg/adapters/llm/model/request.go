@@ -25,9 +25,10 @@ type Resume struct {
 
 // Field описывает конкретное поле для анализа.
 type Field struct {
-	Type  constants.FieldType `json:"type"`
-	Name  string              `json:"name"`
-	Value string              `json:"value"`
+	Type    constants.FieldType `json:"type"`
+	Name    string              `json:"name"`
+	Content string              `json:"content"`
+	Value   string              `json:"value"`
 }
 
 // --- Модели для Yandex API ---
