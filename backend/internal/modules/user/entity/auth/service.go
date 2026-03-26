@@ -136,6 +136,20 @@ func (as *authService) RetrieveUserFromToken(t *jwt.Token, c *fiber.Ctx) (dto.Us
 	return resp, nil
 }
 
+func UserIDFromCookie(c *fiber.Ctx) uint {
+	cookieStr := c.Cookies("token")
+
+	token, err := CookieToToken(cookieStr, c)
+	if err != nil {
+		return 0
+	}
+
+	claims := token.Claims.(jwt.MapClaims)
+
+	userID, _ := claims["sub"].(float64)
+	return uint(userID)
+}
+
 func (as *authService) UserFromCookie(c *fiber.Ctx) (dto.UserResponse, error) {
 	cookieStr := c.Cookies("token")
 
@@ -181,7 +195,6 @@ func (s *authService) UserToToken(c *fiber.Ctx, user *models.User) (string, erro
 	claims["iat"] = now.Unix()
 	claims["nbf"] = now.Unix()
 	// claims["exp"] = now.Add(c.Locals("JWTExpirationTime").(time.Duration)).Unix()
-	fmt.Println(claims["iat"])
 
 	key, _ := c.Locals("JWTSecret").([]byte)
 	return token.SignedString(key)

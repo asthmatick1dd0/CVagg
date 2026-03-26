@@ -5,6 +5,7 @@ import (
 	"log"
 	"strconv"
 
+	"github.com/asthmatick1dd0/CVagg/internal/modules/user/entity/auth"
 	"github.com/asthmatick1dd0/CVagg/internal/transport/input"
 	"github.com/asthmatick1dd0/CVagg/pkg/adapters/llm"
 	"github.com/asthmatick1dd0/CVagg/pkg/adapters/llm/model"
@@ -39,6 +40,11 @@ func (h *handler) CreateResume(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "invalid request"})
 	}
 
+	userID := auth.UserIDFromCookie(ctx)
+	if userID != input.UserID {
+		return ctx.Status(fiber.StatusForbidden).JSON(fiber.Map{"error": "trying to get another user's resume"})
+	}
+
 	err := h.s.SaveResume(nil, &input)
 	if err != nil {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "internal server error"})
@@ -57,6 +63,12 @@ func (h *handler) GetResumeByID(ctx *fiber.Ctx) error {
 	if err != nil {
 		return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{"error": "no such resume"})
 	}
+
+	userID := auth.UserIDFromCookie(ctx)
+	if userID != resume.UserID {
+		return ctx.Status(fiber.StatusForbidden).JSON(fiber.Map{"error": "trying to get another user's resume"})
+	}
+
 	return ctx.JSON(resume)
 }
 
@@ -66,6 +78,15 @@ func (h *handler) ExportResumePDF(ctx *fiber.Ctx) error {
 	if err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "invalid id"})
 	}
+
+	// resume, err := h.s.GetResumeByID(nil, uint(id64))
+	// if err != nil {
+	// 	return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
+	// }
+	// userID := auth.UserIDFromCookie(ctx)
+	// if userID != resume.UserID {
+	// 	return ctx.Status(fiber.StatusForbidden).JSON(fiber.Map{"error": "trying to export another user's resume"})
+	// }
 
 	b, err := h.s.ExportResumePDF(nil, uint(id64))
 	if err != nil {
@@ -105,6 +126,11 @@ func (h *handler) UpdateResume(ctx *fiber.Ctx) error {
 	var input input.ResumeInput
 	if err := ctx.BodyParser(&input); err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "invalid request"})
+	}
+
+	userID := auth.UserIDFromCookie(ctx)
+	if userID != input.UserID {
+		return ctx.Status(fiber.StatusForbidden).JSON(fiber.Map{"error": "trying to update another user's resume"})
 	}
 
 	err := h.s.UpdateResume(nil, &input)
