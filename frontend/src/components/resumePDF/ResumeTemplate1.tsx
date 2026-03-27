@@ -181,26 +181,6 @@ const styles = StyleSheet.create({
 interface ResumeDocumentProps {
   data: Partial<Resume>;
 }
-const formatDate = (isoStr: string | null | undefined): string => {
-  if (!isoStr) return "Настоящее время";
-  
-  try {
-    const date = new Date(isoStr);
-    if (isNaN(date.getTime())) return isoStr;
-    
-    const months = [
-      "Янв", "Фев", "Мар", "Апр", "Май", "Июн",
-      "Июл", "Авг", "Сен", "Окт", "Ноя", "Дек"
-    ];
-    
-    const month = months[date.getMonth()];
-    const year = date.getFullYear();
-    
-    return `${month} ${year}`;
-  } catch {
-    return isoStr;
-  }
-};
 
 const ResumeDocument: React.FC<ResumeDocumentProps> = ({ data }) => {
   const { personalInfo, education, experience, skills, custom } = data;
@@ -309,7 +289,7 @@ const ResumeDocument: React.FC<ResumeDocumentProps> = ({ data }) => {
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                         <CalendarIcon color="#666" size={8} />
                         <Text style={styles.entryDate}>
-                           {formatDate(edu.start_date)} - {edu.end_date ? formatDate(edu.end_date) : "Настоящее время"}
+                           {edu.start_date} - {edu.end_date}
                         </Text>
                     </View>
                   </View>
@@ -333,7 +313,7 @@ const ResumeDocument: React.FC<ResumeDocumentProps> = ({ data }) => {
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                         <CalendarIcon color="#666" size={8} />
                         <Text style={styles.entryDate}>
-                            {formatDate(exp.start_date)} - {exp.end_date ? formatDate(exp.end_date) : "Настоящее время"}
+                            {exp.start_date} - {exp.end_date}
                         </Text>
                     </View>
                   </View>
