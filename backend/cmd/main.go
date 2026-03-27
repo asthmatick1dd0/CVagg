@@ -14,9 +14,10 @@ func main() {
 	conf := config.NewConfig()
 	log := cvagglog.NewLogger(conf)
 	db := database.New(conf, log)
+	rdb := database.NewRedis(conf, log)
 	cvaggtx.New(db)
 
-	app, cleanup, err := newApp(conf, log, db)
+	app, cleanup, err := newApp(conf, log, db, rdb)
 	if err != nil {
 		log.Panic(err.Error())
 	}
