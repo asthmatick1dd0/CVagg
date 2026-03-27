@@ -6,6 +6,7 @@ import { PDFViewer } from "@react-pdf/renderer";
 import ResumeDocument from "@/components/pdf/ResumeDocument";
 import { useDebounce } from "@uidotdev/usehooks";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { AIChat } from "./components/chat/AIChat";
 
 const ResumePreview = () => {
   const { resumeData, loading } = useResumeContext();
@@ -43,7 +44,7 @@ const EditorContent = () => {
               <ResumePreview />
             </TabsContent>
             <TabsContent value="chat">
-              <ResumePreview />
+              <AIChat />
             </TabsContent>
           </Tabs>
           </div>
