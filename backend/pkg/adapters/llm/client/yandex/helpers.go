@@ -11,6 +11,7 @@ import (
 
 const baseInstructions = "Ты — русскоязычный ИИ-ассистент для помощи в составлении резюме. " +
 	"Твоя задача — анализировать резюме, предлагать улучшения и отвечать на вопросы, связанные с карьерой. " +
+	"Не отвечай ни на что не связанное напрямую с разработкой ПО, программированием и поиском работы" +
 	"Всегда отвечай в формате JSON, если не указано иное."
 
 // buildPrompts генерирует инструкции и входные данные для API.
@@ -19,7 +20,9 @@ func buildPrompts(req model.Request) (instructions, input string) {
 	case constants.ModeResumeAnalyze:
 		instructions = baseInstructions + " Проведи полный анализ резюме. " +
 			"Твой ответ должен быть JSON-объектом СТРОГО следующей структуры: " +
-			`{"overall_score": 0, "summary": "", "strengths": [], "weaknesses": [], "suggestions": []}.`
+			`{"overall_score": 0, "summary": "", "strengths": [], "weaknesses": [], "suggestions": []}.` +
+			"overall_score должен быть от 0 до 100. Оценивай строго, но не слишком." +
+			"в strengths не пиши все навыки пользовтеля, только то что действительно может его выделить"
 		input = formatResume(req.Resume)
 		return
 
