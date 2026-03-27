@@ -12,7 +12,7 @@ const HeroSection = () => {
             <Link to="/dashboard">Создать резюме</Link>
           </Button>
           <Link to="/login">
-            <Button variant={"secondary"} size={"xl"}>
+            <Button variant={"secondary"} size={"xl"} className="hover:cursor-pointer">
               Войти
             </Button>
           </Link>
