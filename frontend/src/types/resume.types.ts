@@ -10,13 +10,12 @@ export interface EducationItem {
 }
 
 export interface ExperienceItem {
-  field_id?: number;
+  field_id: number;
   company: string;
   position: string;
   description: string;
   start_date: string;
-  end_date?: string | null;
-  finished: boolean;
+  end_date: string;
 }
 
 export interface SkillItem {
@@ -41,6 +40,7 @@ export interface Resume {
   updatedAt?: string;
 
   personalInfo: {
+    field_id: number;
     name?: string;
     surname?: string;
     jobTitle?: string;

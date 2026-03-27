@@ -36,7 +36,6 @@ export function formReducer(state: FormField[], action: FieldAction): FormField[
         'Дата рождения': 'ДД.ММ.ГГГГ',
         'Веб-сайт': 'https://example.com',
         'GitHub': 'https://github.com/username',
-        'Другое...': 'Введите значение',
       };
       
       const newField: FormField = {
