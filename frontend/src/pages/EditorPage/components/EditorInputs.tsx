@@ -4,6 +4,7 @@ import {
 } from "@/components/ui/field"
 import { AccordionDemo } from "./EditorAccordion"
 import { useResumeContext } from "@/contexts/ResumeContext"
+import PersonalForm from "./forms/PersonalForm"
 
 export function EditorInputs() {
 
@@ -18,6 +19,7 @@ export function EditorInputs() {
         }}
       >
         <div className="py-5">
+          <PersonalForm />
           <FieldSeparator />
           <AccordionDemo />
         </div>
