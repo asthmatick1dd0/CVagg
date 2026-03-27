@@ -15,7 +15,7 @@ import (
 
 const (
 	apiURL          = "https://ai.api.cloud.yandex.net/v1/responses"
-	defaultModel    = "aliceai-llm/latest"
+	defaultModel    = "yandexgpt-5-lite/latest"
 	defaultTemp     = 0.3
 	maxOutputTokens = 1500
 )

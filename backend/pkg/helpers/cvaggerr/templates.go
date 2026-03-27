@@ -84,3 +84,19 @@ func ErrorForbidden() Error {
 		errorCode: fiber.StatusForbidden,
 	}
 }
+
+func ErrorWrongID() Error {
+	return &err{
+		English:   "Wrond ID parameter",
+		Russian:   "Неправильный параметр ID",
+		errorCode: fiber.StatusBadRequest,
+	}
+}
+
+func ErrorCooldown() Error {
+	return &err{
+		English:   "AI on cooldown",
+		Russian:   "ИИ отдыхает",
+		errorCode: fiber.StatusTooManyRequests,
+	}
+}

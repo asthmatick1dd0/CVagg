@@ -15,6 +15,7 @@ import (
 	jobExpRepo "github.com/asthmatick1dd0/CVagg/internal/modules/editor/entity/job_experience"
 	personalDataRepo "github.com/asthmatick1dd0/CVagg/internal/modules/editor/entity/personal_data"
 	resumeItemRepo "github.com/asthmatick1dd0/CVagg/internal/modules/editor/entity/resume_item"
+	cooldownRepo "github.com/asthmatick1dd0/CVagg/internal/modules/redis"
 	"github.com/asthmatick1dd0/CVagg/internal/modules/user"
 	"github.com/asthmatick1dd0/CVagg/internal/modules/user/entity/auth"
 	"github.com/asthmatick1dd0/CVagg/pkg/adapters/llm"
@@ -22,6 +23,7 @@ import (
 	"github.com/asthmatick1dd0/CVagg/pkg/helpers/cvagglog"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/wire"
+	"github.com/redis/go-redis/v9"
 	"github.com/spf13/viper"
 	"gorm.io/gorm"
 )
@@ -59,6 +61,7 @@ var RepositorySet = wire.NewSet(
 	jobExpRepo.NewRepository,
 	personalDataRepo.NewRepository,
 	resumeItemRepo.NewRepository,
+	cooldownRepo.NewRepository,
 )
 
 // Server
@@ -71,7 +74,7 @@ func provideApp(app *fiber.App) (App, func()) {
 	return App{Fiber: app}, cleanup
 }
 
-func newApp(*viper.Viper, *cvagglog.Logger, *gorm.DB) (App, func(), error) {
+func newApp(*viper.Viper, *cvagglog.Logger, *gorm.DB, *redis.Client) (App, func(), error) {
 	panic(wire.Build(
 		ServerSet,
 		HandlerSet,

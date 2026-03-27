@@ -3,6 +3,7 @@ package editor
 import (
 	"bytes"
 	"fmt"
+	"time"
 
 	"github.com/asthmatick1dd0/CVagg/internal/models"
 	dashboardRepo "github.com/asthmatick1dd0/CVagg/internal/modules/dashboard"
@@ -13,8 +14,10 @@ import (
 	jobExpRepo "github.com/asthmatick1dd0/CVagg/internal/modules/editor/entity/job_experience"
 	personalDataRepo "github.com/asthmatick1dd0/CVagg/internal/modules/editor/entity/personal_data"
 	resumeItemRepo "github.com/asthmatick1dd0/CVagg/internal/modules/editor/entity/resume_item"
+	"github.com/asthmatick1dd0/CVagg/internal/modules/redis"
 	"github.com/asthmatick1dd0/CVagg/internal/transport/input"
 	"github.com/asthmatick1dd0/CVagg/pkg/helpers/cvaggerr"
+	"github.com/gofiber/fiber/v2"
 	"github.com/jung-kurt/gofpdf"
 	"gorm.io/gorm"
 )
@@ -24,6 +27,8 @@ type Service interface {
 	GetResumeByID(tx *gorm.DB, id uint) (*input.ResumeInput, cvaggerr.Error)
 	ExportResumePDF(tx *gorm.DB, id uint) ([]byte, cvaggerr.Error)
 	UpdateResume(tx *gorm.DB, resume *input.ResumeInput) cvaggerr.Error
+	CheckCooldown(ctx *fiber.Ctx, userID string) (bool, cvaggerr.Error)
+	SetCooldown(ctx *fiber.Ctx, userID string, duration time.Duration) cvaggerr.Error
 }
 
 type service struct {
@@ -35,6 +40,7 @@ type service struct {
 	aboutRepo        aboutRepo.Repository
 	customRepo       customRepo.Repository
 	personalDataRepo personalDataRepo.Repository
+	cooldownRepo     redis.Repository
 }
 
 func NewService(
@@ -46,6 +52,7 @@ func NewService(
 	aboutRepo aboutRepo.Repository,
 	customRepo customRepo.Repository,
 	personalDataRepo personalDataRepo.Repository,
+	cooldownRepo redis.Repository,
 ) Service {
 	return &service{
 		resumeRepo:       resumeRepo,
@@ -56,6 +63,7 @@ func NewService(
 		aboutRepo:        aboutRepo,
 		customRepo:       customRepo,
 		personalDataRepo: personalDataRepo,
+		cooldownRepo:     cooldownRepo,
 	}
 }
 
@@ -731,4 +739,30 @@ func (s *service) ExportResumePDF(tx *gorm.DB, id uint) ([]byte, cvaggerr.Error)
 		return nil, cvaggerr.New(err.Error(), err.Error(), 500)
 	}
 	return buf.Bytes(), nil
+}
+
+func (s *service) CheckCooldown(ctx *fiber.Ctx, userID string) (bool, cvaggerr.Error) {
+	if userID == "" {
+		return false, cvaggerr.ErrorWrongID()
+	}
+
+	cooldown, err := s.cooldownRepo.IsOnCooldown(ctx, userID)
+	if err != nil {
+		return false, err
+	}
+
+	return cooldown, nil
+}
+
+func (s *service) SetCooldown(ctx *fiber.Ctx, userID string, duration time.Duration) cvaggerr.Error {
+	if userID == "" {
+		return cvaggerr.ErrorWrongID()
+	}
+
+	err := s.cooldownRepo.SetCooldown(ctx, userID, duration)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

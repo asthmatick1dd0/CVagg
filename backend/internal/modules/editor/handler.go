@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"strconv"
+	"time"
 
 	"github.com/asthmatick1dd0/CVagg/internal/modules/user/entity/auth"
 	"github.com/asthmatick1dd0/CVagg/internal/transport/input"
@@ -104,19 +105,39 @@ func (h *handler) ExportResumePDF(ctx *fiber.Ctx) error {
 func (h *handler) Analyze(ctx *fiber.Ctx) error {
 	var req model.Request
 
+	// получаем ID из куки
+	userIDUint := auth.UserIDFromCookie(ctx)
+	if userIDUint == 0 {
+		return resp.HandleError(ctx, cvaggerr.ErrorSignInFirst())
+	}
+	userID := fmt.Sprintf("%d", userIDUint)
+
+	cooldown, err := h.s.CheckCooldown(ctx, userID)
+	if err != nil {
+		return resp.HandleError(ctx, err)
+	}
+	if cooldown {
+		return resp.HandleError(ctx, cvaggerr.ErrorCooldown())
+	}
+
 	if err := ctx.BodyParser(&req); err != nil {
 		log.Printf("[editor:analyze] body parse failed: %v", err)
 		// TODO: добавить новые ошибки и заменить этот ужас мне просто лень
 		return resp.HandleError(ctx, cvaggerr.ErrorValidation())
 	}
 
-	log.Printf("[editor:analyze] request mode=%q has_resume=%t has_field=%t question_len=%d", req.Mode, req.Resume != nil, req.Field != nil, len(req.Question))
+	log.Printf("[editor:analyze] user_id=%s request mode=%q has_resume=%t has_field=%t question_len=%d", userID, req.Mode, req.Resume != nil, req.Field != nil, len(req.Question))
 
-	res, err := h.aiClient.Chat(ctx.Context(), req)
-	if err != nil {
-		log.Printf("[editor:analyze] llm chat failed: %v", err)
+	res, stderr := h.aiClient.Chat(ctx.Context(), req)
+	if stderr != nil {
+		log.Printf("[editor:analyze] llm chat failed: %v", stderr)
 		// TODO: этот ужас тоже поменять иначе я повешусь
 		return resp.HandleError(ctx, cvaggerr.ErrorInternalServer())
+	}
+
+	err = h.s.SetCooldown(ctx, userID, time.Minute)
+	if err != nil {
+		return resp.HandleError(ctx, err)
 	}
 
 	return resp.HandleSuccess(ctx, res)
