@@ -6,7 +6,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
+	"strings"
 
 	"github.com/asthmatick1dd0/CVagg/pkg/adapters/llm/model"
 )
@@ -36,23 +38,43 @@ func New(apiKey, folderID string) *Client {
 
 // Chat отправляет запрос к LLM и возвращает структурированный ответ.
 func (c *Client) Chat(ctx context.Context, req model.Request) (model.Response, error) {
+	log.Printf("[llm:yandex] chat start mode=%q has_resume=%t has_field=%t question_len=%d", req.Mode, req.Resume != nil, req.Field != nil, len(req.Question))
+
+	if strings.TrimSpace(c.apiKey) == "" {
+		log.Printf("[llm:yandex] missing YANDEX_API_KEY")
+		return model.Response{}, fmt.Errorf("не задан YANDEX_API_KEY")
+	}
+	if strings.TrimSpace(c.folderID) == "" {
+		log.Printf("[llm:yandex] missing YANDEX_FOLDER_ID")
+		return model.Response{}, fmt.Errorf("не задан YANDEX_FOLDER_ID")
+	}
+
 	// 1. Формируем тело запроса к API на основе нашей внутренней модели
 	apiReq := c.buildAPIRequest(req)
 
 	// 2. Выполняем HTTP-запрос
 	apiResp, err := c.doRequest(ctx, apiReq)
 	if err != nil {
+		log.Printf("[llm:yandex] request failed: %v", err)
 		return model.Response{}, err
 	}
 
 	// 3. Извлекаем текстовый ответ из JSON ответа API
 	rawText := apiResp.GetOutputText()
 	if rawText == "" {
+		log.Printf("[llm:yandex] empty output text from API")
 		return model.Response{}, fmt.Errorf("получен пустой ответ от API")
 	}
 
 	// 4. Парсим текстовый ответ в нашу внутреннюю структуру Response
-	return parseResponse(rawText, req.Mode)
+	res, err := parseResponse(rawText, req.Mode)
+	if err != nil {
+		log.Printf("[llm:yandex] parse failed mode=%q raw_prefix=%q err=%v", req.Mode, truncateForLog(rawText, 220), err)
+		return model.Response{}, err
+	}
+
+	log.Printf("[llm:yandex] chat success mode=%q", req.Mode)
+	return res, nil
 }
 
 // buildAPIRequest создает запрос к Yandex API на основе внутренней логики.
@@ -96,6 +118,7 @@ func (c *Client) doRequest(ctx context.Context, apiReq model.APIRequest) (*model
 	}
 
 	if resp.StatusCode != http.StatusOK {
+		log.Printf("[llm:yandex] upstream non-200 status=%d body_prefix=%q", resp.StatusCode, truncateForLog(string(body), 300))
 		return nil, fmt.Errorf("API вернул статус %d: %s", resp.StatusCode, string(body))
 	}
 
@@ -105,4 +128,11 @@ func (c *Client) doRequest(ctx context.Context, apiReq model.APIRequest) (*model
 	}
 
 	return &apiResponse, nil
+}
+
+func truncateForLog(s string, max int) string {
+	if max <= 0 || len(s) <= max {
+		return s
+	}
+	return s[:max] + "..."
 }
