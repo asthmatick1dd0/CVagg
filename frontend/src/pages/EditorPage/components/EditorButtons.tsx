@@ -81,19 +81,6 @@ export function DynamicForm() {
       >
         <p>+ GitHub</p>
       </Button>
-      <Button
-        type="button"
-        variant={"ghost"}
-        size={"xs"}
-       onClick={() => dispatch({ 
-            type: 'ADD_FIELD', 
-            fieldType: 'text', 
-            predefinedLabel: 'Текстовое поле' 
-          })}
-        className="flex items-center justify-center p-4 rounded-full gap-1 hover:cursor-pointer border border-sm"
-      >
-        <p>+ Другое...</p>
-      </Button>
       </div>
     </>
   );
