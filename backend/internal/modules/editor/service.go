@@ -139,10 +139,20 @@ func (s *service) UpdateResume(tx *gorm.DB, resume *input.ResumeInput) cvaggerr.
 	}
 
 	// Track which items are still present (to identify deleted items)
-	keptFieldIDs := make(map[uint]bool)
+	// Key: ItemType, Value: map of FieldIDs that should be kept
+	keptFieldIDsByType := make(map[string]map[uint]bool)
+	
+	// Track which sections are present in the request
+	sectionsInRequest := make(map[string]bool)
 
 	// проходимся по мапе и обрабатываем []Items исходя из ключа
 	for section, items := range resume.Items {
+		sectionsInRequest[section] = true
+		
+		if keptFieldIDsByType[section] == nil {
+			keptFieldIDsByType[section] = make(map[uint]bool)
+		}
+		
 		// TODO [CVAGG-59] Переписать этот монструозный свитч в мапу
 		switch section {
 		case "jobexperience":
@@ -156,7 +166,7 @@ func (s *service) UpdateResume(tx *gorm.DB, resume *input.ResumeInput) cvaggerr.
 					}
 				} else {
 					// Update existing item
-					keptFieldIDs[it.FieldID] = true
+					keptFieldIDsByType[section][it.FieldID] = true
 					if err := s.UpdateJobExperience(tx, &it, resume.ID); err != nil {
 						return err
 					}
@@ -169,7 +179,7 @@ func (s *service) UpdateResume(tx *gorm.DB, resume *input.ResumeInput) cvaggerr.
 						return err
 					}
 				} else {
-					keptFieldIDs[it.FieldID] = true
+					keptFieldIDsByType[section][it.FieldID] = true
 					if err := s.UpdateEducation(tx, &it, resume.ID); err != nil {
 						return err
 					}
@@ -182,7 +192,7 @@ func (s *service) UpdateResume(tx *gorm.DB, resume *input.ResumeInput) cvaggerr.
 						return err
 					}
 				} else {
-					keptFieldIDs[it.FieldID] = true
+					keptFieldIDsByType[section][it.FieldID] = true
 					if err := s.UpdateHardSkill(tx, &it, resume.ID); err != nil {
 						return err
 					}
@@ -195,7 +205,7 @@ func (s *service) UpdateResume(tx *gorm.DB, resume *input.ResumeInput) cvaggerr.
 						return err
 					}
 				} else {
-					keptFieldIDs[it.FieldID] = true
+					keptFieldIDsByType[section][it.FieldID] = true
 					if err := s.UpdateAbout(tx, &it, resume.ID); err != nil {
 						return err
 					}
@@ -208,7 +218,7 @@ func (s *service) UpdateResume(tx *gorm.DB, resume *input.ResumeInput) cvaggerr.
 						return err
 					}
 				} else {
-					keptFieldIDs[it.FieldID] = true
+					keptFieldIDsByType[section][it.FieldID] = true
 					if err := s.UpdateCustom(tx, &it, resume.ID); err != nil {
 						return err
 					}
@@ -221,7 +231,7 @@ func (s *service) UpdateResume(tx *gorm.DB, resume *input.ResumeInput) cvaggerr.
 						return err
 					}
 				} else {
-					keptFieldIDs[it.FieldID] = true
+					keptFieldIDsByType[section][it.FieldID] = true
 					if err := s.UpdatePersonalData(tx, &it, resume.ID); err != nil {
 						return err
 					}
@@ -230,12 +240,17 @@ func (s *service) UpdateResume(tx *gorm.DB, resume *input.ResumeInput) cvaggerr.
 		}
 	}
 
-	// Delete items that are no longer present
+	// Delete items that are no longer present, but ONLY from sections that were in the request
 	for _, existingItem := range existingItems {
-		if !keptFieldIDs[existingItem.ID] {
-			// Delete the resume item and its associated data
-			if err := s.DeleteResumeItem(tx, existingItem); err != nil {
-				return err
+		// Only delete if this section was in the request
+		if sectionsInRequest[existingItem.ItemType] {
+			// Check if this item should be kept
+			keptItems, ok := keptFieldIDsByType[existingItem.ItemType]
+			if !ok || !keptItems[existingItem.ItemId] {
+				// Delete the resume item and its associated data
+				if err := s.DeleteResumeItem(tx, existingItem); err != nil {
+					return err
+				}
 			}
 		}
 	}
