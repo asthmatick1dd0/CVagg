@@ -12,12 +12,12 @@ export const resumeApi = {
         return response.data;
     },
     fetchResumeById: async (id: string, userID: number): Promise<Resume> => {
-        const response = await api.get<Resume>(`/editor/${id}?user_id=${userID}${getTokenQuery()}`);
+        const response = await api.get<Resume>(`/editor/resume/${id}?user_id=${userID}${getTokenQuery()}`);
         return response.data;
     },
     saveResume: async (data: Partial<Resume>, userId: number): Promise<Resume> => {
         const response = await api.post(
-            `/editor/save?user_id=${userId}${getTokenQuery()}`, 
+            `/editor/resume?user_id=${userId}${getTokenQuery()}`,
             {
                 ...data,
                 user_id: userId,
@@ -25,13 +25,20 @@ export const resumeApi = {
         );
         return response.data;
     },
-    // на будущее! обновление существующего резюме
     updateResume: async (id: number, data: Partial<Resume>, userId: number): Promise<Resume> => {
-        const response = await api.patch(
-            `/editor/${id}/save?user_id=${userId}${getTokenQuery()}`,
-            { ...data, user_id: userId }
-        );
+    const response = await api.patch(
+        `/editor/resume/update?user_id=${userId}${getTokenQuery()}`, 
+        { 
+            ...data, 
+            id: id,
+            user_id: userId 
+        }
+    );
         return response.data;
+    },
+
+    deleteResume: async (id: number, userId: number): Promise<void> => {
+        await api.delete(`/dashboard/resumes/${id}?user_id=${userId}${getTokenQuery()}`);
     }
 };
 

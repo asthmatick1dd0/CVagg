@@ -63,6 +63,7 @@ function DashboardPage(){
                 <ResumeGrid 
                     resumes={currentResumes} 
                     onCreate={handleCreateClick}
+                    onRefresh={refetch}
                 />
             </div>
 

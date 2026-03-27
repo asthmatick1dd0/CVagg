@@ -1,0 +1,21 @@
+name: CI for project
+
+on:
+  push:
+    branches: [ main, dev ]
+  pull_request:
+    branches: [ main, dev ]
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.25.1
+    - name: Run tests
+      run: cd backend && go test ./tests/unit/dashboard/...
+
