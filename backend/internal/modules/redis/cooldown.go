@@ -10,7 +10,7 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-type CooldownRepo interface {
+type Repository interface {
 	IsOnCooldown(ctx *fiber.Ctx, userID string) (bool, cvaggerr.Error)
 	SetCooldown(ctx *fiber.Ctx, userID string, duration time.Duration) cvaggerr.Error
 }
@@ -20,7 +20,7 @@ type cooldownRepo struct {
 	logger *cvagglog.Logger
 }
 
-func NewRepository(rdb *redis.Client, logger *cvagglog.Logger) CooldownRepo {
+func NewRepository(rdb *redis.Client, logger *cvagglog.Logger) Repository {
 	return &cooldownRepo{
 		rdb:    rdb,
 		logger: logger,

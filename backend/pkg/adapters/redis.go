@@ -28,7 +28,7 @@ func importRedisData(conf *viper.Viper) *redisData {
 
 func NewRedis(conf *viper.Viper, cvagglogger *cvagglog.Logger) *redis.Client {
 	connection := importRedisData(conf)
-	
+
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     fmt.Sprintf("%s:%d", connection.Host, connection.Port),
 		Password: connection.Password,
