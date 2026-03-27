@@ -5,6 +5,8 @@ import { ResumeProvider, useResumeContext } from "@/contexts/ResumeContext";
 import { PDFViewer } from "@react-pdf/renderer";
 import ResumeDocument from "@/components/pdf/ResumeDocument";
 import { useDebounce } from "@uidotdev/usehooks";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { AIChat } from "./components/chat/AIChat";
 
 const ResumePreview = () => {
   const { resumeData, loading } = useResumeContext();
@@ -33,7 +35,18 @@ const EditorContent = () => {
         <EditorInputs />
         <div className="bg-primary/60 rounded-xl p-6 min-h-[400px] max-md:hidden">
           <div className="w-full h-full object-cover rounded-lg">
-            <ResumePreview />
+            <Tabs defaultValue="preview">
+            <TabsList>
+              <TabsTrigger value="preview">Превью</TabsTrigger>
+              <TabsTrigger value="chat">Чат</TabsTrigger>
+            </TabsList>
+            <TabsContent value="preview">
+              <ResumePreview />
+            </TabsContent>
+            <TabsContent value="chat">
+              <AIChat />
+            </TabsContent>
+          </Tabs>
           </div>
         </div>
       </div>
