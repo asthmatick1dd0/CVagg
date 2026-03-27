@@ -22,6 +22,7 @@ import (
 	"github.com/asthmatick1dd0/CVagg/pkg/helpers/cvagglog"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/wire"
+	"github.com/redis/go-redis/v9"
 	"github.com/spf13/viper"
 	"gorm.io/gorm"
 )
@@ -71,7 +72,7 @@ func provideApp(app *fiber.App) (App, func()) {
 	return App{Fiber: app}, cleanup
 }
 
-func newApp(*viper.Viper, *cvagglog.Logger, *gorm.DB) (App, func(), error) {
+func newApp(*viper.Viper, *cvagglog.Logger, *gorm.DB, *redis.Client) (App, func(), error) {
 	panic(wire.Build(
 		ServerSet,
 		HandlerSet,

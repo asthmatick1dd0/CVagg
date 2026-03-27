@@ -24,13 +24,14 @@ import (
 	"github.com/asthmatick1dd0/CVagg/pkg/helpers/cvagglog"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/wire"
+	"github.com/redis/go-redis/v9"
 	"github.com/spf13/viper"
 	"gorm.io/gorm"
 )
 
 // Injectors from wire.go:
 
-func newApp(viperViper *viper.Viper, logger *cvagglog.Logger, db *gorm.DB) (App, func(), error) {
+func newApp(viperViper *viper.Viper, logger *cvagglog.Logger, db *gorm.DB, client *redis.Client) (App, func(), error) {
 	repository := user.NewRepository(db, logger)
 	service := auth.NewService(repository)
 	handler := auth.NewHandler(service, repository)
