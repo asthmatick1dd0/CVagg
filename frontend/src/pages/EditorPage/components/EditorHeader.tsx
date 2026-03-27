@@ -1,9 +1,6 @@
 import { Button } from "@/components/ui/button";
 import ExportIcon from "@/assets/icons/export.svg";
 import LeftArrowIcon from "@/assets/icons/left_arrow.svg";
-import {
-  FieldLabel
-} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { useResumeContext } from "@/contexts/ResumeContext";
 
