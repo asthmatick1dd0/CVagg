@@ -29,5 +29,5 @@ func (s *jobExperienceService) SaveResumeJobExperience(tx *gorm.DB, resume *inpu
 		EndDate:   resume.EndDate,
 	}
 
-	return s.repo.Create(tx, jobExperienceModel, "resume_item.job_experience")
+	return s.repo.Create(tx, jobExperienceModel, "resume_item.job_experiences")
 }
