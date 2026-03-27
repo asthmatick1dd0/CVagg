@@ -1,8 +1,21 @@
 import { Button } from "@/components/ui/button";
 import ExportIcon from "@/assets/icons/export.svg";
 import LeftArrowIcon from "@/assets/icons/left_arrow.svg";
+import {
+  Field,
+  FieldLabel,
+  FieldGroup,
+  FieldLegend,
+  FieldSeparator,
+  FieldSet,
+} from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { useResumeContext } from "@/contexts/ResumeContext";
 
 const EditorHeader = () => {
+
+  const { resumeData, updateTitle } = useResumeContext();
+
   return (
     <section className="bg-background flex w-full h-16 items-center justify-center p-12">
       <div className="flex flex-row items-center justify-between w-full gap-7">
@@ -13,7 +26,14 @@ const EditorHeader = () => {
           </Button>
         </a>
         <div className="font-bold text-lg">
-          <p>Резюме</p>
+          <FieldLabel htmlFor="title">Резюме</FieldLabel>
+            <Input
+              id="title"
+              value={resumeData.title || ""}
+              onChange={(e) => updateTitle(e.target.value)}
+              placeholder="Резюме"
+              required
+            />
         </div>
         <div className="flex flex-row items-center gap-2">
           <Button variant="default" className="flex items-center justify-center p-4 pr-2 rounded-full gap-1 hover:cursor-pointer">
