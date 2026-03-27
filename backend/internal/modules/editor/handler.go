@@ -105,7 +105,12 @@ func (h *handler) ExportResumePDF(ctx *fiber.Ctx) error {
 func (h *handler) Analyze(ctx *fiber.Ctx) error {
 	var req model.Request
 
-	userID := ctx.Query("user_id")
+	// получаем ID из куки
+	userIDUint := auth.UserIDFromCookie(ctx)
+	if userIDUint == 0 {
+		return resp.HandleError(ctx, cvaggerr.ErrorSignInFirst())
+	}
+	userID := fmt.Sprintf("%d", userIDUint)
 
 	cooldown, err := h.s.CheckCooldown(ctx, userID)
 	if err != nil {
@@ -121,7 +126,7 @@ func (h *handler) Analyze(ctx *fiber.Ctx) error {
 		return resp.HandleError(ctx, cvaggerr.ErrorValidation())
 	}
 
-	log.Printf("[editor:analyze] request mode=%q has_resume=%t has_field=%t question_len=%d", req.Mode, req.Resume != nil, req.Field != nil, len(req.Question))
+	log.Printf("[editor:analyze] user_id=%s request mode=%q has_resume=%t has_field=%t question_len=%d", userID, req.Mode, req.Resume != nil, req.Field != nil, len(req.Question))
 
 	res, stderr := h.aiClient.Chat(ctx.Context(), req)
 	if stderr != nil {
