@@ -7,7 +7,6 @@ import {
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import DemoAvatar from "@/assets/icons/demo.svg"
-import { DynamicForm } from "../EditorButtons"
 import { useResumeContext } from "@/contexts/ResumeContext"
 
 export default function EditorInputs() {
@@ -85,7 +84,7 @@ export default function EditorInputs() {
                     required
                   />
                 </Field>
-                <Field className="gap-1">
+                <Field className="gap-1 pb-6">
                   <FieldLabel htmlFor="address">Адрес</FieldLabel>
                   <Input
                     id="address"
@@ -94,10 +93,6 @@ export default function EditorInputs() {
                   />
                 </Field>
             </FieldGroup>
-
-            <div className="">
-              <DynamicForm />
-            </div>
           </FieldSet>
         </FieldGroup>
   )
