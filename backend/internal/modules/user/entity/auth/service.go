@@ -55,6 +55,13 @@ func (as *authService) DeleteFromPool(id uint) {
 	delete(as.userPool, id)
 }
 
+func IsAuthorized(c *fiber.Ctx) error {
+	if c.Cookies("token") == "" {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"message": "you are not authorized"})
+	}
+	return c.Next()
+}
+
 // / Middleware для нормальной работы хендлеров разлогинивания и личной страницы
 func DeserealizeUser(c *fiber.Ctx) error {
 	var token string
