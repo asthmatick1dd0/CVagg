@@ -134,7 +134,7 @@ export const AIChat = () => {
   const resumeId = resumeData?.id;
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }, [messages, loading]);
 
   const addMessage = (msg: Omit<ChatMessage, 'id' | 'timestamp'>) => {
@@ -202,7 +202,7 @@ export const AIChat = () => {
       });
     } finally {
       setLoading(false);
-      inputRef.current?.focus();
+      inputRef.current?.focus({ preventScroll: true });
     }
   };
 
