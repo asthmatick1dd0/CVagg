@@ -132,50 +132,129 @@ func (s *service) UpdateResume(tx *gorm.DB, resume *input.ResumeInput) cvaggerr.
 		return err
 	}
 
+	// Get all existing resume items to track what needs to be deleted
+	existingItems, err := s.resumeItemRepo.GetAllByResumeID(tx, resume.ID, "resume_item.item")
+	if err != nil {
+		return err
+	}
+
+	// Track which items are still present (to identify deleted items)
+	// Key: ItemType, Value: map of FieldIDs that should be kept
+	keptFieldIDsByType := make(map[string]map[uint]bool)
+	
+	// Track which sections are present in the request
+	sectionsInRequest := make(map[string]bool)
+
 	// проходимся по мапе и обрабатываем []Items исходя из ключа
 	for section, items := range resume.Items {
+		sectionsInRequest[section] = true
+		
+		if keptFieldIDsByType[section] == nil {
+			keptFieldIDsByType[section] = make(map[uint]bool)
+		}
+		
 		// TODO [CVAGG-59] Переписать этот монструозный свитч в мапу
 		switch section {
 		case "jobexperience":
 			// здесь проходимся по массиву Items
 			// поскольку в одном резюме может быть множество, допустим, опыта работы, то у нас в каждой секции лежит массив
 			for _, it := range items {
-				if err := s.UpdateJobExperience(tx, &it, resume.ID); err != nil {
-					return err
+				if it.FieldID == 0 {
+					// Create new item
+					if err := s.SaveJobExperience(tx, &it, resume.ID); err != nil {
+						return err
+					}
+				} else {
+					// Update existing item
+					keptFieldIDsByType[section][it.FieldID] = true
+					if err := s.UpdateJobExperience(tx, &it, resume.ID); err != nil {
+						return err
+					}
 				}
 			}
 		case "education":
 			for _, it := range items {
-				if err := s.UpdateEducation(tx, &it, resume.ID); err != nil {
-					return err
+				if it.FieldID == 0 {
+					if err := s.SaveEducation(tx, &it, resume.ID); err != nil {
+						return err
+					}
+				} else {
+					keptFieldIDsByType[section][it.FieldID] = true
+					if err := s.UpdateEducation(tx, &it, resume.ID); err != nil {
+						return err
+					}
 				}
 			}
 		case "hardskill":
 			for _, it := range items {
-				if err := s.UpdateHardSkill(tx, &it, resume.ID); err != nil {
-					return err
+				if it.FieldID == 0 {
+					if err := s.SaveHardSkill(tx, &it, resume.ID); err != nil {
+						return err
+					}
+				} else {
+					keptFieldIDsByType[section][it.FieldID] = true
+					if err := s.UpdateHardSkill(tx, &it, resume.ID); err != nil {
+						return err
+					}
 				}
 			}
 		case "about":
 			for _, it := range items {
-				if err := s.UpdateAbout(tx, &it, resume.ID); err != nil {
-					return err
+				if it.FieldID == 0 {
+					if err := s.SaveAbout(tx, &it, resume.ID); err != nil {
+						return err
+					}
+				} else {
+					keptFieldIDsByType[section][it.FieldID] = true
+					if err := s.UpdateAbout(tx, &it, resume.ID); err != nil {
+						return err
+					}
 				}
 			}
 		case "custom":
 			for _, it := range items {
-				if err := s.UpdateCustom(tx, &it, resume.ID); err != nil {
-					return err
+				if it.FieldID == 0 {
+					if err := s.SaveCustom(tx, &it, resume.ID); err != nil {
+						return err
+					}
+				} else {
+					keptFieldIDsByType[section][it.FieldID] = true
+					if err := s.UpdateCustom(tx, &it, resume.ID); err != nil {
+						return err
+					}
 				}
 			}
 		case "personal_data":
 			for _, it := range items {
-				if err := s.UpdatePersonalData(tx, &it, resume.ID); err != nil {
+				if it.FieldID == 0 {
+					if err := s.SavePersonalData(tx, &it, resume.ID); err != nil {
+						return err
+					}
+				} else {
+					keptFieldIDsByType[section][it.FieldID] = true
+					if err := s.UpdatePersonalData(tx, &it, resume.ID); err != nil {
+						return err
+					}
+				}
+			}
+		}
+	}
+
+	// Delete items that are no longer present, but ONLY from sections that were in the request
+	for _, existingItem := range existingItems {
+		// Only delete if this section was in the request
+		if sectionsInRequest[existingItem.ItemType] {
+			// Check if this item should be kept
+			keptItems, ok := keptFieldIDsByType[existingItem.ItemType]
+			if !ok || !keptItems[existingItem.ItemId] {
+				// Delete the resume item and its associated data
+				if err := s.DeleteResumeItem(tx, existingItem); err != nil {
 					return err
 				}
 			}
 		}
 	}
+
 	return nil
 }
 
@@ -187,17 +266,7 @@ func (s *service) UpdateJobExperience(tx *gorm.DB, it *input.ItemInput, ID uint)
 		EndDate:   it.JobExperience.EndDate,
 	}
 
-	if err := s.jobExpRepo.Update(tx, jobExpModel, "resume_item.job_experience", it.FieldID); err != nil {
-		return err
-	}
-
-	resumeItemModel := &models.ResumeItem{
-		ItemId:   jobExpModel.ID,
-		ItemType: it.Type,
-
-		ResumeId: ID,
-	}
-	if err := s.resumeItemRepo.Update(tx, resumeItemModel, "resume_item.item", resumeItemModel.ID); err != nil {
+	if err := s.jobExpRepo.Update(tx, jobExpModel, "resume_item.job_experiences", it.FieldID); err != nil {
 		return err
 	}
 
@@ -214,16 +283,6 @@ func (s *service) UpdatePersonalData(tx *gorm.DB, it *input.ItemInput, ID uint) 
 	}
 
 	if err := s.personalDataRepo.Update(tx, personalDataModel, "resume_item.personal_data", it.FieldID); err != nil {
-		return err
-	}
-
-	resumeItemModel := &models.ResumeItem{
-		ItemType: it.Type,
-		ItemId:   personalDataModel.ID,
-
-		ResumeId: ID,
-	}
-	if err := s.resumeItemRepo.Update(tx, resumeItemModel, "resume_item.item", resumeItemModel.ID); err != nil {
 		return err
 	}
 
@@ -245,16 +304,6 @@ func (s *service) UpdateEducation(tx *gorm.DB, it *input.ItemInput, ID uint) cva
 		return err
 	}
 
-	resumeItemModel := &models.ResumeItem{
-		ItemId:   educationModel.ID,
-		ItemType: it.Type,
-
-		ResumeId: ID,
-	}
-	if err := s.resumeItemRepo.Update(tx, resumeItemModel, "resume_item.item", resumeItemModel.ID); err != nil {
-		return err
-	}
-
 	return nil
 }
 
@@ -267,16 +316,6 @@ func (s *service) UpdateHardSkill(tx *gorm.DB, it *input.ItemInput, ID uint) cva
 		return err
 	}
 
-	resumeItemModel := &models.ResumeItem{
-		ItemType: it.Type,
-		ItemId:   hardSkillModel.ID,
-
-		ResumeId: ID,
-	}
-	if err := s.resumeItemRepo.Update(tx, resumeItemModel, "resume_item.item", resumeItemModel.ID); err != nil {
-		return err
-	}
-
 	return nil
 }
 
@@ -286,16 +325,6 @@ func (s *service) UpdateAbout(tx *gorm.DB, it *input.ItemInput, ID uint) cvagger
 	}
 
 	if err := s.aboutRepo.Update(tx, aboutModel, "resume_item.about", it.FieldID); err != nil {
-		return err
-	}
-
-	resumeItemInput := &models.ResumeItem{
-		ItemType: it.Type,
-		ItemId:   aboutModel.ID,
-
-		ResumeId: ID,
-	}
-	if err := s.resumeItemRepo.Update(tx, resumeItemInput, "resume_item.item", resumeItemInput.ID); err != nil {
 		return err
 	}
 
@@ -312,13 +341,41 @@ func (s *service) UpdateCustom(tx *gorm.DB, it *input.ItemInput, ID uint) cvagge
 		return err
 	}
 
-	resumeItemModel := &models.ResumeItem{
-		ItemType: it.Type,
-		ItemId:   customModel.ID,
+	return nil
+}
 
-		ResumeId: ID,
+// DeleteResumeItem deletes a resume item and its associated data
+func (s *service) DeleteResumeItem(tx *gorm.DB, item *models.ResumeItem) cvaggerr.Error {
+	// Delete the associated data based on item type
+	switch item.ItemType {
+	case "jobexperience":
+		if err := s.jobExpRepo.Delete(tx, item.ItemId, "resume_item.job_experiences"); err != nil {
+			return err
+		}
+	case "education":
+		if err := s.educationRepo.Delete(tx, item.ItemId, "resume_item.educations"); err != nil {
+			return err
+		}
+	case "hardskill":
+		if err := s.hardSkillRepo.Delete(tx, item.ItemId, "resume_item.hard_skills"); err != nil {
+			return err
+		}
+	case "about":
+		if err := s.aboutRepo.Delete(tx, item.ItemId, "resume_item.about"); err != nil {
+			return err
+		}
+	case "custom":
+		if err := s.customRepo.Delete(tx, item.ItemId, "resume_item.custom"); err != nil {
+			return err
+		}
+	case "personal_data":
+		if err := s.personalDataRepo.Delete(tx, item.ItemId, "resume_item.personal_data"); err != nil {
+			return err
+		}
 	}
-	if err := s.resumeItemRepo.Update(tx, resumeItemModel, "resume_item.item", resumeItemModel.ID); err != nil {
+
+	// Delete the resume item itself
+	if err := s.resumeItemRepo.Delete(tx, item.ID, "resume_item.item"); err != nil {
 		return err
 	}
 
@@ -335,7 +392,7 @@ func (s *service) SaveJobExperience(tx *gorm.DB, it *input.ItemInput, ID uint) c
 		EndDate:   it.JobExperience.EndDate,
 	}
 
-	if err := s.jobExpRepo.Create(tx, jobExpModel, "resume_item.job_experience"); err != nil {
+	if err := s.jobExpRepo.Create(tx, jobExpModel, "resume_item.job_experiences"); err != nil {
 		return err
 	}
 
