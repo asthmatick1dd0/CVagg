@@ -193,17 +193,17 @@ export function ResumeGrid({ resumes, onCreate, onRefresh }: ResumeGridProps) {
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8 gap-y-16 px-5">
         <NewResumeCard onClick={onCreate} />
         
-        {resumes.map((r, index) => {
-          const resumeId = r.id || r.ID;
-          const numId = typeof resumeId === 'string' ? parseInt(resumeId, 10) : resumeId;
+        {resumes.map((r) => {
+          const resumeId = r.id ?? r.ID;
+          const numId = Number(resumeId);
           
           return (
             <ResumeCard 
-              key={resumeId || index} 
+              key={`resume-${numId}`} 
               resume={r}
               isSelectionMode={isSelectionMode}
-              isSelected={numId !== undefined && !isNaN(numId) && selectedIds.has(numId)}
-              onSelect={() => resumeId !== undefined && toggleSelect(resumeId)}
+              isSelected={!isNaN(numId) && selectedIds.has(numId)}
+              onSelect={() => !isNaN(numId) && toggleSelect(numId)}
             />
           );
         })}
