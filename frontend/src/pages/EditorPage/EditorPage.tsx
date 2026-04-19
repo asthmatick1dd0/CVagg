@@ -2,7 +2,7 @@ import Footer from "@/components/footer";
 import EditorHeader from "./components/EditorHeader";
 import { EditorInputs } from "./components/EditorInputs";
 import { ResumeProvider, useResumeContext } from "@/contexts/ResumeContext"; 
-import { PDFViewer } from "@react-pdf/renderer";
+import { usePDF } from "@react-pdf/renderer";
 import ResumeDocument from "@/components/pdf/ResumeDocument";
 import { useDebounce } from "@uidotdev/usehooks";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -11,20 +11,35 @@ import { useState, useRef } from "react";
 import { CSSTransition } from 'react-transition-group' 
 import { Button } from "@/components/ui/button";
 import { FileQuestionMark, XIcon } from "lucide-react"; 
+import { useEffect } from "react";
 
 const ResumePreview = () => {
   const { resumeData, loading } = useResumeContext();
-  const debouncedData = useDebounce(resumeData, 3000);
+  const debouncedData = useDebounce(resumeData, 1000);
+  const [instance, updateInstance] = usePDF({
+    document: <ResumeDocument data={debouncedData} />,
+  });
+
+  useEffect(() => {
+    if (debouncedData) {
+      updateInstance(<ResumeDocument data={debouncedData} />);
+    }
+  }, [debouncedData]);
 
   if (loading) {
     return <div>Загрузка данных...</div>;
   }
+  if (instance.loading) return <div>Генерация PDF...</div>;
+  if (instance.error) return <div>Ошибка генерации PDF</div>;
 
   return (
     <div className="w-full h-screen">
-      <PDFViewer width="100%" height="100%" showToolbar={false}>
-        <ResumeDocument data={debouncedData} />
-      </PDFViewer>
+      <iframe
+        src={instance.url!}
+        width="100%"
+        height="100%"
+        style={{ border: 'none' }}
+      />
     </div>
   );
 };
