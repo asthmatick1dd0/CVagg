@@ -233,9 +233,9 @@ function EducationCard({ initialData, isEditing, onDelete, onSave, onEdit }: Car
 
   if (!isEditing) {
     return (
-      <div className="border border-gray-200 rounded-xl p-4 flex items-center justify-between bg-white/5 animate-in fade-in duration-300">
-        <div className="flex flex-col">
-          <span className="text-white font-medium text-lg">
+      <div className="border border-gray-200 rounded-xl p-4 flex items-center justify-between bg-white/5 animate-in fade-in duration-300 gap-4">
+        <div className="flex flex-col min-w-0 flex-1">
+          <span className="text-white font-medium text-lg break-words leading-tight">
             {draft.university || "Учебное заведение не указано"}
           </span>
           {(draft.degree || draft.major) && (
@@ -249,7 +249,7 @@ function EducationCard({ initialData, isEditing, onDelete, onSave, onEdit }: Car
             variant="ghost" 
             size="icon" 
             onClick={(e) => { e.preventDefault(); onEdit(); }}
-            className="rounded-full text-white/70 hover:text-white hover:bg-white/10"
+            className="rounded-full text-white/70 hover:text-white hover:bg-white/10 shrink-0 ml-2"
             type="button"
         >
             <Pencil size={18} />
@@ -264,11 +264,11 @@ function EducationCard({ initialData, isEditing, onDelete, onSave, onEdit }: Car
       {/* HEADER: University */}
       <div className="space-y-1.5">
         <Label className="text-white font-medium">Учебное заведение</Label>
-        <Input 
+        < Input
           value={draft.university}
           onChange={(e) => updateDraft("university", e.target.value)}
           placeholder="Южный федеральный университет" 
-          className="bg-gray-50/50 border-gray-200" 
+          className="bg-gray-50/50 border-gray-200 break-words whitespace-normal" 
         />
       </div>
 

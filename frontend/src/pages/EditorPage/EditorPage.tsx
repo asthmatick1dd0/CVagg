@@ -25,7 +25,8 @@ const ResumePreview = () => {
   );
 };
 
-const EditorContent = () => {
+const 
+EditorContent = () => {
   const { resumeData } = useResumeContext();
 
   return (
