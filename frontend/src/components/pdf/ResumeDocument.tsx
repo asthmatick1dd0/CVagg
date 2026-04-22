@@ -22,7 +22,10 @@ Font.register({
   ],
 });
 
-
+const getAdaptiveNameFontSize = (fullName: string | null | undefined) => {
+  const len = fullName?.length || 0;
+  return len > 26 ? 12 : len > 21 ? 14 : len > 18 ? 18 : len > 16 ? 21 : 24;
+};
 
 const styles = StyleSheet.create({
   page: {
@@ -115,9 +118,9 @@ const styles = StyleSheet.create({
   },
   headerTextContainer: {
     flex: 1,
+    flexWrap: 'nowrap',
   },
   name: {
-    fontSize: 24,
     color: '#FFF',
     textTransform: 'uppercase',
     fontWeight: 'bold', // OpenSans-Bold
@@ -262,8 +265,13 @@ const ResumeDocument: React.FC<ResumeDocumentProps> = ({ data }) => {
               <View style={{ width: 100, height: 100, backgroundColor: '#ccc' }}></View>
             </View>
             <View style={styles.headerTextContainer}>
-              <Text style={styles.name}>
-                {personalInfo?.name} {personalInfo?.surname}
+              <Text style={[styles.name, 
+                { 
+                  fontSize: getAdaptiveNameFontSize(`${personalInfo?.name || ''} ${personalInfo?.surname || ''}`.trim())
+                }
+              ]}
+              >
+              {personalInfo?.name} {personalInfo?.surname}
               </Text>
               <Text style={{ color: '#FFF', fontSize: 10, marginBottom: 5 }}>
                 {personalInfo?.jobTitle}
