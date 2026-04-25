@@ -368,13 +368,13 @@ function ExperienceCard({
                 val: i.toString(),
                 label: m,
               }))}
-              value={start.month}
+              value={end.month}
               onChange={(v) => updateDateState("end", "month", v)}
             />
             <DateSelect
               placeholder="Год"
               options={years.map((y) => ({ val: y, label: y }))}
-              value={start.year}
+              value={end.year}
               onChange={(v) => updateDateState("end", "year", v)}
             />
           </div>
