@@ -41,6 +41,7 @@ const INITIAL_RESUME: Resume = {
 interface ResumeContextType {
   resumeData: Partial<Resume>;
   loading: boolean;
+  updateTitle: (value: string) => void;
   setResumeData: React.Dispatch<React.SetStateAction<Partial<Resume>>>;
   saveResume: () => Promise<void>;
 
@@ -208,6 +209,13 @@ export const ResumeProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [id, isNew, user?.id, navigate]);
 
+  const updateTitle = (value: string) => {
+  setResumeData((prev) => ({
+    ...prev,
+    title: value,
+  }));
+  };
+
   const updatePersonalInfo = useCallback(
   (field: string, value: string) => {
     setResumeData((prev) => ({
@@ -366,7 +374,8 @@ export const ResumeProvider = ({ children }: { children: ReactNode }) => {
         resumeData,
         setResumeData,
         loading,
-        saveResume,
+        saveResume, 
+        updateTitle,
         updatePersonalInfo,
         updateEducation,
         updateExperience,
