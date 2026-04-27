@@ -22,8 +22,9 @@ type Handler interface {
 }
 
 type handler struct {
-	service  Service
-	userRepo user.Repository // снести репо нахй отсюда
+	service      Service
+	userRepo     user.Repository // снести репо нахй отсюда
+	emailService Service
 }
 
 func NewHandler(s Service, userRepo user.Repository) Handler {
