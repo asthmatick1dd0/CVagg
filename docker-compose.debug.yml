@@ -11,6 +11,7 @@ services:
       - .env
     depends_on:
       - database
+      - redis
     volumes:
       - ./assets:/app/assets
     security_opt:
@@ -40,5 +41,15 @@ services:
     env_file:
       - .env
 
+  redis:
+    container_name: cvagg-redis
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data_debug:/data
+
 volumes:
   postgres_data_debug:
+  redis_data_debug:

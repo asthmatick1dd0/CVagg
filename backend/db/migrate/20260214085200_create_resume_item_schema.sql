@@ -13,7 +13,10 @@ CREATE TABLE IF NOT EXISTS resume_item.personal_data (
     full_name TEXT,
     email TEXT,
     phone TEXT,
-    address TEXT
+    address TEXT,
+    birth_date TIMESTAMP WITH TIME ZONE,
+    website TEXT,
+    github TEXT
 );
 
 -- таблица resume_item.about
@@ -67,8 +70,8 @@ CREATE TABLE IF NOT EXISTS resume_item.job_experiences (
     deleted_at TIMESTAMP WITH TIME ZONE,
     company TEXT,
     position TEXT,
-    start_date BIGINT,
-    end_date BIGINT
+    start_date TIMESTAMP WITH TIME ZONE,
+    end_date TIMESTAMP WITH TIME ZONE
 );
 
 CREATE TABLE IF NOT EXISTS resume_item.item (
