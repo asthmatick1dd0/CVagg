@@ -32,7 +32,7 @@ font-family: "Noto Sans", monospace;
   --secondary: #ffffff;
   --secondary-foreground: #0A0A0A;
 
-  --muted: oklch(0.97 0 0);
+  --muted: #e5e5e5;
   --muted-foreground: #989898;
 
   --accent: #ed1b26;
@@ -42,7 +42,7 @@ font-family: "Noto Sans", monospace;
 
   --border: oklch(100% 0.00011 271.152 / 0.1);
 
-  --input: oklch(0.922 0 0);
+  --input: #e5e5e5;
 
   --ring: oklch(0.708 0 0);
   --sidebar: oklch(0.985 0 0);
@@ -67,7 +67,7 @@ font-family: "Noto Sans", monospace;
   --card: #810000; /* Белый для карточек, если понадобятся */
   --card-foreground: #edebdecc;
   --popover: #FFFFFF;
-  --popover-foreground: #1c1917;
+  --popover-foreground: #1B1716;
   
   /* Акцентные цвета */
   --primary: #810100; /*  */
@@ -77,7 +77,7 @@ font-family: "Noto Sans", monospace;
   --secondary: #EDEBDE; /* Серо-бежевый для кнопки "Войти" */
   --secondary-foreground: #1c1917; /* Темный текст на кнопке */
 
-  --muted: #F5F2EF;
+  --muted: #1b171656;
   --muted-foreground: #71717A;
 
   --accent: #EDEBDE;
@@ -154,7 +154,7 @@ font-family: "Noto Sans", monospace;
   background: linear-gradient(to bottom, #1B1716 7%, #630100 59%, #EDEBDE 100%);
 }
 [data-theme="light"] .dashboard-gradient {
-  background: linear-gradient(to bottom, #560004 0%, #0A0A0A 50%, #0a0a0ac0 80%, #56000491 100%);
+  background: linear-gradient(to top, #EDEBDE 0%, #810100 41%, #630100 70%, #1B1716 93%);
 }
 [data-theme="light"] .custom-gradient2 {
   background: linear-gradient(to top, #0A0A0A 41%, #560004 100%);
@@ -166,6 +166,14 @@ font-family: "Noto Sans", monospace;
 }
 [data-theme="light"] .landing-btn {
   background-color: var(--foreground);
+  color: var(--background);
+}
+.dashboard-btn {
+  background-color: var(--secondary);
+  color: var(--secondary-foreground);
+}
+[data-theme="light"] .dashboard-btn {
+  background-color: var(--primary);
   color: var(--background);
 }
 
@@ -223,6 +231,13 @@ font-family: "Noto Sans", monospace;
 }
 [data-theme="light"] .auth-card {
   background-color: #EDEBDE;
+}
+
+.resume-grid {
+  background-color: var(--primary);
+}
+[data-theme="light"] .resume-grid {
+  background-color: #C6B7A2;
 }
 
 

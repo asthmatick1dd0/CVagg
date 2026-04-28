@@ -13,7 +13,7 @@ export function NewResumeCard({ onClick }: NewResumeCardProps) {
       <div className="w-38 h-46 rounded-2xl bg-white/30 flex items-center justify-center border border-transparent transition-all duration-200 group-hover:bg-white/40 group-hover:scale-105 group-hover:border-white/50">
         <img src={addIcon} alt="Create a new resume" />
       </div>
-      <p className="font-inter font-semibold mt-2 text-sm text-white">Новое резюме</p>
+      <p className="font-inter font-semibold mt-2 text-sm text-foreground">Новое резюме</p>
     </section>
   );
 }
