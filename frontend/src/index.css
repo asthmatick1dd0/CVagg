@@ -201,6 +201,21 @@ font-family: "Noto Sans", monospace;
   display: block;
 }
 
+.github-dark {
+  display: block;
+}
+.github-light {
+  display: none;
+}
+
+[data-theme="light"] .github-dark {
+  display: none;
+}
+[data-theme="light"] .github-light {
+  display: block;
+}
+
+
 
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
