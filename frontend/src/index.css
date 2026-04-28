@@ -39,7 +39,7 @@ font-family: "Noto Sans", monospace;
   --accent-foreground: #FAFAFA;
 
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
+  --border: oklch(100% 0.00011 271.152 / 0.1);
   --input: oklch(0.922 0 0);
   --ring: oklch(0.708 0 0);
   --sidebar: oklch(0.985 0 0);
@@ -54,7 +54,7 @@ font-family: "Noto Sans", monospace;
 
 [data-theme="light"] {
   color-scheme: light;
-  color: #1c1917; /* Почти черный, но мягче */
+  color: #1B1716; /* Почти черный, но мягче */
   background-color: #EDEBDE; /* Бежевый фон */
 
   /* Основная палитра */
@@ -62,14 +62,13 @@ font-family: "Noto Sans", monospace;
   --foreground: #1B1716; /* Почти черный текст */
   
   --card: #810000; /* Белый для карточек, если понадобятся */
-  --card-foreground: #EDEBDE;
+  --card-foreground: #edebdecc;
   --popover: #FFFFFF;
   --popover-foreground: #1c1917;
   
   /* Акцентные цвета */
   --primary: #810100; /*  */
   --primary-foreground: #1B1716;
-  --primary-accent: #560004;
   
   /* Второстепенные элементы */
   --secondary: #EDEBDE; /* Серо-бежевый для кнопки "Войти" */
@@ -83,7 +82,7 @@ font-family: "Noto Sans", monospace;
 
   --destructive: oklch(0.577 0.245 27.325);
 
-  --border: #1B1716;
+  --border: #EDEBDE;
 
   --input: oklch(0.922 0 0);
   --ring: oklch(0.708 0 0);
@@ -160,13 +159,20 @@ background: #ed1b265d;
   background: linear-gradient(to top, #0A0A0A 41%, #560004 100%);
 }
 
+/* стили для лендинга */
 .landing-btn {
   background-color: var(--primary);
 }
-
 [data-theme="light"] .landing-btn {
   background-color: var(--foreground);
   color: var(--background);
+}
+
+.landing-bg {
+  background-color: #560004;
+}
+[data-theme="light"] .landing-bg {
+  background-color: #EDEBDE;
 }
 
 .logo-dark {
