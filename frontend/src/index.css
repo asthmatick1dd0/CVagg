@@ -160,6 +160,15 @@ background: #ed1b265d;
   background: linear-gradient(to top, #0A0A0A 41%, #560004 100%);
 }
 
+.landing-btn {
+  background-color: var(--primary);
+}
+
+[data-theme="light"] .landing-btn {
+  background-color: var(--foreground);
+  color: var(--background);
+}
+
 .logo-dark {
   display: block;
 }
@@ -173,6 +182,7 @@ background: #ed1b265d;
 [data-theme="light"] .logo-light {
   display: block;
 }
+
 
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
