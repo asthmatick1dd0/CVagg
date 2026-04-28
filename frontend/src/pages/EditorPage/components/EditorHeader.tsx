@@ -1,25 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { DownloadIcon, ArrowLeftIcon } from "lucide-react";
-import { useExportResume } from "@/hooks/useExportResume";
-import type { Resume } from "@/types/resume.types";
+import { Input } from "@/components/ui/input";
+import { useResumeContext } from "@/contexts/ResumeContext";
 
-interface EditorHeaderProps {
-  resumeData: Partial<Resume>; 
-  resumeTitle?: string;
-}
+const EditorHeader = () => {
 
-const EditorHeader = ({ resumeData, resumeTitle = "Резюме" }: EditorHeaderProps) => {
-  const { exportResume, isExporting } = useExportResume();
-
-  const handleExport = async () => {
-    try {
-      console.log('=== EXPORT DEBUG ===');
-  console.log('Resume data:', resumeData);
-      await exportResume(resumeData);
-    } catch (err) {
-      console.error('Export failed:', err);
-    }
-  };
+  const { resumeData, updateTitle } = useResumeContext();
 
   return (
     <section className="bg-background flex w-full h-16 items-center justify-center p-12">
@@ -32,7 +18,13 @@ const EditorHeader = ({ resumeData, resumeTitle = "Резюме" }: EditorHeader
         </a>
         
         <div className="font-bold text-lg">
-          <p>{resumeTitle}</p>
+          <Input
+            id="title"
+            value={resumeData.title || ""}
+            onChange={(e) => updateTitle(e.target.value)}
+            placeholder="Резюме"
+            required
+          />
         </div>
         
         <div className="flex flex-row items-center gap-2">

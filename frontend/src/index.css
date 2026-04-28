@@ -239,6 +239,41 @@ font-family: "Noto Sans", monospace;
 
 
 
+.modal-backdrop-enter {
+  opacity: 0;
+}
+.modal-backdrop-enter-active {
+  opacity: 1;
+  transition: opacity 300ms ease-in-out;
+}
+.modal-backdrop-exit {
+  opacity: 1;
+}
+.modal-backdrop-exit-active {
+  opacity: 0;
+  transition: opacity 300ms ease-in-out;
+}
+
+.modal-content-enter {
+  opacity: 0;
+  transform: translateY(100%);
+}
+.modal-content-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 300ms ease-in-out, transform 300ms ease-in-out;
+}
+.modal-content-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
+.modal-content-exit-active {
+  opacity: 0;
+  transform: translateY(100%);
+  transition: opacity 300ms ease-in-out, transform 300ms ease-in-out;
+}
+
+
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
