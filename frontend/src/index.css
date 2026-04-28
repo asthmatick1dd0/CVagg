@@ -8,29 +8,36 @@ font-family: "Noto Sans", monospace;
   font-style: normal;
   font-variation-settings: "wdth" 62.5;
 
-  color-scheme: dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #0A0A0A;
-
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   --radius: 0.625rem;
-  --background: #0A0A0A;
+}
+
+:root,
+[data-theme="dark"] {
+   --background: #0A0A0A;
   --foreground: #FAFAFA;
+
   --card: #141414;
   --card-foreground: #989898;
-  --popover: oklch(100% 0.00011 271.152);
+
+  --popover: #141414;
   --popover-foreground: #A3A3A3;
+
   --primary: #ed1b26;
   --primary-foreground: #ff0000;
+
   --secondary: #ffffff;
   --secondary-foreground: #0A0A0A;
+
   --muted: oklch(0.97 0 0);
   --muted-foreground: #989898;
+
   --accent: oklch(0.97 0 0);
   --accent-foreground: #0A0A0A;
+
   --destructive: oklch(0.577 0.245 27.325);
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
@@ -43,6 +50,71 @@ font-family: "Noto Sans", monospace;
   --sidebar-accent-foreground: #0A0A0A;
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+  color: #1c1917; /* Почти черный, но мягче */
+  background-color: #EDEBDE; /* Бежевый фон */
+
+  /* Основная палитра */
+  --background: #EDEBDE; /* Бежевый */
+  --foreground: #1B1716; /* Почти черный текст */
+  
+  --card: #810000; /* Белый для карточек, если понадобятся */
+  --card-foreground: #EDEBDE;
+  --popover: #FFFFFF;
+  --popover-foreground: #1c1917;
+  
+  /* Акцентные цвета */
+  --primary: #810100; /*  */
+  --primary-foreground: #1B1716;
+  --primary-accent: #560004;
+  
+  /* Второстепенные элементы */
+  --secondary: #D6D2CC; /* Серо-бежевый для кнопки "Войти" */
+  --secondary-foreground: #1c1917; /* Темный текст на кнопке */
+
+  --muted: #F5F2EF;
+  --muted-foreground: #71717A;
+
+  --accent: #F5F2EF;
+  --accent-foreground: #1c1917;
+
+  --destructive: oklch(0.577 0.245 27.325);
+
+  --border: #1B1716;
+
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: #A3A3A3;
+  --sidebar-primary: #0A0A0A;
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: #0A0A0A;
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+
+::selection {
+  background: #ed1b265d; 
+}
+
+.font-inter {
+  font-family: "Inter", serif;
+}
+
+.text-fluid {
+  font-size: clamp(1rem, 2vw, 1.2rem);
+}
+
+.custom-bg {
+  background-image: url('/background.svg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 ::selection {
@@ -66,16 +138,40 @@ background: #ed1b265d;
   background-repeat: no-repeat;
 }
 
+/* тёмная тема*/
 .custom-gradient {
   background: linear-gradient(to bottom, #0A0A0A 41%, #560004 100%);
 }
-
 .dashboard-gradient {
   background: linear-gradient(to bottom, #560004 0%, #0A0A0A 50%, #0a0a0ac0 80%, #56000491 100%);
 }
-
 .custom-gradient2 {
   background: linear-gradient(to top, #0A0A0A 41%, #560004 100%);
+}
+
+/* светлая тема*/
+[data-theme="light"] .custom-gradient {
+  background: linear-gradient(to bottom, #1B1716 7%, #630100 59%, #EDEBDE 100%);
+}
+[data-theme="light"] .dashboard-gradient {
+  background: linear-gradient(to bottom, #560004 0%, #0A0A0A 50%, #0a0a0ac0 80%, #56000491 100%);
+}
+[data-theme="light"] .custom-gradient2 {
+  background: linear-gradient(to top, #0A0A0A 41%, #560004 100%);
+}
+
+.logo-dark {
+  display: block;
+}
+.logo-light {
+  display: none;
+}
+
+[data-theme="light"] .logo-dark {
+  display: none;
+}
+[data-theme="light"] .logo-light {
+  display: block;
 }
 
 @theme inline {
