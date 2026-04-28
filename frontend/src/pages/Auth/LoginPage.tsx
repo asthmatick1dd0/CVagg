@@ -60,7 +60,7 @@ function LoginPage() {
     
     return (
         <div className="min-h-screen w-screen justify-start custom-bg">
-            <Card className="min-md:w-[400px] flex flex-col justify-center items-center">
+            <Card className="auth-card min-md:w-[400px] flex flex-col justify-center items-center">
                 <CardHeader className="flex flex-col items-center">
                     <CardTitle className="text-4xl ">Войти в аккаунт</CardTitle>
                 </CardHeader>
@@ -69,7 +69,7 @@ function LoginPage() {
                         <div className="gap-2">
                             <div className="flex flex-col gap-2 items-center">
                                 <div className="pt-2 w-[280px]">
-                                    <label htmlFor="email">Электронная почта</label>
+                                    <label className="text-foreground" htmlFor="email">Электронная почта</label>
                                     <Input
                                         id="email"
                                         type="email"
@@ -78,14 +78,14 @@ function LoginPage() {
                                         onChange={formik.handleChange}
                                         onBlur={formik.handleBlur}
                                         required
-                                        className={formik.touched.email && formik.errors.email ? "border-red-500 focus-visible:ring-red-500" : ""}
+                                        className={formik.touched.email && formik.errors.email ? "border-destructive focus-visible:ring-destructive" : ""}
                                     />
                                     {formik.touched.email && formik.errors.email && (
-                                        <div className="text-red-500 text-sm mt-1">{formik.errors.email}</div>
+                                        <div className="text-destructive text-sm mt-1">{formik.errors.email}</div>
                                     )}
                                 </div>
                                 <div className="pb-2 w-[280px]">
-                                    <label htmlFor="password">Пароль</label>
+                                    <label className="text-foreground" htmlFor="password">Пароль</label>
                                     <div className="relative">
                                         <Input
                                             id="password"
@@ -95,7 +95,7 @@ function LoginPage() {
                                             onChange={formik.handleChange}
                                             onBlur={formik.handleBlur}
                                             required
-                                            className={formik.touched.password && formik.errors.password ? "border-red-500 focus-visible:ring-red-500" : ""}
+                                            className={formik.touched.password && formik.errors.password ? "border-destructive focus-visible:ring-destructive" : ""}
                                         />
                                         <button
                                             type="button"
@@ -106,7 +106,7 @@ function LoginPage() {
                                         </button>
                                     </div>
                                     {formik.touched.password && formik.errors.password && (
-                                        <div className="text-red-500 text-sm mt-1">{formik.errors.password}</div>
+                                        <div className="text-destructive text-sm mt-1">{formik.errors.password}</div>
                                     )}
                                 </div>
                             </div>
