@@ -17,7 +17,7 @@ font-family: "Noto Sans", monospace;
 
 :root,
 [data-theme="dark"] {
-   --background: #0A0A0A;
+  --background: #0A0A0A;
   --foreground: #FAFAFA;
 
   --card: #141414;
@@ -35,8 +35,8 @@ font-family: "Noto Sans", monospace;
   --muted: oklch(0.97 0 0);
   --muted-foreground: #989898;
 
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: #0A0A0A;
+  --accent: #ed1b26;
+  --accent-foreground: #FAFAFA;
 
   --destructive: oklch(0.577 0.245 27.325);
   --border: oklch(0.922 0 0);
@@ -72,14 +72,14 @@ font-family: "Noto Sans", monospace;
   --primary-accent: #560004;
   
   /* Второстепенные элементы */
-  --secondary: #D6D2CC; /* Серо-бежевый для кнопки "Войти" */
+  --secondary: #EDEBDE; /* Серо-бежевый для кнопки "Войти" */
   --secondary-foreground: #1c1917; /* Темный текст на кнопке */
 
   --muted: #F5F2EF;
   --muted-foreground: #71717A;
 
-  --accent: #F5F2EF;
-  --accent-foreground: #1c1917;
+  --accent: #EDEBDE;
+  --accent-foreground: #EDEBDE;
 
   --destructive: oklch(0.577 0.245 27.325);
 
