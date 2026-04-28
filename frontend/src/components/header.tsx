@@ -1,6 +1,6 @@
 import { Button } from "./ui/button";
-import LogOutIcon from "@/assets/icons/logout.svg";
 import { useAuth } from "@/contexts/AuthContext";
+import { LogOutIcon } from "lucide-react";
 
 const Header = () => {
   const { logout } = useAuth();
@@ -16,7 +16,7 @@ const Header = () => {
         </a>
         <div className="flex flex-row items-center gap-2">
           <Button variant="link" className="flex items-center justify-center h-16 w-16 hover:cursor-pointer" onClick={() => logout()}>
-            <img src={LogOutIcon} alt="Log out" className="scale-110" />
+            <LogOutIcon className="scale-250" />
           </Button>
         </div>
       </div>
