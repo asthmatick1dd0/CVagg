@@ -117,9 +117,7 @@ font-family: "Noto Sans", monospace;
 }
 
 ::selection {
-
-background: #ed1b265d; 
-
+  background: #ed1b265d; 
 }
 
 .font-inter {
@@ -173,6 +171,20 @@ background: #ed1b265d;
 }
 [data-theme="light"] .landing-bg {
   background-color: #EDEBDE;
+}
+
+.hit-bg {
+  background-color: #141414;
+}
+[data-theme="light"] .hit-bg {
+  background-color: #EDEBDE;
+}
+
+.cta {
+  background-color: var(--primary);
+}
+[data-theme="light"] .cta {
+  background-color: #1B1716;
 }
 
 .logo-dark {
