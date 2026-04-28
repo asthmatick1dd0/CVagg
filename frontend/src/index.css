@@ -154,10 +154,7 @@ font-family: "Noto Sans", monospace;
   background: linear-gradient(to bottom, #1B1716 7%, #630100 59%, #EDEBDE 100%);
 }
 [data-theme="light"] .dashboard-gradient {
-  background: linear-gradient(to top, #EDEBDE 0%, #810100 41%, #630100 70%, #1B1716 93%);
-}
-[data-theme="light"] .custom-gradient2 {
-  background: linear-gradient(to top, #0A0A0A 41%, #560004 100%);
+  background: linear-gradient(to top, #EDEBDE 0%, #B7766F 10%, #810100 30%, #630100 50%, #3F0C0B 70%, #1B1716 93%);
 }
 
 /* стили для лендинга */
