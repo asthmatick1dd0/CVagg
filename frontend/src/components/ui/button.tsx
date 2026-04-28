@@ -20,6 +20,7 @@ const buttonVariants = cva(
         link: "text-primary underline-offset-4 hover:underline",
         landing: "landing-btn hover:bg-accent/70",
         dashboard: "dashboard-btn hover:bg-secondary/70",
+        black: "bg-black text-white hover:bg-white/40 hover:text-black border border-white/30 hover:border-black",
       },
       size: {
         default: "h-10 px-4 py-2 has-[>svg]:px-3",
