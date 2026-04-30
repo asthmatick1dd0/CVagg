@@ -167,6 +167,10 @@ export const ResumeProvider = ({ children }: { children: ReactNode }) => {
                   exp.job_experience?.position ||
                   exp.Position ||
                   "",
+                description:
+                  exp.job_experience?.description ||
+                  exp.Description ||
+                  "",
                 start_date:
                   exp.job_experience?.start_date ||
                   exp.StartDate ||
@@ -310,6 +314,7 @@ export const ResumeProvider = ({ children }: { children: ReactNode }) => {
             job_experience: {
               company: exp.company || "",
               position: exp.position || "",
+              description: exp.description || "",
               start_date: exp.start_date || "",
               end_date: exp.end_date || null,
             },
