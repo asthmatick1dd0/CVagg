@@ -3,10 +3,21 @@ import ExportIcon from "@/assets/icons/export.svg";
 import LeftArrowIcon from "@/assets/icons/left_arrow.svg";
 import { Input } from "@/components/ui/input";
 import { useResumeContext } from "@/contexts/ResumeContext";
+import { useExportResume } from "@/hooks/useExportResume";
 
 const EditorHeader = () => {
-
+  const { exportResume, isExporting } = useExportResume();
   const { resumeData, updateTitle } = useResumeContext();
+
+  const handleExport = async () => {
+    try {
+      console.log('=== EXPORT DEBUG ===');
+  console.log('Resume data:', resumeData);
+      await exportResume(resumeData);
+    } catch (err) {
+      console.error('Export failed:', err);
+    }
+  };
 
   return (
     <section className="bg-background flex w-full h-16 items-center justify-center p-12">
