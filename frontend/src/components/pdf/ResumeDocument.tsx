@@ -323,9 +323,9 @@ const ResumeDocument: React.FC<ResumeDocumentProps> = ({ data }) => {
           {/* EXPERIENCE */}
           {experience && experience.length > 0 && (
             <>
-               <View style={styles.sectionTitleBox}>
-                <Text style={styles.sectionTitleText}>EMPLOYMENT</Text>
-              </View>
+                <View style={styles.sectionTitleBox}>
+                  <Text style={styles.sectionTitleText}>EMPLOYMENT</Text>
+                </View>
               {experience.map((exp, index) => (
                 <View key={index} style={styles.entryContainer}>
                   <View style={styles.entryHeader}>
@@ -338,6 +338,7 @@ const ResumeDocument: React.FC<ResumeDocumentProps> = ({ data }) => {
                     </View>
                   </View>
                   <Text style={styles.entrySubtitle}>{exp.position}</Text>
+                  <Text style={styles.entryDescription}>{exp.description}</Text>
                 </View>
               ))}
             </>
