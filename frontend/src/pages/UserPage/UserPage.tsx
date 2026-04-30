@@ -87,7 +87,7 @@ function UserPage({ currentUser, accounts = [], onLogout, onSwitchAccount, onSet
   const otherAccounts = accounts.filter((a) => a.id !== currentUser.id);
 
   return (
-    <div className="min-h-screen w-screen flex items-center justify-center custom-bg">
+    <div className="flex items-center justify-center rounded-3xl custom-bg">
       <div className="w-[340px] rounded-3xl overflow-hidden shadow-2xl">
         <div className="bg-muted/60 flex flex-col items-center justify-center pt-8 pb-10 px-6 relative">
           <button
