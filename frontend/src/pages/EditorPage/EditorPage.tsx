@@ -45,7 +45,6 @@ const ResumePreview = () => {
 };
 
 const EditorContent = () => {
-  const { resumeData } = useResumeContext();
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
   const backdropRef = useRef(null);
@@ -56,7 +55,7 @@ const EditorContent = () => {
 
   return (
     <>
-    <EditorHeader resumeData={resumeData} />
+    <EditorHeader />
     {window.innerWidth <= 768 ? (
       <div className="px-4 py-6 dashboard-gradient rounded-xl">
         <div className="w-full h-full object-cover rounded-lg">
