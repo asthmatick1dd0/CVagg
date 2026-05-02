@@ -13,6 +13,7 @@ export interface ExperienceItem {
   field_id: number;
   company: string;
   position: string;
+  description: string;
   start_date: string;
   end_date: string;
 }
