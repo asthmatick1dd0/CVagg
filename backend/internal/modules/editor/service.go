@@ -562,10 +562,11 @@ func (s *service) GetResumeByID(tx *gorm.DB, id uint) (*input.ResumeInput, cvagg
 				FieldID:  model.ID,
 				ResumeID: id,
 				JobExperience: &input.JobExperienceInput{
-					Company:   model.Company,
-					Position:  model.Position,
-					StartDate: model.StartDate,
-					EndDate:   model.EndDate,
+					Company:     model.Company,
+					Position:    model.Position,
+					StartDate:   model.StartDate,
+					EndDate:     model.EndDate,
+					Description: model.Description,
 				},
 			}, nil
 		},
