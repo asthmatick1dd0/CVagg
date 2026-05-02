@@ -92,7 +92,7 @@ function RegistrationPage(){
 
     return (
     <div className="min-h-screen w-screen justify-start custom-bg">
-        <Card className="min-md:w-[400px] flex flex-col justify-center items-center">
+        <Card className="auth-card min-md:w-[400px] flex flex-col justify-center items-center">
             <CardHeader className="flex flex-col items-center"> 
                 <CardTitle className="text-4xl">Регистрация</CardTitle>
             </CardHeader>
@@ -101,7 +101,7 @@ function RegistrationPage(){
                     <div className="gap-2">
                         <div className="flex flex-col gap-2 items-center">
                             <div className="pt-2 w-[280px]">
-                        <label htmlFor="username">Логин</label>
+                        <label className="text-foreground" htmlFor="username">Логин</label>
                         <Input 
                             id="username" 
                             type="text" 
@@ -110,15 +110,15 @@ function RegistrationPage(){
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
                             required
-                            className={formik.touched.username && formik.errors.username ? "border-red-500 focus-visible:ring-red-500" : ""}
+                            className={formik.touched.username && formik.errors.username ? "border-destructive focus-visible:ring-destructive" : ""}
                         />
                         {formik.touched.username && formik.errors.username && (
-                            <div className="text-red-500 text-sm mt-1">{formik.errors.username}</div>
+                            <div className="text-destructive text-sm mt-1">{formik.errors.username}</div>
                         )}
                     </div>
 
                     <div className="w-[280px]">
-                        <label htmlFor="email">Электронная почта</label>
+                        <label className="text-foreground" htmlFor="email">Электронная почта</label>
                         <Input
                             id="email"
                             type="email"
@@ -127,15 +127,15 @@ function RegistrationPage(){
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
                             required
-                            className={formik.touched.email && formik.errors.email ? "border-red-500 focus-visible:ring-red-500" : ""}
+                            className={formik.touched.email && formik.errors.email ? "border-destructive focus-visible:ring-destructive" : ""}
                         />
                         {formik.touched.email && formik.errors.email && (
-                            <div className="text-red-500 text-sm mt-1">{formik.errors.email}</div>
+                            <div className="text-destructive text-sm mt-1">{formik.errors.email}</div>
                         )}
                     </div>
 
                     <div className="w-[280px]">
-                        <label htmlFor="password">Пароль</label>
+                        <label className="text-foreground" htmlFor="password">Пароль</label>
                         <div className="relative">   
                             <Input
                                 id="password"
@@ -145,7 +145,7 @@ function RegistrationPage(){
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
                                 required
-                                className={formik.touched.password && formik.errors.password ? "border-red-500 focus-visible:ring-red-500" : ""}
+                                className={formik.touched.password && formik.errors.password ? "border-destructive focus-visible:ring-destructive" : ""}
                             />
                             <button
                                     type="button"
@@ -157,12 +157,12 @@ function RegistrationPage(){
                           </div>
 
                         {formik.touched.password && formik.errors.password && (
-                                <div className="text-red-500 text-sm mt-1">{formik.errors.password}</div>
+                                <div className="text-destructive text-sm mt-1">{formik.errors.password}</div>
                             )}
                     </div>
 
                     <div className="pb-2 w-[280px]">
-                        <label htmlFor="confirmPassword">Повторите пароль</label>
+                        <label className="text-foreground" htmlFor="confirmPassword">Повторите пароль</label>
                         <div className="relative">
                             <Input
                                 id="confirmPassword"
@@ -172,7 +172,7 @@ function RegistrationPage(){
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
                                 required
-                                className={formik.touched.confirmPassword && formik.errors.confirmPassword ? "border-red-500 focus-visible:ring-red-500" : ""}
+                                className={formik.touched.confirmPassword && formik.errors.confirmPassword ? "border-destructive focus-visible:ring-destructive" : ""}
                             />
                             <button
                                 type="button"
@@ -183,14 +183,14 @@ function RegistrationPage(){
                             </button>
                         </div>
                         {formik.touched.confirmPassword && formik.errors.confirmPassword && (
-                            <div className="text-red-500 text-sm mt-1">{formik.errors.confirmPassword}</div>
+                            <div className="text-destructive text-sm mt-1">{formik.errors.confirmPassword}</div>
                         )}
                     </div>
                         </div>
                     </div>
 
                     {errorMessage && (
-                            <div className="text-red-500 text-sm mt-4 text-center">
+                            <div className="text-destructive text-sm mt-4 text-center">
                                 {errorMessage}
                             </div>
                         )}

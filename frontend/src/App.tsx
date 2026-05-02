@@ -6,6 +6,7 @@ import RegistrationPage from "./pages/Auth/RegistrationPage";
 import EditorPage from "./pages/EditorPage/EditorPage";
 import { useAuth } from "./contexts/AuthContext";
 import { ResumeProvider } from "./contexts/ResumeContext";
+import { ThemeToggle } from "./components/ThemeToggle";
 
 function App() {
   const { user, loading } = useAuth();
@@ -35,12 +36,9 @@ function App() {
         path="/editor/:id" 
         element={user ? <EditorPage /> : <Navigate to="/login" replace />} 
         /> 
-        <Route 
-        path="/" 
-        element={<EditorPage />} 
-        />
       </Routes>
     </ResumeProvider>
+    <ThemeToggle/>
     </>
   );
 };

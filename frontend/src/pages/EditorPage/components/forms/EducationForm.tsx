@@ -118,7 +118,7 @@ export default function EducationManager() {
   }
 
   return (
-    <div className="w-full max-w-3xl space-y-6">
+    <div className="w-full max-w-3xl space-y-6 text-white">
       {items.map((item, index) => (
         <EducationCard 
           key={item.localId} 
@@ -136,7 +136,7 @@ export default function EducationManager() {
       <Button 
         variant="outline" 
         onClick={(e) => { e.preventDefault(); addNewItem(); }}
-        className="w-full rounded-xl border-dashed  py-6"
+        className="w-full rounded-xl border-dashed py-6 dark:border-white dark:hover:bg-muted/50"
         type="button"
       >
         <Plus className="w-5 h-5 mr-2" /> Добавить место обучения
@@ -259,7 +259,7 @@ function EducationCard({ initialData, isEditing, onDelete, onSave, onEdit }: Car
   }
 
   return (
-    <div className="border border-gray-200 rounded-xl p-6 shadow-sm space-y-5 animate-in fade-in zoom-in-95 duration-200 bg-white/5">
+    <div className="border border-gray-200 rounded-xl p-6 shadow-sm space-y-5 animate-in fade-in zoom-in-95 duration-200 bg-white/10">
       
       {/* HEADER: University */}
       <div className="space-y-1.5">
@@ -268,7 +268,7 @@ function EducationCard({ initialData, isEditing, onDelete, onSave, onEdit }: Car
           value={draft.university}
           onChange={(e) => updateDraft("university", e.target.value)}
           placeholder="Южный федеральный университет" 
-          className="bg-gray-50/50 border-gray-200" 
+          className="bg-gray-50/50 border-gray-200 text-white placeholder:text-white/50" 
         />
       </div>
 
@@ -280,7 +280,7 @@ function EducationCard({ initialData, isEditing, onDelete, onSave, onEdit }: Car
              value={draft.faculty}
              onChange={(e) => updateDraft("faculty", e.target.value)}
              placeholder="Институт математики..."
-             className="bg-gray-50/50 border-gray-200" 
+             className="bg-gray-50/50 border-gray-200 text-white placeholder:text-white/50" 
           />
         </div>
         <div className="space-y-1.5">
@@ -289,7 +289,7 @@ function EducationCard({ initialData, isEditing, onDelete, onSave, onEdit }: Car
              value={draft.degree}
              onChange={(e) => updateDraft("degree", e.target.value)}
              placeholder="Бакалавр"
-             className="bg-gray-50/50 border-gray-200" 
+             className="bg-gray-50/50 border-gray-200 text-white placeholder:text-white/50" 
           />
         </div>
       </div>
@@ -301,7 +301,7 @@ function EducationCard({ initialData, isEditing, onDelete, onSave, onEdit }: Car
              value={draft.major}
              onChange={(e) => updateDraft("major", e.target.value)}
              placeholder="Программная инженерия"
-             className="bg-gray-50/50 border-gray-200" 
+             className="bg-gray-50/50 border-gray-200 text-white placeholder:text-white/50" 
           />
       </div>
 
@@ -313,7 +313,7 @@ function EducationCard({ initialData, isEditing, onDelete, onSave, onEdit }: Car
         {/* Start Date */}
         <div className="space-y-2">
           <Label className="text-white font-medium">Дата начала</Label>
-            <div className="flex flex-row items-center gap-2 w-full">
+            <div className="flex flex-row items-center gap-2 w-full text-white">
              <DateSelect 
               placeholder="Месяц" 
               options={months.map((m, i) => ({ val: i.toString(), label: m }))}
@@ -376,7 +376,7 @@ function EducationCard({ initialData, isEditing, onDelete, onSave, onEdit }: Car
             variant="ghost" 
             size="icon" 
             onClick={(e) => { e.preventDefault(); onDelete(); }}
-            className="h-10 w-10 rounded-full text-gray-400 hover:text-red-500 hover:bg-red-500/10 transition-colors hover:cursor-pointer"
+            className="h-10 w-10 rounded-full text-white-400 hover:text-red-500 hover:bg-red-500/10 transition-colors hover:cursor-pointer"
             type="button"
         >
             <Trash2 size={18} />
