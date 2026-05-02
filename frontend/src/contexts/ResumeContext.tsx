@@ -204,8 +204,14 @@ export const ResumeProvider = ({ children }: { children: ReactNode }) => {
         })
         .finally(() => setLoading(false));
     } else if (isNew) {
-      setResumeData({ ...INITIAL_RESUME });
-    }
+      setResumeData({
+        ...INITIAL_RESUME,
+        personalInfo: {
+        ...INITIAL_RESUME.personalInfo,
+        email: user?.email ?? "",
+        },
+      });
+      }
   }, [id, isNew, user?.id, navigate]);
 
   const updatePersonalInfo = useCallback(
