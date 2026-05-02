@@ -141,18 +141,18 @@ func (s *service) UpdateResume(tx *gorm.DB, resume *input.ResumeInput) cvaggerr.
 	// Track which items are still present (to identify deleted items)
 	// Key: ItemType, Value: map of FieldIDs that should be kept
 	keptFieldIDsByType := make(map[string]map[uint]bool)
-	
+
 	// Track which sections are present in the request
 	sectionsInRequest := make(map[string]bool)
 
 	// проходимся по мапе и обрабатываем []Items исходя из ключа
 	for section, items := range resume.Items {
 		sectionsInRequest[section] = true
-		
+
 		if keptFieldIDsByType[section] == nil {
 			keptFieldIDsByType[section] = make(map[uint]bool)
 		}
-		
+
 		// TODO [CVAGG-59] Переписать этот монструозный свитч в мапу
 		switch section {
 		case "jobexperience":
@@ -260,10 +260,11 @@ func (s *service) UpdateResume(tx *gorm.DB, resume *input.ResumeInput) cvaggerr.
 
 func (s *service) UpdateJobExperience(tx *gorm.DB, it *input.ItemInput, ID uint) cvaggerr.Error {
 	jobExpModel := &models.JobExperience{
-		Company:   it.JobExperience.Company,
-		Position:  it.JobExperience.Position,
-		StartDate: it.JobExperience.StartDate,
-		EndDate:   it.JobExperience.EndDate,
+		Company:     it.JobExperience.Company,
+		Position:    it.JobExperience.Position,
+		StartDate:   it.JobExperience.StartDate,
+		EndDate:     it.JobExperience.EndDate,
+		Description: it.JobExperience.Description,
 	}
 
 	if err := s.jobExpRepo.Update(tx, jobExpModel, "resume_item.job_experiences", it.FieldID); err != nil {
@@ -386,10 +387,11 @@ func (s *service) DeleteResumeItem(tx *gorm.DB, item *models.ResumeItem) cvagger
 
 func (s *service) SaveJobExperience(tx *gorm.DB, it *input.ItemInput, ID uint) cvaggerr.Error {
 	jobExpModel := &models.JobExperience{
-		Company:   it.JobExperience.Company,
-		Position:  it.JobExperience.Position,
-		StartDate: it.JobExperience.StartDate,
-		EndDate:   it.JobExperience.EndDate,
+		Company:     it.JobExperience.Company,
+		Position:    it.JobExperience.Position,
+		StartDate:   it.JobExperience.StartDate,
+		EndDate:     it.JobExperience.EndDate,
+		Description: it.JobExperience.Description,
 	}
 
 	if err := s.jobExpRepo.Create(tx, jobExpModel, "resume_item.job_experiences"); err != nil {
