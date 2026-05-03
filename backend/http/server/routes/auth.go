@@ -8,6 +8,7 @@ import (
 func AuthGroup(r fiber.Router, authHandler auth.Handler) {
 	authRoutes := r.Group("/auth")
 	authRoutes.Post("/signup", authHandler.SignUp)
+	authRoutes.Get("/verify", authHandler.Verify)
 	authRoutes.Get("/signin", authHandler.SignIn)
 	authRoutes.Post("/logout", authHandler.LogOut)
 	authRoutes.Get("/me", authHandler.Me)

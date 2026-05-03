@@ -5,49 +5,71 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/asthmatick1dd0/CVagg/pkg/helpers/cvagglog"
 	"github.com/joho/godotenv"
 	"gopkg.in/gomail.v2"
 )
 
 type Service interface {
-	Start() error
-	SendToken(email string, url string, token string) error
+	SendToken(email string, token string) error
+}
+
+type SMTPConfig struct {
+	Server   string
+	Port     int
+	Email    string
+	Password string
+}
+
+func NewSMTPConfig() *SMTPConfig {
+	if err := godotenv.Load(); err != nil {
+		return nil
+	}
+
+	port, err := strconv.Atoi(os.Getenv("SMTP_PORT"))
+	if err != nil {
+		return nil
+	}
+
+	return &SMTPConfig{
+		Server:   os.Getenv("SMTP_SERVER"),
+		Port:     port,
+		Email:    os.Getenv("EMAIL_ADDRESS"),
+		Password: os.Getenv("EMAIL_PASSWORD"),
+	}
+}
+
+func NewDialer(cfg *SMTPConfig) *gomail.Dialer {
+	return gomail.NewDialer(
+		cfg.Server,
+		cfg.Port,
+		cfg.Email,
+		cfg.Password,
+	)
 }
 
 type emailService struct {
 	dialer *gomail.Dialer
-	logger *cvagglog.Logger
+	URL    string
 }
 
-func NewEmailer(dialer *gomail.Dialer, logger *cvagglog.Logger) Service {
+func NewService(dialer *gomail.Dialer) Service {
+	godotenv.Load()
 	return &emailService{
 		dialer: dialer,
-		logger: logger,
+		URL:    os.Getenv("URL"),
 	}
-}
-
-func (em *emailService) Start() error {
-	err := godotenv.Load()
-	if err != nil {
-		return err
-	}
-
-	port, _ := strconv.Atoi(os.Getenv("SMTP_PORT"))
-	em.dialer = gomail.NewDialer(os.Getenv("SMTP_SERVER"), port, os.Getenv("EMAIL_ADDRESS"), os.Getenv("EMAIL_PASSWORD"))
-
-	return err
 }
 
 // Sends AND forms the verification link
 //
 // URL is a string of the address where our project lives, http://localhost:8080/ or https://cvagg.ru/ for example
-func (em *emailService) SendToken(email string, url string, token string) error {
+func (em *emailService) SendToken(email string, token string) error {
+	fmt.Println("aaa")
 	message := gomail.NewMessage()
 	message.SetHeader("From", em.dialer.Username)
 	message.SetHeader("To", email)
 	message.SetHeader("Subject", "Подтверждение почты")
-	message.SetBody("text/plain", fmt.Sprintf("Чтобы подтвердить свою регистрацию на %s, перейдите по ссылке: %sapi/v1/auth/verify?token=%s", url, url, token))
+	message.SetBody("text/plain", fmt.Sprintf("Чтобы подтвердить свою регистрацию на %s, перейдите по ссылке: %sapi/v1/auth/verify/?token=%s", em.URL, em.URL, token))
 
 	return em.dialer.DialAndSend(message)
 }

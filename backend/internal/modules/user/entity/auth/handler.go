@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/asthmatick1dd0/CVagg/internal/models"
+	"github.com/asthmatick1dd0/CVagg/internal/modules/email"
 	"github.com/asthmatick1dd0/CVagg/internal/modules/user"
 	"github.com/asthmatick1dd0/CVagg/internal/transport/input"
 	"github.com/asthmatick1dd0/CVagg/pkg/validation"
@@ -16,6 +17,7 @@ import (
 
 type Handler interface {
 	SignUp(c *fiber.Ctx) error
+	Verify(c *fiber.Ctx) error
 	SignIn(c *fiber.Ctx) error
 	LogOut(c *fiber.Ctx) error
 	Me(c *fiber.Ctx) error
@@ -24,11 +26,11 @@ type Handler interface {
 type handler struct {
 	service      Service
 	userRepo     user.Repository // снести репо нахй отсюда
-	emailService Service
+	emailService email.Service
 }
 
 func NewHandler(s Service, userRepo user.Repository) Handler {
-	return &handler{service: s, userRepo: userRepo}
+	return &handler{service: s, userRepo: userRepo, emailService: email.NewService(email.NewDialer(email.NewSMTPConfig()))}
 }
 
 func (h *handler) SignUp(c *fiber.Ctx) error {
@@ -47,14 +49,46 @@ func (h *handler) SignUp(c *fiber.Ctx) error {
 	user.Email = input.Email
 	user.Username = input.Username
 	passwordHash, err := bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.DefaultCost)
+
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(err)
+		return c.Status(fiber.StatusInternalServerError).JSON("can't read password")
 	}
 	user.PasswordHash = string(passwordHash)
+
+	token, err := h.service.NewUserToToken(c, &user)
+
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON("can't encode user")
+	}
+
+	if err := h.emailService.SendToken(user.Email, token); err != nil {
+		return c.Status(fiber.StatusFailedDependency).JSON(err.Error())
+	}
+
+	return c.Status(fiber.StatusAccepted).JSON(input)
+}
+
+func (h *handler) Verify(c *fiber.Ctx) error {
+	tokenString := c.Query("token")
+
+	token, err := jwt.Parse(tokenString, func(t *jwt.Token) (any, error) {
+		return c.Locals("JWTSecret").([]byte), nil
+	})
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(err.Error())
+	}
+
+	user, err := h.service.NewUserFromToken(token, c)
+
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(err.Error())
+	}
+
 	if err := h.userRepo.Create(&user); err != nil {
 		return c.Status(fiber.StatusInsufficientStorage).JSON(err)
 	}
-	return c.Status(fiber.StatusAccepted).JSON(input)
+
+	return c.Status(fiber.StatusAccepted).JSON(user.Username)
 }
 
 func (h *handler) SignIn(c *fiber.Ctx) error {

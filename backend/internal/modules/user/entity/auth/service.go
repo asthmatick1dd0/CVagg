@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/asthmatick1dd0/CVagg/internal/models"
+	"github.com/asthmatick1dd0/CVagg/internal/modules/email"
 	"github.com/asthmatick1dd0/CVagg/internal/modules/user"
 	"github.com/asthmatick1dd0/CVagg/internal/transport/dto"
 	"github.com/asthmatick1dd0/CVagg/internal/transport/input"
@@ -22,17 +23,25 @@ type Service interface {
 	UserFromCookie(c *fiber.Ctx) (dto.UserResponse, error)
 	RetrieveUserFromToken(t *jwt.Token, c *fiber.Ctx) (dto.UserResponse, error)
 
+	NewUserFromToken(t *jwt.Token, c *fiber.Ctx) (models.User, error)
+	NewUserToToken(c *fiber.Ctx, user *models.User) (string, error)
+
 	SignInUser(c *fiber.Ctx, input input.SignInInputEmail) (*models.User, error)
 	UserToToken(c *fiber.Ctx, user *models.User) (string, error)
 }
 
 type authService struct {
 	repo     user.Repository
+	emailer  email.Service
 	userPool map[uint]*models.User
 }
 
 func NewService(repo user.Repository) Service {
-	return &authService{repo, make(map[uint]*models.User)} // для быстрого доступа к авторизованным юзерам, хранится только в оперативной памяти хоста
+	return &authService{
+		repo,
+		email.NewService(email.NewDialer(email.NewSMTPConfig())),
+		make(map[uint]*models.User),
+	} // для быстрого доступа к авторизованным юзерам, хранится только в оперативной памяти хоста
 }
 
 func (as *authService) AddToPool(id uint, user *models.User) error {
@@ -143,6 +152,25 @@ func (as *authService) RetrieveUserFromToken(t *jwt.Token, c *fiber.Ctx) (dto.Us
 	return resp, nil
 }
 
+func (as *authService) NewUserFromToken(t *jwt.Token, c *fiber.Ctx) (models.User, error) {
+	claims := t.Claims.(jwt.MapClaims)
+
+	email, ok := claims["email"].(string)
+	if !ok {
+		return models.User{}, fmt.Errorf("type of email: %T", email)
+	}
+	username, _ := claims["username"].(string)
+	hashedPassword, _ := claims["password"].(string)
+
+	resp := models.User{
+		Username:     username,
+		Email:        email,
+		PasswordHash: hashedPassword,
+	}
+
+	return resp, nil
+}
+
 func UserIDFromCookie(c *fiber.Ctx) uint {
 	cookieStr := c.Cookies("token")
 
@@ -199,6 +227,22 @@ func (s *authService) UserToToken(c *fiber.Ctx, user *models.User) (string, erro
 	now := time.Now().UTC()
 	claims := token.Claims.(jwt.MapClaims)
 	claims["sub"] = user.ID
+	claims["iat"] = now.Unix()
+	claims["nbf"] = now.Unix()
+	// claims["exp"] = now.Add(c.Locals("JWTExpirationTime").(time.Duration)).Unix()
+
+	key, _ := c.Locals("JWTSecret").([]byte)
+	return token.SignedString(key)
+}
+
+func (s *authService) NewUserToToken(c *fiber.Ctx, user *models.User) (string, error) {
+	// ВСЕ числовые значения по непонятной причине приводятся к float64 при записи в JWT
+	token := jwt.New(jwt.SigningMethodHS256)
+	now := time.Now().UTC()
+	claims := token.Claims.(jwt.MapClaims)
+	claims["email"] = user.Email
+	claims["username"] = user.Username
+	claims["password"] = user.PasswordHash
 	claims["iat"] = now.Unix()
 	claims["nbf"] = now.Unix()
 	// claims["exp"] = now.Add(c.Locals("JWTExpirationTime").(time.Duration)).Unix()
