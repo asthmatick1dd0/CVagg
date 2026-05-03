@@ -108,7 +108,7 @@ export default function SkillsManager() {
             selectedSkills.map(skillId => (
               <Badge 
                 key={skillId} 
-                className="flex items-center gap-1 px-3 py-1.5 bg-blue-500/20 text-blue-300 border border-blue-500/30"
+                className="flex items-center gap-1 px-3 py-1.5 bg-red-500/60 text-red-200 border border-red-200/30"
               >
                 {getSkillName(skillId)}
                 <button
@@ -131,7 +131,7 @@ export default function SkillsManager() {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Поиск навыков..."
-          className="pl-10"
+          className="pl-10 text-white placeholder:text-white/40"
         />
       </div>
 
@@ -167,7 +167,7 @@ export default function SkillsManager() {
               variant="ghost"
               size="sm"
               onClick={expandAll}
-              className="text-xs text-white/60 hover:text-white"
+              className="text-xs text-white/60 hover:text-white border"
             >
               Развернуть все
             </Button>
@@ -176,7 +176,7 @@ export default function SkillsManager() {
               variant="ghost"
               size="sm"
               onClick={collapseAll}
-              className="text-xs text-white/60 hover:text-white"
+              className="text-xs text-white/60 hover:text-white border"
             >
               Свернуть все
             </Button>
@@ -208,7 +208,7 @@ export default function SkillsManager() {
                     {selectedCount > 0 && (
                       <Badge 
                         variant="secondary" 
-                        className="ml-2 bg-blue-500/20 text-blue-300 text-xs"
+                        className="ml-2 bg-red-500/40 border border-dashed border-white/20 text-red-200 text-xs"
                       >
                         {selectedCount}
                       </Badge>
@@ -235,10 +235,10 @@ export default function SkillsManager() {
                               ? removeSkill(skill.id) 
                               : addSkill(skill.id)
                           }
-                          className={`rounded-full text-xs transition-all ${
+                          className={`rounded-full text-xs transition-all text-white dark:bg-white/30 dark:border-white ${
                             isSelected 
-                              ? 'bg-blue-500 hover:bg-blue-600 text-white' 
-                              : 'hover:border-blue-400'
+                              ? 'bg-red-500 hover:bg-red-600 text-white' 
+                              : 'hover:border-red-100 hover:text-red-100'
                           }`}
                         >
                           {isSelected ? "✓ " : "+ "}

@@ -71,7 +71,8 @@ CREATE TABLE IF NOT EXISTS resume_item.job_experiences (
     company TEXT,
     position TEXT,
     start_date TIMESTAMP WITH TIME ZONE,
-    end_date TIMESTAMP WITH TIME ZONE
+    end_date TIMESTAMP WITH TIME ZONE,
+    description TEXT
 );
 
 CREATE TABLE IF NOT EXISTS resume_item.item (

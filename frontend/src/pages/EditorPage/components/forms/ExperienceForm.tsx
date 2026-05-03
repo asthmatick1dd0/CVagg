@@ -14,11 +14,13 @@ import {
 import { Trash2, Check, Plus, Pencil, Briefcase } from "lucide-react"
 import { useResumeContext } from "@/contexts/ResumeContext"
 import type { ExperienceItem } from "@/types/resume.types"
+import { Textarea } from "@/components/ui/textarea"
 
 interface ExperienceDraft {
   field_id: number;
   company: string;
   position: string;
+  description: string;
   start_date: string;
   end_date: string;
 }
@@ -40,6 +42,7 @@ const contextToLocal = (exp: ExperienceItem): ExperienceDraft => ({
   field_id: exp.field_id || 0,
   company: exp.company || "",
   position: exp.position || "",
+  description: exp.description || "",
   start_date: exp.start_date || new Date().toISOString(),
   end_date: exp.end_date || new Date().toISOString(),
 });
@@ -48,6 +51,7 @@ const localToContext = (draft: ExperienceDraft): ExperienceItem => ({
   field_id: draft.field_id,
   company: draft.company,
   position: draft.position,
+  description: draft.description,
   start_date: draft.start_date,
   end_date: draft.end_date,
 });
@@ -56,6 +60,7 @@ const createEmptyDraft = (): ExperienceDraft => ({
   field_id: 0,
   company: "",
   position: "",
+  description: "",
   start_date: new Date().toISOString(),
   end_date: new Date().toISOString(),
 });
@@ -89,7 +94,6 @@ export default function ExperienceManager() {
     }
   }, [resumeData.experience]);
 
-  // ─── FIX 2: Sync TO context — convert local drafts to context type ─
   const syncToGlobal = (currentItems: ExperienceItemState[]) => {
     const cleanData: ExperienceItem[] = currentItems.map((item) =>
       localToContext(item.data)
@@ -138,7 +142,7 @@ export default function ExperienceManager() {
   };
 
   return (
-    <div className="w-full max-w-3xl space-y-6">
+    <div className="w-full max-w-3xl space-y-6 text-white">
       {items.map((item, index) => (
         <ExperienceCard
           key={item.localId}
@@ -156,7 +160,7 @@ export default function ExperienceManager() {
           e.preventDefault();
           addNewItem();
         }}
-        className="w-full rounded-xl border-dashed py-6"
+        className="w-full rounded-xl dark:border-white dark:hover:bg-muted/50 border-dashed py-6"
         type="button"
       >
         <Plus className="w-5 h-5 mr-2" /> Добавить место работы
@@ -165,7 +169,6 @@ export default function ExperienceManager() {
   );
 }
 
-// ─── Card Props ─────────────────────────────────────────────────────
 interface CardProps {
   initialData: ExperienceDraft;
   isEditing: boolean;
@@ -184,8 +187,6 @@ function ExperienceCard({
   const [draft, setDraft] = useState<ExperienceDraft>(initialData);
   const [dateError, setDateError] = useState<string | null>(null);
 
-  // ─── FIX 3: Re-sync draft when initialData changes
-  //     (e.g., after context reloads) ────────────────────────────────
   useEffect(() => {
     setDraft(initialData);
   }, [initialData]);
@@ -310,14 +311,14 @@ function ExperienceCard({
   }
 
   return (
-    <div className="border border-gray-200 rounded-xl p-6 shadow-sm space-y-5 animate-in fade-in zoom-in-95 duration-200 bg-white/5">
+    <div className="border border-gray-200 rounded-xl p-6 shadow-sm space-y-5 animate-in fade-in zoom-in-95 duration-200 bg-white/10">
       <div className="space-y-1.5">
         <Label className="text-white font-medium">Название компании</Label>
         <Input
           value={draft.company}
           onChange={(e) => updateDraft("company", e.target.value)}
           placeholder="Яндекс"
-          className="bg-gray-50/50 border-gray-200"
+          className="bg-gray-50/50 border-gray-200 text-white placeholder:text-white/50"
         />
       </div>
 
@@ -328,6 +329,17 @@ function ExperienceCard({
           value={draft.position}
           onChange={(e) => updateDraft("position", e.target.value)}
           placeholder="Frontend Developer"
+          className="bg-gray-50/50 border-gray-200 text-white placeholder:text-white/50"
+        />
+      </div>
+
+      {/* Description */}
+      <div className="space-y-1.5">
+        <Label className="text-white font-medium">Дополнительная информация</Label>
+        <Textarea
+          value={draft.description}
+          onChange={(e) => updateDraft("description", e.target.value)}
+          placeholder=""
           className="bg-gray-50/50 border-gray-200"
         />
       </div>
@@ -339,7 +351,7 @@ function ExperienceCard({
         {/* Start Date */}
         <div className="space-y-2">
           <Label className="text-white font-medium">Дата начала</Label>
-          <div className="flex flex-row items-center gap-2 w-full">
+          <div className="flex flex-row items-center gap-2 w-full text-white">
             <DateSelect
               placeholder="Месяц"
               options={months.map((m, i) => ({
@@ -361,7 +373,7 @@ function ExperienceCard({
         {/* End Date */}
         <div className="space-y-2">
           <Label className="text-white font-medium">Дата окончания</Label>
-          <div className="flex flex-row items-center gap-2 w-full">
+          <div className="flex flex-row items-center gap-2 w-full text-white">
             <DateSelect
               placeholder="Месяц"
               options={months.map((m, i) => ({
@@ -396,7 +408,7 @@ function ExperienceCard({
             e.preventDefault();
             onDelete();
           }}
-          className="h-10 w-10 rounded-full text-gray-400 hover:text-red-500 hover:bg-red-500/10 transition-colors hover:cursor-pointer"
+          className="h-10 w-10 rounded-full text-white-400 hover:text-red-500 hover:bg-red-500/10 transition-colors hover:cursor-pointer"
           type="button"
         >
           <Trash2 size={18} />
