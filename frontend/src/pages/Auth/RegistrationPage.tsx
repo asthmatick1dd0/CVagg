@@ -96,8 +96,8 @@ function RegistrationPage(){
             <CardHeader className="flex flex-col items-center"> 
                 <CardTitle className="text-4xl">Регистрация</CardTitle>
             </CardHeader>
-            <CardContent className="flex flex-col justify-center items-center w-full">
-                <form onSubmit={formik.handleSubmit}>
+            <CardContent className="flex flex-col justify-center items-center">
+                <form onSubmit={formik.handleSubmit} className="w-[300px]">
                     <div className="gap-2">
                         <div className="flex flex-col gap-2 items-center">
                             <div className="pt-2 w-[280px]">
@@ -115,77 +115,77 @@ function RegistrationPage(){
                         {formik.touched.username && formik.errors.username && (
                             <div className="text-destructive text-sm mt-1">{formik.errors.username}</div>
                         )}
-                    </div>
+                            </div>
 
-                    <div className="w-[280px]">
-                        <label className="text-foreground" htmlFor="email">Электронная почта</label>
-                        <Input
-                            id="email"
-                            type="email"
-                            placeholder="you@example.com"
-                            value={formik.values.email}
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            required
-                            className={formik.touched.email && formik.errors.email ? "border-destructive focus-visible:ring-destructive" : ""}
-                        />
-                        {formik.touched.email && formik.errors.email && (
-                            <div className="text-destructive text-sm mt-1">{formik.errors.email}</div>
-                        )}
-                    </div>
+                            <div className="w-[280px]">
+                                <label className="text-foreground" htmlFor="email">Электронная почта</label>
+                                <Input
+                                    id="email"
+                                    type="email"
+                                    placeholder="you@example.com"
+                                    value={formik.values.email}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    required
+                                    className={formik.touched.email && formik.errors.email ? "border-destructive focus-visible:ring-destructive" : ""}
+                                />
+                                {formik.touched.email && formik.errors.email && (
+                                    <div className="text-destructive text-sm mt-1">{formik.errors.email}</div>
+                                )}
+                            </div>
 
-                    <div className="w-[280px]">
-                        <label className="text-foreground" htmlFor="password">Пароль</label>
-                        <div className="relative">   
-                            <Input
-                                id="password"
-                                type={showPassword ? "text" : "password"}
-                                placeholder="••••••••"
-                                value={formik.values.password}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                                required
-                                className={formik.touched.password && formik.errors.password ? "border-destructive focus-visible:ring-destructive" : ""}
-                            />
-                            <button
-                                    type="button"
-                                    onClick={togglePasswordVisibility}
-                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
-                                >
-                                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                                </button>
-                          </div>
+                            <div className="w-[280px]">
+                                <label className="text-foreground" htmlFor="password">Пароль</label>
+                                <div className="relative">   
+                                    <Input
+                                        id="password"
+                                        type={showPassword ? "text" : "password"}
+                                        placeholder="••••••••"
+                                        value={formik.values.password}
+                                        onChange={formik.handleChange}
+                                        onBlur={formik.handleBlur}
+                                        required
+                                        className={formik.touched.password && formik.errors.password ? "border-destructive focus-visible:ring-destructive" : ""}
+                                    />
+                                    <button
+                                            type="button"
+                                            onClick={togglePasswordVisibility}
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
+                                        >
+                                            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                                        </button>
+                                </div>
 
-                        {formik.touched.password && formik.errors.password && (
+                            {formik.touched.password && formik.errors.password && (
                                 <div className="text-destructive text-sm mt-1">{formik.errors.password}</div>
                             )}
-                    </div>
+                            </div>
 
-                    <div className="pb-2 w-[280px]">
-                        <label className="text-foreground" htmlFor="confirmPassword">Повторите пароль</label>
-                        <div className="relative">
-                            <Input
-                                id="confirmPassword"
-                                type={showConfirmPassword ? "text" : "password"}
-                                placeholder="••••••••"
-                                value={formik.values.confirmPassword}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                                required
-                                className={formik.touched.confirmPassword && formik.errors.confirmPassword ? "border-destructive focus-visible:ring-destructive" : ""}
-                            />
-                            <button
-                                type="button"
-                                onClick={toggleConfirmPasswordVisibility}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
-                            >
-                                {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                            </button>
-                        </div>
-                        {formik.touched.confirmPassword && formik.errors.confirmPassword && (
-                            <div className="text-destructive text-sm mt-1">{formik.errors.confirmPassword}</div>
-                        )}
-                    </div>
+                            <div className="pb-2 w-[280px]">
+                                <label className="text-foreground" htmlFor="confirmPassword">Повторите пароль</label>
+                                <div className="relative">
+                                    <Input
+                                        id="confirmPassword"
+                                        type={showConfirmPassword ? "text" : "password"}
+                                        placeholder="••••••••"
+                                        value={formik.values.confirmPassword}
+                                        onChange={formik.handleChange}
+                                        onBlur={formik.handleBlur}
+                                        required
+                                        className={formik.touched.confirmPassword && formik.errors.confirmPassword ? "border-destructive focus-visible:ring-destructive" : ""}
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={toggleConfirmPasswordVisibility}
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
+                                    >
+                                        {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                                    </button>
+                                </div>
+                                {formik.touched.confirmPassword && formik.errors.confirmPassword && (
+                                    <div className="text-destructive text-sm mt-1">{formik.errors.confirmPassword}</div>
+                                )}
+                            </div>
                         </div>
                     </div>
 
