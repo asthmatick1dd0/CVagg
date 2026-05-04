@@ -16,7 +16,8 @@ CREATE TABLE IF NOT EXISTS resume_item.personal_data (
     address TEXT,
     birth_date TIMESTAMP WITH TIME ZONE,
     website TEXT,
-    github TEXT
+    github TEXT,
+    avatar TEXT
 );
 
 -- таблица resume_item.about
