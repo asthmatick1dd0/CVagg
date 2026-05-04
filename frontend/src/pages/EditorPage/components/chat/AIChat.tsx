@@ -5,6 +5,7 @@ import type { ChatMessage, Analysis } from '@/types/ai.types';
 import { Button } from '@/components/ui/button';
 import { Send } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
+import { Textarea } from '@/components/ui/textarea';
 
 const genId = () => Math.random().toString(36).slice(2, 10);
 
@@ -128,13 +129,17 @@ export const AIChat = () => {
   const [loading, setLoading] = useState(false);
   const [input, setInput] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   const userId = resumeData?.user_id || 0;
   const resumeId = resumeData?.id;
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    const container = messagesContainerRef.current;
+  if (!container) return;
+  
+  container.scrollTop = container.scrollHeight;
   }, [messages, loading]);
 
   const addMessage = (msg: Omit<ChatMessage, 'id' | 'timestamp'>) => {
@@ -314,7 +319,7 @@ export const AIChat = () => {
 
       <div className="p-3 border-t bg-white">
         <div className="flex items-end gap-2">
-          <textarea
+          <Textarea
             ref={inputRef}
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -322,11 +327,7 @@ export const AIChat = () => {
             placeholder="Напишите сообщение..."
             disabled={loading}
             rows={1}
-            className="flex-1 resize-none rounded-xl border border-gray-300
-                       px-4 py-2.5 text-sm outline-none text-secondary-foreground
-                       focus:border-primary focus:ring-1 focus:ring-primary
-                       disabled:bg-gray-50 disabled:text-primary/10
-                       max-h-24 transition-colors"
+            className="flex-1"
             style={{
               height: 'auto',
               minHeight: '42px',

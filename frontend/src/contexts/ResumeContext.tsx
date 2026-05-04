@@ -41,6 +41,7 @@ const INITIAL_RESUME: Resume = {
 interface ResumeContextType {
   resumeData: Partial<Resume>;
   loading: boolean;
+  updateTitle: (value: string) => void;
   setResumeData: React.Dispatch<React.SetStateAction<Partial<Resume>>>;
   saveResume: () => Promise<void>;
 
@@ -166,6 +167,10 @@ export const ResumeProvider = ({ children }: { children: ReactNode }) => {
                   exp.job_experience?.position ||
                   exp.Position ||
                   "",
+                description:
+                  exp.job_experience?.description ||
+                  exp.Description ||
+                  "",
                 start_date:
                   exp.job_experience?.start_date ||
                   exp.StartDate ||
@@ -207,6 +212,13 @@ export const ResumeProvider = ({ children }: { children: ReactNode }) => {
       setResumeData({ ...INITIAL_RESUME });
     }
   }, [id, isNew, user?.id, navigate]);
+
+  const updateTitle = (value: string) => {
+  setResumeData((prev) => ({
+    ...prev,
+    title: value,
+  }));
+  };
 
   const updatePersonalInfo = useCallback(
   (field: string, value: string) => {
@@ -302,6 +314,7 @@ export const ResumeProvider = ({ children }: { children: ReactNode }) => {
             job_experience: {
               company: exp.company || "",
               position: exp.position || "",
+              description: exp.description || "",
               start_date: exp.start_date || "",
               end_date: exp.end_date || null,
             },
@@ -366,7 +379,8 @@ export const ResumeProvider = ({ children }: { children: ReactNode }) => {
         resumeData,
         setResumeData,
         loading,
-        saveResume,
+        saveResume, 
+        updateTitle,
         updatePersonalInfo,
         updateEducation,
         updateExperience,

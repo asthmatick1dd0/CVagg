@@ -6,7 +6,12 @@ const Footer = () => {
           <img
               src="/github-mark-white.svg"
               alt="GitHub logo"
-              className="w-9 h-9 hover:opacity-80 transition"
+              className="github-dark w-9 h-9 hover:opacity-80 transition"
+          />
+          <img
+              src="/github-mark-black.svg"
+              alt="GitHub logo"
+              className="github-light w-9 h-9 hover:opacity-80 transition"
           />
         </a>
         <div className="flex flex-row items-center gap-2">
@@ -15,7 +20,7 @@ const Footer = () => {
             alt="CVaggregator logo"
             className="w-9 h-8 rounded-md"
           />
-          <p className="font-inter font-semibold text-white text-lg">
+          <p className="font-inter font-semibold text-foreground text-lg">
             CVaggregator
           </p>
         </div>
