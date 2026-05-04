@@ -2,7 +2,13 @@ package editor
 
 import (
 	"bytes"
+	"crypto/rand"
+	"encoding/hex"
 	"fmt"
+	"io"
+	"mime/multipart"
+	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/asthmatick1dd0/CVagg/internal/models"
@@ -27,6 +33,7 @@ type Service interface {
 	GetResumeByID(tx *gorm.DB, id uint) (*input.ResumeInput, cvaggerr.Error)
 	ExportResumePDF(tx *gorm.DB, id uint) ([]byte, cvaggerr.Error)
 	UpdateResume(tx *gorm.DB, resume *input.ResumeInput) cvaggerr.Error
+	UploadAvatar(ctx *fiber.Ctx, resumeID uint, fh *multipart.FileHeader) (string, cvaggerr.Error)
 	CheckCooldown(ctx *fiber.Ctx, userID string) (bool, cvaggerr.Error)
 	SetCooldown(ctx *fiber.Ctx, userID string, duration time.Duration) cvaggerr.Error
 }
@@ -281,6 +288,7 @@ func (s *service) UpdatePersonalData(tx *gorm.DB, it *input.ItemInput, ID uint) 
 		Email:      it.PersonalData.Email,
 		Phone:      it.PersonalData.Phone,
 		Address:    it.PersonalData.Address,
+		Avatar:     it.PersonalData.Avatar,
 	}
 
 	if err := s.personalDataRepo.Update(tx, personalDataModel, "resume_item.personal_data", it.FieldID); err != nil {
@@ -418,6 +426,7 @@ func (s *service) SavePersonalData(tx *gorm.DB, it *input.ItemInput, ID uint) cv
 		Email:      it.PersonalData.Email,
 		Phone:      it.PersonalData.Phone,
 		Address:    it.PersonalData.Address,
+		Avatar:     it.PersonalData.Avatar,
 	}
 
 	if err := s.personalDataRepo.Create(tx, personalDataModel, "resume_item.personal_data"); err != nil {
@@ -658,6 +667,7 @@ func (s *service) GetResumeByID(tx *gorm.DB, id uint) (*input.ResumeInput, cvagg
 					Email:      model.Email,
 					Phone:      model.Phone,
 					Address:    model.Address,
+					Avatar:     model.Avatar,
 				},
 			}, nil
 		},
@@ -825,4 +835,78 @@ func (s *service) SetCooldown(ctx *fiber.Ctx, userID string, duration time.Durat
 	}
 
 	return nil
+}
+
+// UploadAvatar saves uploaded file to disk and stores its path in personal_data for the resume
+func (s *service) UploadAvatar(ctx *fiber.Ctx, resumeID uint, fh *multipart.FileHeader) (string, cvaggerr.Error) {
+	if fh == nil {
+		return "", cvaggerr.New("file required", "файл обязателен", 400)
+	}
+
+	uploadDir := os.Getenv("UPLOAD_DIR")
+	if uploadDir == "" {
+		uploadDir = "images/uploads"
+	}
+	if err := os.MkdirAll(uploadDir, 0755); err != nil {
+		return "", cvaggerr.New(err.Error(), "не удалось создать папку для загрузок", 500)
+	}
+
+	src, err := fh.Open()
+	if err != nil {
+		return "", cvaggerr.New(err.Error(), "не удалось открыть файл", 500)
+	}
+	defer src.Close()
+
+	rb := make([]byte, 8)
+	rand.Read(rb)
+	ext := filepath.Ext(fh.Filename)
+	filename := fmt.Sprintf("%d-%s%s", time.Now().Unix(), hex.EncodeToString(rb), ext)
+	dstPath := filepath.Join(uploadDir, filename)
+
+	dst, err := os.Create(dstPath)
+	if err != nil {
+		return "", cvaggerr.New(err.Error(), "не удалось создать файл на диске", 500)
+	}
+	defer dst.Close()
+
+	if _, err := io.Copy(dst, src); err != nil {
+		return "", cvaggerr.New(err.Error(), "не удалось записать файл", 500)
+	}
+
+	url := "/images/uploads/" + filename
+
+	if resumeID != 0 {
+		// find personal_data resume_item
+		items, err := s.resumeItemRepo.GetAllByResumeID(nil, resumeID, "resume_item.item")
+		if err != nil {
+			return url, err
+		}
+
+		var pdItem *models.ResumeItem
+		for _, it := range items {
+			if it.ItemType == "personal_data" {
+				pdItem = it
+				break
+			}
+		}
+
+		if pdItem != nil {
+			avatar := url
+			if err := s.personalDataRepo.Update(nil, &models.PersonalData{Avatar: &avatar}, "resume_item.personal_data", pdItem.ItemId); err != nil {
+				return url, err
+			}
+		} else {
+			avatar := url
+			pdModel := &models.PersonalData{Avatar: &avatar}
+			if err := s.personalDataRepo.Create(nil, pdModel, "resume_item.personal_data"); err != nil {
+				return url, err
+			}
+			resumeItemModel := &models.ResumeItem{ItemType: "personal_data", ItemId: pdModel.ID, ResumeId: resumeID}
+			if err := s.resumeItemRepo.Create(nil, resumeItemModel, "resume_item.item"); err != nil {
+				return url, err
+			}
+		}
+	}
+
+	return url, nil
 }
