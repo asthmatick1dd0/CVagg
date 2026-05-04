@@ -226,7 +226,7 @@ export const AIChat = () => {
       <div className="px-4 py-3 bg-gray-50 border-b flex justify-between items-center">
         <div className="flex items-center gap-2">
           <img src="/mascot.svg" alt="mascot" className="w-6 h-6" />
-          <h3 className="font-semibold text-sm">AI-ассистент</h3>
+          <h3 className="font-semibold text-black text-sm">AI-ассистент</h3>
         </div>
         <div className="flex gap-2">
           <Button
@@ -291,7 +291,7 @@ export const AIChat = () => {
           <div key={msg.id}>
             {msg.role === 'user' ? (
               <div className="flex justify-end">
-                <div className="max-w-[80%] px-4 py-3 rounded-2xl rounded-br-xs bg-primary text-foreground">
+                <div className="max-w-[80%] px-4 py-3 rounded-2xl rounded-br-xs bg-primary text-white">
                   {msg.text && (
                     <div className="text-sm whitespace-pre-wrap">
                       <ReactMarkdown>{msg.text}</ReactMarkdown>
@@ -302,7 +302,7 @@ export const AIChat = () => {
             ) : (
               <MascotBubble>
                 {msg.text && (
-                  <div className={`text-sm text-secondary-foreground whitespace-pre-wrap ${msg.analysis ? 'mb-3' : ''}`}>
+                  <div className={`text-sm text-black whitespace-pre-wrap ${msg.analysis ? 'mb-3' : ''}`}>
                     <ReactMarkdown>{msg.text}</ReactMarkdown>
                   </div>
                 )}
@@ -327,7 +327,7 @@ export const AIChat = () => {
             placeholder="Напишите сообщение..."
             disabled={loading}
             rows={1}
-            className="flex-1"
+            className="flex-1 text-black"
             style={{
               height: 'auto',
               minHeight: '42px',
