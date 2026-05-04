@@ -135,7 +135,7 @@ const EditorContent = () => {
                 <AIChat />
               </TabsContent>
           </Tabs>
-            </div>
+          </div>
         </div>
       </CSSTransition>
     </>

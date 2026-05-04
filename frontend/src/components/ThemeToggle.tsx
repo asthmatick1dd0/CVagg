@@ -1,4 +1,3 @@
-// ThemeToggle.tsx
 import { useEffect, useState } from 'react';
 import { Moon, Sun } from 'lucide-react';
 
@@ -27,7 +26,7 @@ export function ThemeToggle() {
     <button
       onClick={toggleTheme}
       className="
-        fixed bottom-6 right-6 z-50
+        fixed bottom-6 right-6 z-[100]
         p-3 rounded-full
         bg-popover border border-border
         shadow-lg hover:shadow-xl
