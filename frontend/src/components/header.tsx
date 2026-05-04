@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button } from "./ui/button";
 import { useAuth } from "@/contexts/AuthContext";
+import { useResumes } from "@/hooks/useResumes";
 import UserPage from "@/pages/UserPage/UserPage";
 import { User } from "lucide-react";
 
@@ -11,6 +12,8 @@ const Header = () => {
   const handleUser = () => {
     setIsUserPageOpen(!isUserPageOpen);
   };
+
+  const { count } = useResumes();
   
   return (
     <>
@@ -36,9 +39,10 @@ const Header = () => {
           <UserPage
             currentUser={{
               id: user?.id ?? "1",
-              name: (user as any)?.name ?? (user as any)?.username ?? user?.email ?? "Name Surname",
+              name: user?.name ?? "Имя",
+              surname: user?.surname ?? "Фамилия",
               email: user?.email ?? "example@your.mail",
-              resumeCount: 0,
+              resumeCount: count ?? 0,
             }}
             onLogout={logout}
             onSettings={() => {}}

@@ -7,6 +7,7 @@ export const useResumes = () => {
     const { user } = useAuth();
 
     const [resumes, setResumes] = useState<Resume[]>([]);
+    const [count, setCount] = useState<number>(0);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null); 
 
@@ -20,6 +21,7 @@ export const useResumes = () => {
         try {
             const data = await resumeApi.fetchResumes(Number(user.id));
             setResumes(Array.isArray(data) ? data : []);
+            setCount(Array.isArray(data) ? count + 1 : count);
         } catch (err: any) {
             console.error("Fetch error:", err);
             
@@ -79,5 +81,5 @@ export const useResumes = () => {
         }
     }, [fetchResumes, user]);
 
-    return { resumes, loading, error, refetch: fetchResumes, saveResume, updateResume};
+    return { resumes, loading, error, count, refetch: fetchResumes, saveResume, updateResume};
 };
