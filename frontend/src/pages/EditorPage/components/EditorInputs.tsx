@@ -11,7 +11,7 @@ export function EditorInputs() {
   const { saveResume, loading } = useResumeContext()
 
   return (
-    <div className="w-full min-w:400px p-10 bg-secondary/20 rounded-xl">
+    <div className="w-full min-w:400px p-10 inputs rounded-xl">
       <form
         onSubmit={(e) => {
           e.preventDefault()
@@ -20,7 +20,7 @@ export function EditorInputs() {
       >
         <div className="py-5">
           <PersonalForm />
-          <FieldSeparator />
+          <FieldSeparator/>
           <AccordionDemo />
         </div>
 

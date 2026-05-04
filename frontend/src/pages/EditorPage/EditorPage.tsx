@@ -72,7 +72,7 @@ const EditorContent = () => {
                 group
               "
               onClick={handleOpen}>
-                <FileQuestionMark className="w-5 h-5 text-foregroun transition-colors" />
+                <FileQuestionMark className="w-5 h-5 text-foreground transition-colors" />
               </div>
         </div>
       </div>

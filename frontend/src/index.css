@@ -85,7 +85,7 @@ font-family: "Noto Sans", monospace;
 
   --destructive: #b40000;
 
-  --border: #fafafa;
+  --border: #1B1716;
 
   --input: #C6B7A2;
 
@@ -235,6 +235,13 @@ font-family: "Noto Sans", monospace;
 }
 [data-theme="light"] .resume-grid {
   background-color: #d8cec1;
+}
+
+.inputs {
+  background-color: rgb(255, 255, 255, 0.2)
+}
+[data-theme="light"] .inputs {
+  background-color: rgb(255, 255, 255);
 }
 
 
