@@ -56,7 +56,7 @@ function DashboardPage(){
         <div className="flex flex-col min-h-screen items-center justify-center gap-6 dashboard-gradient">
             <Header />
             <div className="flex-1 flex flex-col">
-                <div className="flex flex-col items-center justify-center px-24 pt-10 gap-16">
+                <div className="flex flex-col items-center justify-center px-24 max-sm:px-0 pt-10 gap-16">
                     <div className="flex flex-row justify-start items-start w-full max-sm:justify-center">
                         <h1 className="text-5xl text-white font-bold">Ваши резюме</h1>
                     </div>
