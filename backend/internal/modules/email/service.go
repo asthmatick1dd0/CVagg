@@ -20,22 +20,27 @@ type SMTPConfig struct {
 	Password string
 }
 
-func NewSMTPConfig() *SMTPConfig {
-	if err := godotenv.Load(); err != nil {
-		return nil
-	}
+func NewSMTPConfig() (*SMTPConfig, error) {
+	_ = godotenv.Load()
 
-	port, err := strconv.Atoi(os.Getenv("SMTP_PORT"))
+	portStr := os.Getenv("SMTP_PORT")
+	port, err := strconv.Atoi(portStr)
 	if err != nil {
-		return nil
+		return nil, fmt.Errorf("invalid SMTP_PORT: %w", err)
 	}
 
-	return &SMTPConfig{
+	cfg := &SMTPConfig{
 		Server:   os.Getenv("SMTP_SERVER"),
 		Port:     port,
 		Email:    os.Getenv("EMAIL_ADDRESS"),
 		Password: os.Getenv("EMAIL_PASSWORD"),
 	}
+
+	if cfg.Server == "" || cfg.Email == "" || cfg.Password == "" {
+		return nil, fmt.Errorf("missing SMTP env vars")
+	}
+
+	return cfg, nil
 }
 
 func NewDialer(cfg *SMTPConfig) *gomail.Dialer {

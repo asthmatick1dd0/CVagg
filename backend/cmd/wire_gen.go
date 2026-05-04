@@ -17,6 +17,7 @@ import (
 	"github.com/asthmatick1dd0/CVagg/internal/modules/editor/entity/job_experience"
 	"github.com/asthmatick1dd0/CVagg/internal/modules/editor/entity/personal_data"
 	"github.com/asthmatick1dd0/CVagg/internal/modules/editor/entity/resume_item"
+	"github.com/asthmatick1dd0/CVagg/internal/modules/email"
 	redis2 "github.com/asthmatick1dd0/CVagg/internal/modules/redis"
 	"github.com/asthmatick1dd0/CVagg/internal/modules/user"
 	"github.com/asthmatick1dd0/CVagg/internal/modules/user/entity/auth"
@@ -34,8 +35,14 @@ import (
 
 func newApp(viperViper *viper.Viper, logger *cvagglog.Logger, db *gorm.DB, client *redis.Client) (App, func(), error) {
 	repository := user.NewRepository(db, logger)
-	service := auth.NewService(repository)
-	handler := auth.NewHandler(service, repository)
+	smtpConfig, err := email.NewSMTPConfig()
+	if err != nil {
+		return App{}, nil, err
+	}
+	dialer := email.NewDialer(smtpConfig)
+	service := email.NewService(dialer)
+	authService := auth.NewService(repository, service)
+	handler := auth.NewHandler(authService, repository, service)
 	dashboardRepository := dashboard.NewRepository(db, logger)
 	dashboardService := dashboard.NewDashboardService(dashboardRepository)
 	dashboardHandler := dashboard.NewHandler(dashboardService)
@@ -71,7 +78,7 @@ func provideYandexClient(v *viper.Viper) llm.LLMClient {
 var HandlerSet = wire.NewSet(auth.NewHandler, dashboard.NewHandler, editor.NewHandler)
 
 // Services
-var ServiceSet = wire.NewSet(auth.NewService, dashboard.NewDashboardService, editor.NewService)
+var ServiceSet = wire.NewSet(auth.NewService, dashboard.NewDashboardService, editor.NewService, email.NewService, email.NewDialer, email.NewSMTPConfig)
 
 // Repositories
 var RepositorySet = wire.NewSet(user.NewRepository, dashboard.NewRepository, about.NewRepository, custom.NewRepository, education.NewRepository, hard_skill.NewRepository, job_experience.NewRepository, personal_data.NewRepository, resume_item.NewRepository, redis2.NewRepository)

@@ -29,8 +29,8 @@ type handler struct {
 	emailService email.Service
 }
 
-func NewHandler(s Service, userRepo user.Repository) Handler {
-	return &handler{service: s, userRepo: userRepo, emailService: email.NewService(email.NewDialer(email.NewSMTPConfig()))}
+func NewHandler(s Service, userRepo user.Repository, emailService email.Service) Handler {
+	return &handler{service: s, userRepo: userRepo, emailService: emailService}
 }
 
 func (h *handler) SignUp(c *fiber.Ctx) error {
@@ -49,14 +49,12 @@ func (h *handler) SignUp(c *fiber.Ctx) error {
 	user.Email = input.Email
 	user.Username = input.Username
 	passwordHash, err := bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.DefaultCost)
-
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON("can't read password")
 	}
 	user.PasswordHash = string(passwordHash)
 
 	token, err := h.service.NewUserToToken(c, &user)
-
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON("can't encode user")
 	}
@@ -79,7 +77,6 @@ func (h *handler) Verify(c *fiber.Ctx) error {
 	}
 
 	user, err := h.service.NewUserFromToken(token, c)
-
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(err.Error())
 	}
@@ -117,7 +114,7 @@ func (h *handler) SignIn(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(err.Error())
 	}
 
-	//TODO: вынести то шо внизу в сервис
+	// TODO: вынести то шо внизу в сервис
 	domain := os.Getenv("COOKIE_DOMAIN")
 	if domain == "" {
 		domain = "localhost"

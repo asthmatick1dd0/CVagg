@@ -36,10 +36,10 @@ type authService struct {
 	userPool map[uint]*models.User
 }
 
-func NewService(repo user.Repository) Service {
+func NewService(repo user.Repository, emailDialer email.Service) Service {
 	return &authService{
 		repo,
-		email.NewService(email.NewDialer(email.NewSMTPConfig())),
+		emailDialer,
 		make(map[uint]*models.User),
 	} // для быстрого доступа к авторизованным юзерам, хранится только в оперативной памяти хоста
 }

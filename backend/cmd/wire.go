@@ -4,6 +4,8 @@
 package main
 
 import (
+	"github.com/asthmatick1dd0/CVagg/internal/modules/email"
+
 	"github.com/asthmatick1dd0/CVagg/http/server"
 	"github.com/asthmatick1dd0/CVagg/internal/modules/dashboard"
 	dashboardService "github.com/asthmatick1dd0/CVagg/internal/modules/dashboard"
@@ -48,6 +50,9 @@ var ServiceSet = wire.NewSet(
 	auth.NewService,
 	dashboardService.NewDashboardService,
 	editor.NewService,
+	email.NewService,
+	email.NewDialer,
+	email.NewSMTPConfig,
 )
 
 // Repositories
