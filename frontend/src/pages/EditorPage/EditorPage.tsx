@@ -61,9 +61,18 @@ const EditorContent = () => {
         <div className="w-full h-full object-cover rounded-lg">
           <EditorInputs />
               <div 
-              className="fixed bg-primary end-2 w-16 h-16 rounded-full bottom-2 flex items-center justify-center cursor-pointer" 
+              className="
+                fixed bottom-18 right-6 max-sm:bottom-18 max-sm:right-4 z-50
+                p-3 rounded-full
+                bg-accent border border-border
+                shadow-lg hover:shadow-xl
+                hover:scale-110 active:scale-95
+                transition-all duration-200 ease-out
+                cursor-pointer
+                group
+              "
               onClick={handleOpen}>
-                <FileQuestionMark size={24} />
+                <FileQuestionMark className="w-5 h-5 text-foregroun transition-colors" />
               </div>
         </div>
       </div>
@@ -135,7 +144,7 @@ const EditorContent = () => {
                 <AIChat />
               </TabsContent>
           </Tabs>
-          </div>
+            </div>
         </div>
       </CSSTransition>
     </>
