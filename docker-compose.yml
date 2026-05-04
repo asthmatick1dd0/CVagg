@@ -12,6 +12,7 @@ services:
     volumes:
       - ./backend:/app
       - ./assets:/app/assets
+      - images_data:/app/images
 
   nginx:
     container_name: cvagg-nginx
@@ -47,3 +48,4 @@ services:
 volumes:
   postgres_data:
   redis_data:
+  images_data:
