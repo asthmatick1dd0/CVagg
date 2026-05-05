@@ -67,7 +67,7 @@ export function ResumeCard({
               }
             `}
           >
-            {isSelected && <Check size={14} className="text-white" strokeWidth={3} />}
+            {isSelected && <Check size={14} className="text-foreground" strokeWidth={3} />}
           </div>
         )}
       </div>
@@ -77,7 +77,7 @@ export function ResumeCard({
         className={`
           font-inter mt-2 text-sm text-center max-w-38 truncate
           transition-colors duration-200
-          ${isSelected ? 'text-primary-400 font-medium' : 'text-white'}
+          ${isSelected ? 'font-bold' : 'text-foreground'}
         `}
       >
         {resume.title || "Без названия"}

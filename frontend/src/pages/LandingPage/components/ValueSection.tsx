@@ -2,7 +2,7 @@ import TextBox from "@/components/ui/textbox";
 
 const ValueSection = () => {
   return (
-    <section className="flex items-center justify-center" style={{ backgroundColor: "#560004" }}>
+    <section className="landing-bg flex items-center justify-center">
       <div className="sticky flex flex-col rounded-t-3xl justify-center items-center bg-background w-full mx-auto p-12 gap-6">
         <h3 className="text-primary-foreground text-2xl font-bold pt-8 pb-3">Всё, чтобы выделиться:</h3>
         <div className="grid grid-cols-3 max-md:grid-cols-1 max-md:grid-rows-3 font-inter gap-5">
