@@ -10,14 +10,7 @@ import {
   FileText,
   ChevronRight,
 } from "lucide-react";
-
-export interface Account {
-  id: string | number;
-  name: string;
-  email: string;
-  resumeCount: number;
-  avatarUrl?: string;
-}
+import type { Account } from "@/types/account.types";
 
 export interface UserPageProps {
   currentUser: Account;
@@ -27,13 +20,13 @@ export interface UserPageProps {
   onSettings?: () => void;
 }
 
-function UserAvatar({ avatarUrl, name, size = "lg" }: { avatarUrl?: string; name: string; size?: "sm" | "lg" }) {
+function UserAvatar({ avatar, name, size = "lg" }: { avatar?: string; name: string; size?: "sm" | "lg" }) {
   const sizeClasses = size === "lg" ? "w-16 h-16" : "w-9 h-9";
   const iconSize = size === "lg" ? 32 : 18;
   return (
     <div className={`${sizeClasses} rounded-xl bg-white/20 flex items-center justify-center overflow-hidden shrink-0`}>
-      {avatarUrl
-        ? <img src={avatarUrl} alt={name} className="w-full h-full object-cover" />
+      {avatar
+        ? <img src={avatar} alt={name} className="w-full h-full object-cover" />
         : <User size={iconSize} className="text-white/70" />
       }
     </div>
@@ -97,7 +90,7 @@ function UserPage({ currentUser, accounts = [], onLogout, onSwitchAccount, onSet
           >
             <LogOut size={26} />
           </button>
-          <UserAvatar avatarUrl={currentUser.avatarUrl} name={currentUser.name} size="lg" />
+          <UserAvatar avatar={currentUser.avatar} name={currentUser.name} size="lg" />
         </div>
         <div className="bg-card rounded-3xl flex flex-col gap-4 px-6 pt-6 pb-8 -mt-6 relative z-10">
 
