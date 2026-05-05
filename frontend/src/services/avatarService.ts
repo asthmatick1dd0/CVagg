@@ -1,0 +1,24 @@
+import { api } from '@/utils/api';
+
+const getTokenQuery = () => {
+    const token = localStorage.getItem("token");
+    return token ? `&SignedString=${encodeURIComponent(token)}` : "";
+};
+
+export const avatarApi = {
+  uploadAvatar: async (userID: number, file: File): Promise<{ url: string }> => {
+        const formData = new FormData();
+        formData.append('avatar', file);
+
+        const response = await api.post(
+            `/upload-avatar?user_id=${userID}${getTokenQuery()}`,
+            formData,
+            {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            }
+        );
+        return response.data;
+    },
+};
