@@ -65,7 +65,7 @@ function LoginPage() {
                     <CardTitle className="text-4xl ">Войти в аккаунт</CardTitle>
                 </CardHeader>
                 <CardContent className="flex flex-col justify-center items-center w-full">
-                    <form onSubmit={formik.handleSubmit}>
+                    <form onSubmit={formik.handleSubmit} className="w-[300px]">
                         <div className="gap-2">
                             <div className="flex flex-col gap-2 items-center">
                                 <div className="pt-2 w-[280px]">
