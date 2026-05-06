@@ -3,7 +3,9 @@ package editor
 import (
 	"fmt"
 	"log"
+	"path/filepath"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/asthmatick1dd0/CVagg/internal/modules/user/entity/auth"
@@ -20,6 +22,7 @@ type Handler interface {
 	GetResumeByID(ctx *fiber.Ctx) error
 	ExportResumePDF(ctx *fiber.Ctx) error
 	Analyze(ctx *fiber.Ctx) error
+	UploadAvatar(ctx *fiber.Ctx) error
 	UpdateResume(ctx *fiber.Ctx) error
 }
 
@@ -159,4 +162,48 @@ func (h *handler) UpdateResume(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "internal server error"})
 	}
 	return nil
+}
+
+func (h *handler) UploadAvatar(ctx *fiber.Ctx) error {
+	// require resume_id to attach photo to resume
+	resumeIDStr := ctx.FormValue("resume_id")
+	if resumeIDStr == "" {
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "resume_id is required"})
+	}
+	id64, err := strconv.ParseUint(resumeIDStr, 10, 64)
+	if err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "invalid resume_id"})
+	}
+	resumeID := uint(id64)
+
+	fileHeader, err := ctx.FormFile("file")
+	if err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "file is required"})
+	}
+
+	allowedExts := map[string]bool{
+		".jpg":  true,
+		".jpeg": true,
+		".png":  true,
+		".webp": true,
+	}
+	maxSize := int64(20 * 1024 * 1024) // 20 MB
+
+	ext := strings.ToLower(filepath.Ext(fileHeader.Filename))
+	if !allowedExts[ext] {
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "unsupported file type"})
+	}
+
+	if fileHeader.Size > 0 {
+		if fileHeader.Size > maxSize {
+			return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "file too large"})
+		}
+	}
+
+	url, err := h.s.UploadAvatar(ctx, resumeID, fileHeader)
+	if err != nil {
+		return resp.HandleError(ctx, cvaggerr.NewD(err))
+	}
+
+	return ctx.JSON(fiber.Map{"url": url})
 }
