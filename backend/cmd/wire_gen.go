@@ -17,6 +17,7 @@ import (
 	"github.com/asthmatick1dd0/CVagg/internal/modules/editor/entity/job_experience"
 	"github.com/asthmatick1dd0/CVagg/internal/modules/editor/entity/personal_data"
 	"github.com/asthmatick1dd0/CVagg/internal/modules/editor/entity/resume_item"
+	"github.com/asthmatick1dd0/CVagg/internal/modules/editor/storage"
 	redis2 "github.com/asthmatick1dd0/CVagg/internal/modules/redis"
 	"github.com/asthmatick1dd0/CVagg/internal/modules/user"
 	"github.com/asthmatick1dd0/CVagg/internal/modules/user/entity/auth"
@@ -40,6 +41,7 @@ func newApp(viperViper *viper.Viper, logger *cvagglog.Logger, db *gorm.DB, clien
 	dashboardService := dashboard.NewDashboardService(dashboardRepository)
 	dashboardHandler := dashboard.NewHandler(dashboardService)
 	resume_itemRepository := resume_item.NewRepository(db, logger)
+	avatarStorage := storage.NewAvatarStorage()
 	job_experienceRepository := job_experience.NewRepository(db, logger)
 	educationRepository := education.NewRepository(db, logger)
 	hard_skillRepository := hard_skill.NewRepository(db, logger)
@@ -47,7 +49,7 @@ func newApp(viperViper *viper.Viper, logger *cvagglog.Logger, db *gorm.DB, clien
 	customRepository := custom.NewRepository(db, logger)
 	personal_dataRepository := personal_data.NewRepository(db, logger)
 	redisRepository := redis2.NewRepository(client, logger)
-	editorService := editor.NewService(dashboardRepository, resume_itemRepository, job_experienceRepository, educationRepository, hard_skillRepository, aboutRepository, customRepository, personal_dataRepository, redisRepository)
+	editorService := editor.NewService(dashboardRepository, resume_itemRepository, job_experienceRepository, educationRepository, hard_skillRepository, aboutRepository, customRepository, personal_dataRepository, avatarStorage, redisRepository)
 	llmClient := provideYandexClient(viperViper)
 	editorHandler := editor.NewHandler(editorService, llmClient)
 	app := server.NewServerHTTP(handler, dashboardHandler, editorHandler)
@@ -74,7 +76,7 @@ var HandlerSet = wire.NewSet(auth.NewHandler, dashboard.NewHandler, editor.NewHa
 var ServiceSet = wire.NewSet(auth.NewService, dashboard.NewDashboardService, editor.NewService)
 
 // Repositories
-var RepositorySet = wire.NewSet(user.NewRepository, dashboard.NewRepository, about.NewRepository, custom.NewRepository, education.NewRepository, hard_skill.NewRepository, job_experience.NewRepository, personal_data.NewRepository, resume_item.NewRepository, redis2.NewRepository)
+var RepositorySet = wire.NewSet(user.NewRepository, dashboard.NewRepository, about.NewRepository, custom.NewRepository, education.NewRepository, hard_skill.NewRepository, job_experience.NewRepository, personal_data.NewRepository, resume_item.NewRepository, storage.NewAvatarStorage, redis2.NewRepository)
 
 // Server
 var ServerSet = wire.NewSet(server.NewServerHTTP)
