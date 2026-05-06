@@ -5,6 +5,8 @@ import { api } from "../utils/api";
 interface User {
   id?: string;
   username?: string;
+  name?: string;
+  surname?: string;
   email?: string;
 }
 

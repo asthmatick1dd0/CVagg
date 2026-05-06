@@ -126,6 +126,12 @@ export const ResumeProvider = ({ children }: { children: ReactNode }) => {
                 personalSource.DesiredJob ||
                 personalSource.JobTitle ||
                 "",
+              avatar:
+                personalSource.avatar ||
+                personalSource.Avatar ||
+                personalSource.image ||
+                personalSource.Image ||
+                ""
             },
 
             education: (data.items?.education || []).map(
@@ -294,6 +300,7 @@ export const ResumeProvider = ({ children }: { children: ReactNode }) => {
                 email: current.personalInfo?.email || "",
                 phone: current.personalInfo?.phone || "",
                 address: current.personalInfo?.address || "",
+                avatar: current.personalInfo?.avatar || "",
               },
             },
           ],
@@ -346,6 +353,10 @@ export const ResumeProvider = ({ children }: { children: ReactNode }) => {
           })),
         },
       };
+
+      if (isEditing) {
+        payload.id = currentResumeId;
+      }
 
       console.log("Payload:", JSON.stringify(payload, null, 2));
 
