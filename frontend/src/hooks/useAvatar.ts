@@ -10,7 +10,7 @@ interface UseAvatarReturn {
     uploading: boolean;
     error: string | null;
     preview: string | null;
-    uploadAvatar: (userID: number, file: File) => Promise<AvatarResponse | null>;
+    uploadAvatar: (resumeID: string, userID: number, file: File) => Promise<AvatarResponse | null>;
     setPreview: (url: string | null) => void;
     clearError: () => void;
     validateFile: (file: File) => boolean;
@@ -44,6 +44,7 @@ export const useAvatar = (options: UseAvatarOptions = {}): UseAvatarReturn => {
     }, [allowedTypes, maxSizeInMB]);
 
     const uploadAvatar = useCallback(async (
+        resumeID: string,
         userID: number,
         file: File
     ): Promise<AvatarResponse | null> => {
@@ -53,7 +54,7 @@ export const useAvatar = (options: UseAvatarOptions = {}): UseAvatarReturn => {
         setError(null);
 
         try {
-            const response = await avatarApi.uploadAvatar(userID, file);
+            const response = await avatarApi.uploadAvatar(resumeID, userID, file);
             setPreview(response.url);
             return response;
         } catch (err) {

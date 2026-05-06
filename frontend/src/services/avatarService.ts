@@ -12,26 +12,19 @@ export interface AvatarResponse {
 }
 
 export const avatarApi = {
-  uploadAvatar: async (userID: number, file: File): Promise<AvatarResponse> => {
+  uploadAvatar: async (resumeID: string, userID: number, file: File): Promise<AvatarResponse> => {
         const formData = new FormData();
-        formData.append('avatar', file);
+        formData.append('file', file);
 
         const response = await api.post(
-            `/upload-avatar?user_id=${userID}${getTokenQuery()}`,
+            `editor/upload-avatar?resume_id=${resumeID}&user_id=${userID}${getTokenQuery()}`,
             formData,
             {
                 headers: {
-                    'Content-Type': 'multipart/form-data',
+                    'Content-Type': undefined,
                 },
             }
         );
         return response.data;
-    },
-    // удаление на будущее
-    // deleteAvatar: async (userID: number): Promise<{success: boolean}> => {
-    //     const response = await api.delete(
-    //         `/delete-avatar?user_id=${userID}${getTokenQuery()}`
-    //     );
-    //     return response.data;
-    // }
+    } 
 };
