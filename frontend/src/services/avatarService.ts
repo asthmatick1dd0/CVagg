@@ -5,8 +5,14 @@ const getTokenQuery = () => {
     return token ? `&SignedString=${encodeURIComponent(token)}` : "";
 };
 
+export interface AvatarResponse {
+    url: string;
+    success: boolean;
+    message?: string;
+}
+
 export const avatarApi = {
-  uploadAvatar: async (userID: number, file: File): Promise<{ url: string }> => {
+  uploadAvatar: async (userID: number, file: File): Promise<AvatarResponse> => {
         const formData = new FormData();
         formData.append('avatar', file);
 
@@ -21,4 +27,11 @@ export const avatarApi = {
         );
         return response.data;
     },
+    // удаление на будущее
+    // deleteAvatar: async (userID: number): Promise<{success: boolean}> => {
+    //     const response = await api.delete(
+    //         `/delete-avatar?user_id=${userID}${getTokenQuery()}`
+    //     );
+    //     return response.data;
+    // }
 };
