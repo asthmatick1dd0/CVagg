@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button"
 import {
   Field,
   FieldLabel,
@@ -6,12 +5,23 @@ import {
   FieldSet,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import DemoAvatar from "@/assets/icons/demo.svg"
+import { AvatarUpload } from "@/components/AvatarUpload"
+import { useAuth } from "@/contexts/AuthContext"
 import { useResumeContext } from "@/contexts/ResumeContext"
 
 export default function EditorInputs() {
 
   const { resumeData, updatePersonalInfo } = useResumeContext()
+  const { user } = useAuth()
+
+  const avatarUrl = resumeData.personalInfo?.avatar || null
+  const userName = [resumeData.personalInfo?.name, resumeData.personalInfo?.surname]
+    .filter(Boolean)
+    .join(' ') || undefined
+
+  const handleAvatarUploadSuccess = (url: string) => {
+    updatePersonalInfo('avatar', url)
+  }
 
   return (
         <FieldGroup>
@@ -20,13 +30,15 @@ export default function EditorInputs() {
               <Field className="gap-1">
                 <div className="relative group flex flex-col items-center gap-1">
                   <p className="text-sm font-medium ">Фото</p>
-                  <div className="w-[111px] h-[111px] rounded-sm overflow-hidden bg-gray-50 dark:bg-gray-900">
-                    <img src={DemoAvatar} alt="User avatar" className="w-full h-full object-cover" />
+                  <div className="w-full max-w-[172px]">
+                    <AvatarUpload
+                      resumeID={resumeData.id}
+                      userID={Number(user?.id ?? 0)}
+                      currentAvatarUrl={avatarUrl}
+                      userName={userName}
+                      onUploadSuccess={handleAvatarUploadSuccess}
+                    />
                   </div>
-                  {/* TODO: добавить логику загрузки изображения */}
-                  <Button variant="secondary" size="sm" className="absolute bottom-2 opacity-0 max-md:opacity-100  group-hover:opacity-100 transition-opacity hover:cursor-pointer" type="button" onClick={(e) => e.preventDefault()}> 
-                    Загрузить
-                  </Button>
                 </div>
               </Field>
 
