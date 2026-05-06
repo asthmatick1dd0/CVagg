@@ -16,4 +16,5 @@ type PersonalData struct {
 	BirthDate  *time.Time `json:"birth_date"`
 	Website    *string    `json:"website"`
 	Github     *string    `json:"github"`
+	Avatar     *string    `json:"avatar"`
 }

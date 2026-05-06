@@ -22,11 +22,12 @@ type ItemInput struct {
 }
 
 type PersonalDataInput struct {
-	DesiredJob string `json:"desired_job"`
-	FullName   string `json:"full_name"`
-	Email      string `json:"email"`
-	Phone      string `json:"phone"`
-	Address    string `json:"address"`
+	DesiredJob string  `json:"desired_job"`
+	FullName   string  `json:"full_name"`
+	Email      string  `json:"email"`
+	Phone      string  `json:"phone"`
+	Address    string  `json:"address"`
+	Avatar     *string `json:"avatar,omitempty"`
 }
 
 type EducationInput struct {

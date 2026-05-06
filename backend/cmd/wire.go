@@ -15,6 +15,7 @@ import (
 	jobExpRepo "github.com/asthmatick1dd0/CVagg/internal/modules/editor/entity/job_experience"
 	personalDataRepo "github.com/asthmatick1dd0/CVagg/internal/modules/editor/entity/personal_data"
 	resumeItemRepo "github.com/asthmatick1dd0/CVagg/internal/modules/editor/entity/resume_item"
+	"github.com/asthmatick1dd0/CVagg/internal/modules/editor/storage"
 	cooldownRepo "github.com/asthmatick1dd0/CVagg/internal/modules/redis"
 	"github.com/asthmatick1dd0/CVagg/internal/modules/user"
 	"github.com/asthmatick1dd0/CVagg/internal/modules/user/entity/auth"
@@ -61,6 +62,7 @@ var RepositorySet = wire.NewSet(
 	jobExpRepo.NewRepository,
 	personalDataRepo.NewRepository,
 	resumeItemRepo.NewRepository,
+	storage.NewAvatarStorage,
 	cooldownRepo.NewRepository,
 )
 
