@@ -2,13 +2,8 @@ package editor
 
 import (
 	"bytes"
-	"crypto/rand"
-	"encoding/hex"
 	"fmt"
-	"io"
 	"mime/multipart"
-	"os"
-	"path/filepath"
 	"time"
 
 	"github.com/asthmatick1dd0/CVagg/internal/models"
@@ -20,6 +15,7 @@ import (
 	jobExpRepo "github.com/asthmatick1dd0/CVagg/internal/modules/editor/entity/job_experience"
 	personalDataRepo "github.com/asthmatick1dd0/CVagg/internal/modules/editor/entity/personal_data"
 	resumeItemRepo "github.com/asthmatick1dd0/CVagg/internal/modules/editor/entity/resume_item"
+	"github.com/asthmatick1dd0/CVagg/internal/modules/editor/storage"
 	"github.com/asthmatick1dd0/CVagg/internal/modules/redis"
 	"github.com/asthmatick1dd0/CVagg/internal/transport/input"
 	"github.com/asthmatick1dd0/CVagg/pkg/helpers/cvaggerr"
@@ -47,6 +43,7 @@ type service struct {
 	aboutRepo        aboutRepo.Repository
 	customRepo       customRepo.Repository
 	personalDataRepo personalDataRepo.Repository
+	avatarStorage    storage.AvatarStorage
 	cooldownRepo     redis.Repository
 }
 
@@ -59,6 +56,7 @@ func NewService(
 	aboutRepo aboutRepo.Repository,
 	customRepo customRepo.Repository,
 	personalDataRepo personalDataRepo.Repository,
+	avatarStorage storage.AvatarStorage,
 	cooldownRepo redis.Repository,
 ) Service {
 	return &service{
@@ -70,6 +68,7 @@ func NewService(
 		aboutRepo:        aboutRepo,
 		customRepo:       customRepo,
 		personalDataRepo: personalDataRepo,
+		avatarStorage:    avatarStorage,
 		cooldownRepo:     cooldownRepo,
 	}
 }
@@ -837,43 +836,15 @@ func (s *service) SetCooldown(ctx *fiber.Ctx, userID string, duration time.Durat
 	return nil
 }
 
-// UploadAvatar saves uploaded file to disk and stores its path in personal_data for the resume
 func (s *service) UploadAvatar(ctx *fiber.Ctx, resumeID uint, fh *multipart.FileHeader) (string, cvaggerr.Error) {
 	if fh == nil {
 		return "", cvaggerr.New("file required", "файл обязателен", 400)
 	}
 
-	uploadDir := os.Getenv("UPLOAD_DIR")
-	if uploadDir == "" {
-		uploadDir = "images/uploads"
-	}
-	if err := os.MkdirAll(uploadDir, 0755); err != nil {
-		return "", cvaggerr.New(err.Error(), "не удалось создать папку для загрузок", 500)
-	}
-
-	src, err := fh.Open()
+	url, err := s.avatarStorage.SaveAvatar(fh)
 	if err != nil {
-		return "", cvaggerr.New(err.Error(), "не удалось открыть файл", 500)
+		return "", err
 	}
-	defer src.Close()
-
-	rb := make([]byte, 8)
-	rand.Read(rb)
-	ext := filepath.Ext(fh.Filename)
-	filename := fmt.Sprintf("%d-%s%s", time.Now().Unix(), hex.EncodeToString(rb), ext)
-	dstPath := filepath.Join(uploadDir, filename)
-
-	dst, err := os.Create(dstPath)
-	if err != nil {
-		return "", cvaggerr.New(err.Error(), "не удалось создать файл на диске", 500)
-	}
-	defer dst.Close()
-
-	if _, err := io.Copy(dst, src); err != nil {
-		return "", cvaggerr.New(err.Error(), "не удалось записать файл", 500)
-	}
-
-	url := "/images/uploads/" + filename
 
 	if resumeID != 0 {
 		// find personal_data resume_item
@@ -891,9 +862,28 @@ func (s *service) UploadAvatar(ctx *fiber.Ctx, resumeID uint, fh *multipart.File
 		}
 
 		if pdItem != nil {
+			var oldAvatar string
+			existing, err := s.personalDataRepo.GetByID(nil, pdItem.ItemId, "resume_item.personal_data")
+			if err != nil {
+				return url, err
+			}
+			if existing != nil && existing.Avatar != nil {
+				oldAvatar = *existing.Avatar
+			}
+
 			avatar := url
 			if err := s.personalDataRepo.Update(nil, &models.PersonalData{Avatar: &avatar}, "resume_item.personal_data", pdItem.ItemId); err != nil {
 				return url, err
+			}
+
+			if oldAvatar != "" && oldAvatar != url {
+				if err := s.avatarStorage.DeleteAvatar(oldAvatar); err != nil {
+					if oldAvatar != "" {
+						revertAvatar := oldAvatar
+						_ = s.personalDataRepo.Update(nil, &models.PersonalData{Avatar: &revertAvatar}, "resume_item.personal_data", pdItem.ItemId)
+					}
+					return url, err
+				}
 			}
 		} else {
 			avatar := url
@@ -907,6 +897,5 @@ func (s *service) UploadAvatar(ctx *fiber.Ctx, resumeID uint, fh *multipart.File
 			}
 		}
 	}
-
 	return url, nil
 }
