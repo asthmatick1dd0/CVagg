@@ -12,22 +12,23 @@ function App() {
   const { user } = useAuth();
 
   return (
-    <ResumeProvider>
-      <Routes>
-        <Route path="/" element={<DashboardPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/registration" element={<RegistrationPage />} />
-        <Route
-          path="/dashboard"
-          element={user ? <DashboardPage /> : <Navigate to="/login" replace />}
-        />
-        <Route 
-        path="/editor/:id" 
-        element={user ? <EditorPage /> : <Navigate to="/login" replace />} 
-        /> 
-      </Routes>
-    </ResumeProvider>
-    <ThemeToggle/>
+    <>
+      <ResumeProvider>
+        <Routes>
+          <Route path="/" element={<DashboardPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/registration" element={<RegistrationPage />} />
+          <Route
+            path="/dashboard"
+            element={user ? <DashboardPage /> : <Navigate to="/login" replace />}
+          />
+          <Route 
+          path="/editor/:id" 
+          element={user ? <EditorPage /> : <Navigate to="/login" replace />} 
+          /> 
+        </Routes>
+      </ResumeProvider>
+      <ThemeToggle/>
     </>
   );
 }
