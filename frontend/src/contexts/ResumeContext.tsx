@@ -300,6 +300,7 @@ export const ResumeProvider = ({ children }: { children: ReactNode }) => {
                 email: current.personalInfo?.email || "",
                 phone: current.personalInfo?.phone || "",
                 address: current.personalInfo?.address || "",
+                avatar: current.personalInfo?.avatar || "",
               },
             },
           ],

@@ -23,6 +23,10 @@ export default function EditorInputs() {
     updatePersonalInfo('avatar', url)
   }
 
+  const handleAvatarDelete = () => {
+    updatePersonalInfo('avatar', '')
+  }
+
   return (
         <FieldGroup>
           <FieldSet className="gap-4 text-white">
@@ -30,13 +34,14 @@ export default function EditorInputs() {
               <Field className="gap-1">
                 <div className="relative group flex flex-col items-center gap-1">
                   <p className="text-sm font-medium ">Фото</p>
-                  <div className="w-full max-w-[172px]">
+                  <div className="w-full max-w-[96px]">
                     <AvatarUpload
                       resumeID={resumeData.id}
                       userID={Number(user?.id ?? 0)}
                       currentAvatarUrl={avatarUrl}
                       userName={userName}
                       onUploadSuccess={handleAvatarUploadSuccess}
+                      onDelete={handleAvatarDelete}
                     />
                   </div>
                 </div>
@@ -97,7 +102,7 @@ export default function EditorInputs() {
                     id="phone"
                     className="text-white"
                     value={resumeData.personalInfo?.phone || ""}
-                    onChange={(e) => updatePersonalInfo("phone", e.target.value)}
+                    onChange={(e) => updatePersonalInfo("phone",e.target.value)}
                     required
                   />
                 </Field>

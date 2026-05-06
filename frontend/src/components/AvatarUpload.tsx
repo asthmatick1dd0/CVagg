@@ -1,7 +1,8 @@
 import { useRef, type ChangeEvent, useEffect, useState } from 'react';
-import { Camera, Loader2, X } from 'lucide-react';
+import { Camera, Loader2, Trash, X } from 'lucide-react';
 import { Avatar } from './Avatar';
 import { useAvatar } from '@/hooks/useAvatar';
+import { Button } from './ui/button';
 
 interface AvatarUploadProps {
     resumeID?: string | number | null;
@@ -10,6 +11,7 @@ interface AvatarUploadProps {
     userName?: string;
     onUploadSuccess?: (url: string) => void;
     onUploadError?: (error: string) => void;
+    onDelete?: () => void;
 }
 
 export const AvatarUpload = ({
@@ -19,6 +21,7 @@ export const AvatarUpload = ({
     userName,
     onUploadSuccess,
     onUploadError,
+    onDelete,
 }: AvatarUploadProps) => {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [localPreview, setLocalPreview] = useState<string | null>(null);
@@ -57,14 +60,14 @@ export const AvatarUpload = ({
     const displayUrl = localPreview || currentAvatarUrl;
     const hasResumeId = Boolean(resumeID);
 
-    // Clean up blob URLs when component unmounts (but keep base64 data)
+    // Clean up blob URLs when localPreview changes
     useEffect(() => {
         return () => {
             if (localPreview && localPreview.startsWith('blob:')) {
                 URL.revokeObjectURL(localPreview);
             }
         };
-    }, []);
+    }, [localPreview]);
 
     const handleFileSelect = async (e: ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -107,16 +110,24 @@ export const AvatarUpload = ({
         }
     };
 
+    const handleDeleteAvatar = () => {
+        if (resumeID) {
+            localStorage.removeItem(`avatar_${resumeID}`);
+        }
+        setLocalPreview(null);
+        onDelete?.();
+    };
+
     const triggerFileSelect = () => {
         fileInputRef.current?.click();
     };
 
     return (
+        <div className="relative w-[96px] h-[96px]">
         <div className="flex flex-col items-center gap-3">
             {/* Avatar with upload overlay */}
             <div className="relative group">
-                <Avatar
-                    src={displayUrl}
+                <Avatar src={displayUrl}
                     alt={userName || 'User avatar'}
                     size="xl"
                     fallback={userName}
@@ -173,6 +184,16 @@ export const AvatarUpload = ({
                     : 'Сохраните резюме, чтобы загрузить фото'}
             </p>
 
+            {localPreview && !uploading && (
+                    <Button
+                    variant={"destructive"}
+                    onClick={handleDeleteAvatar}
+                    className="absolute start-0 bottom-0 z-50 rounded-full"
+                >
+                    <Trash/>
+                </Button>
+            )}
+
             {/* Error message */}
             {error && (
                 <div className="flex items-center gap-2 text-sm text-red-500 bg-red-50 px-3 py-2 rounded-lg">
@@ -186,6 +207,7 @@ export const AvatarUpload = ({
                     </button>
                 </div>
             )}
+        </div>
         </div>
     );
 };
