@@ -207,7 +207,7 @@ export const AIChat = () => {
       });
     } finally {
       setLoading(false);
-      inputRef.current?.focus();
+      inputRef.current?.focus({ preventScroll: true });
     }
   };
 

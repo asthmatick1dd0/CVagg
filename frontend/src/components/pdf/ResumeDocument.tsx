@@ -22,7 +22,10 @@ Font.register({
   ],
 });
 
-
+const getAdaptiveNameFontSize = (fullName: string | null | undefined) => {
+  const len = fullName?.length || 0;
+  return len > 26 ? 12 : len > 21 ? 14 : len > 18 ? 18 : len > 16 ? 21 : 24;
+};
 
 const styles = StyleSheet.create({
   page: {
@@ -115,9 +118,9 @@ const styles = StyleSheet.create({
   },
   headerTextContainer: {
     flex: 1,
+    flexWrap: 'nowrap',
   },
   name: {
-    fontSize: 24,
     color: '#FFF',
     textTransform: 'uppercase',
     fontWeight: 'bold', // OpenSans-Bold
@@ -153,12 +156,24 @@ const styles = StyleSheet.create({
   entryHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'flex-start', // Важно: выравнивание по верху, если текст станет многострочным
+    width: '100%',
     marginBottom: 2,
+  },
+  titleWrapper: {
+    flex: 1,               // Занимает всё доступное пространство
+    marginRight: 15,       // Минимальный гарантированный отступ от даты
   },
   entryTitle: {
     fontSize: 11,
     fontWeight: 'bold', // OpenSans-Bold
     color: '#000',
+  },
+  dateWrapper: {
+    flexShrink: 0,
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 2,
   },
   entryDate: {
     fontSize: 9,
@@ -250,8 +265,13 @@ const ResumeDocument: React.FC<ResumeDocumentProps> = ({ data }) => {
               <View style={{ width: 100, height: 100, backgroundColor: '#ccc' }}></View>
             </View>
             <View style={styles.headerTextContainer}>
-              <Text style={styles.name}>
-                {personalInfo?.name} {personalInfo?.surname}
+              <Text style={[styles.name, 
+                { 
+                  fontSize: getAdaptiveNameFontSize(`${personalInfo?.name || ''} ${personalInfo?.surname || ''}`.trim())
+                }
+              ]}
+              >
+              {personalInfo?.name} {personalInfo?.surname}
               </Text>
               <Text style={{ color: '#FFF', fontSize: 10, marginBottom: 5 }}>
                 {personalInfo?.jobTitle}
@@ -298,27 +318,32 @@ const ResumeDocument: React.FC<ResumeDocumentProps> = ({ data }) => {
 
           {/* EDUCATION */}
           {education && education.length > 0 && (
-            <>
-              <View style={styles.sectionTitleBox}>
-                <Text style={styles.sectionTitleText}>EDUCATION</Text>
-              </View>
-              {education.map((edu, index) => (
-                <View key={index} style={styles.entryContainer}>
-                  <View style={styles.entryHeader}>
+          <>
+            <View style={styles.sectionTitleBox}>
+              <Text style={styles.sectionTitleText}>EDUCATION</Text>
+            </View>
+            {education.map((edu, index) => (
+              <View key={index} style={styles.entryContainer}>
+                
+                <View style={styles.entryHeader}>
+                  <View style={styles.titleWrapper}>
                     <Text style={styles.entryTitle}>• {edu.university}</Text>
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <CalendarIcon color="#666" size={8} />
-                        <Text style={styles.entryDate}>
-                           {formatDate(edu.start_date)} - {edu.end_date ? formatDate(edu.end_date) : "Настоящее время"}
-                        </Text>
-                    </View>
                   </View>
-                  <Text style={styles.entrySubtitle}>{edu.degree} - {edu.faculty}</Text>
-                  <Text style={styles.entryDescription}>{edu.major}</Text>
+                  
+                  <View style={styles.dateWrapper}>
+                    <CalendarIcon color="#666" size={8} />
+                    <Text style={styles.entryDate}>
+                      {formatDate(edu.start_date)} - {edu.end_date ? formatDate(edu.end_date) : "Настоящее время"}
+                    </Text>
+                  </View>
                 </View>
-              ))}
-            </>
-          )}
+
+                <Text style={styles.entrySubtitle}>{edu.degree} - {edu.faculty}</Text>
+                <Text style={styles.entryDescription}>{edu.major}</Text>
+              </View>
+            ))}
+          </>
+        )}
 
           {/* EXPERIENCE */}
           {experience && experience.length > 0 && (

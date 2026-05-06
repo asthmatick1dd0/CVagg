@@ -93,9 +93,10 @@ export const aiApi = {
         .map((exp: any) => {
           const position = exp.position || '';
           const company = exp.company || '';
+          const description = exp.description || '';
           const startDate = exp.start_date || '';
           const endDate = exp.end_date || '';
-          return `${position} at ${company}\n from ${startDate} to ${endDate}`.trim();
+          return `${position} at ${company}\n from ${startDate} to ${endDate}. Description: ${description}`.trim();
         })
         .join('\n\n');
     } else {
