@@ -221,12 +221,12 @@ export const AIChat = () => {
   const clearChat = () => setMessages([]);
 
   return (
-    <div className="flex flex-col h-[calc(100vh-6rem)] bg-white rounded-lg overflow-hidden border border-gray-200">
+    <div className="flex flex-col h-[calc(100vh-6rem)] bg-white rounded-lg overflow-hidden border border-gray-300 border-[3px]">
       {/* Шапка */}
-      <div className="px-4 py-3 bg-gray-50 border-b flex justify-between items-center">
+      <div className="px-4 py-3 bg-gray-50 border-b border-gray-300 flex justify-between items-center">
         <div className="flex items-center gap-2">
           <img src="/mascot.svg" alt="mascot" className="w-6 h-6" />
-          <h3 className="font-semibold text-sm">AI-ассистент</h3>
+          <h3 className="font-semibold text-black text-sm">AI-ассистент</h3>
         </div>
         <div className="flex gap-2">
           <Button
@@ -271,7 +271,7 @@ export const AIChat = () => {
 
             <div className="flex flex-col justify-center gap-2 max-w-sm">
               {QUICK_PROMPTS.map((prompt) => (
-                <button
+                <Button
                   key={prompt}
                   onClick={() => sendMessage(prompt)}
                   disabled={loading}
@@ -280,7 +280,7 @@ export const AIChat = () => {
                              hover:text-primary transition-all disabled:opacity-50"
                 >
                   {prompt}
-                </button>
+                </Button>
               ))}
             </div>
           </div>
@@ -291,7 +291,7 @@ export const AIChat = () => {
           <div key={msg.id}>
             {msg.role === 'user' ? (
               <div className="flex justify-end">
-                <div className="max-w-[80%] px-4 py-3 rounded-2xl rounded-br-xs bg-primary text-foreground">
+                <div className="max-w-[80%] px-4 py-3 rounded-2xl rounded-br-xs bg-primary text-white">
                   {msg.text && (
                     <div className="text-sm whitespace-pre-wrap">
                       <ReactMarkdown>{msg.text}</ReactMarkdown>
@@ -302,7 +302,7 @@ export const AIChat = () => {
             ) : (
               <MascotBubble>
                 {msg.text && (
-                  <div className={`text-sm text-secondary-foreground whitespace-pre-wrap ${msg.analysis ? 'mb-3' : ''}`}>
+                  <div className={`text-sm text-black whitespace-pre-wrap ${msg.analysis ? 'mb-3' : ''}`}>
                     <ReactMarkdown>{msg.text}</ReactMarkdown>
                   </div>
                 )}
@@ -317,7 +317,7 @@ export const AIChat = () => {
         <div ref={messagesEndRef} />
       </div>
 
-      <div className="p-3 border-t bg-white">
+      <div className="p-3 border-t border-gray-300 bg-white">
         <div className="flex items-end gap-2">
           <Textarea
             ref={inputRef}
@@ -327,7 +327,7 @@ export const AIChat = () => {
             placeholder="Напишите сообщение..."
             disabled={loading}
             rows={1}
-            className="flex-1"
+            className="flex-1 text-black"
             style={{
               height: 'auto',
               minHeight: '42px',

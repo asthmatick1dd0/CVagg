@@ -97,7 +97,7 @@ export function ResumeGrid({ resumes, onCreate, onRefresh }: ResumeGridProps) {
   }; */
 
   return (
-    <section className="resume-grid flex flex-col justify-center items-center rounded-4xl pt-10 pb-18 px-3 gap-12 min-w-sm">
+    <section className="resume-grid flex flex-col justify-center items-center rounded-4xl pt-10 pb-18 px-3 max-sm:px-0 gap-12 min-w-sm">
       
       {/* Панель инструментов */}
       <section className="flex flex-row w-full items-center justify-between px-6">

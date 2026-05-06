@@ -15,7 +15,7 @@ export default function EditorInputs() {
 
   return (
         <FieldGroup>
-          <FieldSet className="gap-4 text-white">
+          <FieldSet className="gap-4 text-foreground">
             <FieldGroup className="grid grid-cols-[auto_1fr] gap-4 max-md:grid-cols-1">
               <Field className="gap-1">
                 <div className="relative group flex flex-col items-center gap-1">
@@ -36,7 +36,7 @@ export default function EditorInputs() {
                     <FieldLabel htmlFor="name">Имя</FieldLabel>
                     <Input
                         id="name"
-                        className="text-white"
+                        className="text-foreground"
                         value={resumeData.personalInfo?.name || ""}
                         onChange={(e) => updatePersonalInfo("name", e.target.value)}
                         required
@@ -47,7 +47,7 @@ export default function EditorInputs() {
                     <FieldLabel htmlFor="surname">Фамилия</FieldLabel>
                     <Input
                       id="surname"
-                      className="text-white"
+                      className="text-foreground"
                       value={resumeData.personalInfo?.surname || ""}
                       onChange={(e) => updatePersonalInfo("surname", e.target.value)}
                       required
@@ -59,7 +59,7 @@ export default function EditorInputs() {
                   <FieldLabel htmlFor="jobTitle">Желаемая должность</FieldLabel>
                   <Input
                     id="jobTitle"
-                    className="text-white"
+                    className="text-foreground"
                     value={resumeData.personalInfo?.jobTitle || ""}
                     onChange={(e) => updatePersonalInfo("jobTitle", e.target.value)}
                     required
@@ -73,7 +73,7 @@ export default function EditorInputs() {
                   <FieldLabel htmlFor="email">Email</FieldLabel>
                   <Input
                     id="email"
-                    className="text-white"
+                    className="text-foreground"
                     value={resumeData.personalInfo?.email || ""}
                     onChange={(e) => updatePersonalInfo("email", e.target.value)}
                     required
@@ -83,7 +83,7 @@ export default function EditorInputs() {
                   <FieldLabel htmlFor="phone">Номер телефона</FieldLabel>
                   <Input
                     id="phone"
-                    className="text-white"
+                    className="text-foreground"
                     value={resumeData.personalInfo?.phone || ""}
                     onChange={(e) => updatePersonalInfo("phone", e.target.value)}
                     required
@@ -93,7 +93,7 @@ export default function EditorInputs() {
                   <FieldLabel htmlFor="address">Адрес</FieldLabel>
                   <Input
                     id="address"
-                    className="text-white"
+                    className="text-foreground"
                     value={resumeData.personalInfo?.address || ""}
                     onChange={(e) => updatePersonalInfo("address", e.target.value)}
                   />

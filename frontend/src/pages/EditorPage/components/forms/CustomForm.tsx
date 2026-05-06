@@ -85,7 +85,7 @@ export default function CustomManager() {
   }
 
   return (
-    <div className="w-full max-w-3xl space-y-6 text-white">
+    <div className="w-full max-w-3xl space-y-6 text-foreground">
       {items.map((item, index) => (
         <CustomCard 
           key={item.localId} 
@@ -139,12 +139,12 @@ function CustomCard({ initialData, isEditing, onDelete, onSave, onEdit }: CardPr
     return (
       <div className="border border-gray-200 rounded-xl p-4 flex items-start justify-between bg-white/10 animate-in fade-in duration-300">
         <div className="flex flex-col gap-1">
-          <span className="text-white font-medium text-lg flex items-center gap-2">
-            <FileText size={18} className="text-white/70" />
+          <span className="text-foreground font-medium text-lg flex items-center gap-2">
+            <FileText size={18} className="text-foreground/70" />
             {draft.title || "Поле без названия"}
           </span>
           {draft.content && (
-             <span className="text-white/60 text-sm ml-6 whitespace-pre-wrap">
+             <span className="text-foreground/60 text-sm ml-6 whitespace-pre-wrap">
                 {draft.content}
              </span>
           )}
@@ -154,7 +154,7 @@ function CustomCard({ initialData, isEditing, onDelete, onSave, onEdit }: CardPr
             variant="ghost" 
             size="icon" 
             onClick={(e) => { e.preventDefault(); onEdit(); }}
-            className="rounded-full text-white/70 hover:text-white hover:bg-white/10 shrink-0"
+            className="rounded-full text-foreground/70 hover:text-foreground hover:bg-white/10 shrink-0"
             type="button"
         >
             <Pencil size={18} />
@@ -168,23 +168,23 @@ function CustomCard({ initialData, isEditing, onDelete, onSave, onEdit }: CardPr
       
       {/* Название */}
       <div className="space-y-1.5">
-        <Label className="text-white font-medium">Название</Label>
+        <Label className="text-foreground font-medium">Название</Label>
         <Input 
           value={draft.title}
           onChange={(e) => updateDraft("title", e.target.value)}
           placeholder="Водительские права" 
-          className="bg-gray-50/50 border-gray-200 text-white placeholder:text-white/50" 
+          className="bg-gray-50/50 border-gray-200 text-foreground placeholder:text-foreground/50" 
         />
       </div>
 
       {/* Содержание */}
       <div className="space-y-1.5">
-        <Label className="text-white font-medium">Содержание</Label>
+        <Label className="text-foreground font-medium">Содержание</Label>
         <Textarea 
           value={draft.content}
           onChange={(e) => updateDraft("content", e.target.value)}
           placeholder="Любая информация, которую вы хотите добавить"
-          className="bg-gray-50/50 border-gray-200 min-h-[80px] text-white placeholder:text-white/50" 
+          className="bg-gray-50/50 border-gray-200 min-h-[80px] text-foreground placeholder:text-foreground/50" 
         />
       </div>
 
@@ -194,7 +194,7 @@ function CustomCard({ initialData, isEditing, onDelete, onSave, onEdit }: CardPr
             variant="ghost" 
             size="icon" 
             onClick={(e) => { e.preventDefault(); onDelete(); }}
-            className="h-10 w-10 rounded-full text-white-400 hover:text-red-500 hover:bg-red-500/10 transition-colors hover:cursor-pointer"
+            className="h-10 w-10 rounded-full text-foreground-400 hover:text-red-500 hover:bg-red-500/10 transition-colors hover:cursor-pointer"
             type="button"
         >
             <Trash2 size={18} />
