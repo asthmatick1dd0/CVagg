@@ -7,24 +7,39 @@ import ResumeDocument from "@/components/pdf/ResumeDocument";
 import { useDebounce } from "@uidotdev/usehooks";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { AIChat } from "./components/chat/AIChat";
-import { useState, useRef } from "react";
+import { useState, useRef, useMemo, useEffect } from "react";
 import { CSSTransition } from 'react-transition-group' 
 import { Button } from "@/components/ui/button";
-import { FileQuestionMark, XIcon } from "lucide-react"; 
-import { useEffect } from "react";
+import { FileQuestionMark, XIcon } from "lucide-react";
+
+const getAvatarFromStorage = (resumeId?: string | number | null) => {
+  if (!resumeId) return null;
+  try {
+    return localStorage.getItem(`avatar_${resumeId}`);
+  } catch {
+    return null;
+  }
+};
 
 const ResumePreview = () => {
   const { resumeData, loading } = useResumeContext();
   const debouncedData = useDebounce(resumeData, 1000);
+  const avatarBase64 = useMemo(() => {
+    const stored = getAvatarFromStorage(debouncedData?.id);
+    if (stored) return stored;
+    const avatar = debouncedData?.personalInfo?.avatar;
+    return avatar?.startsWith?.('data:') ? avatar : null;
+  }, [debouncedData]);
+
   const [instance, updateInstance] = usePDF({
-    document: <ResumeDocument data={debouncedData} />,
+    document: <ResumeDocument data={debouncedData} avatarBase64={avatarBase64} />,
   });
 
   useEffect(() => {
     if (debouncedData) {
-      updateInstance(<ResumeDocument data={debouncedData} />);
+      updateInstance(<ResumeDocument data={debouncedData} avatarBase64={avatarBase64} />);
     }
-  }, [debouncedData]);
+  }, [debouncedData, avatarBase64]);
 
   if (loading) {
     return <div>Загрузка данных...</div>;

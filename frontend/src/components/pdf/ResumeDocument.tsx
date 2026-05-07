@@ -1,5 +1,5 @@
 import React from 'react';
-import { Page, Text, View, Document, StyleSheet, Font } from '@react-pdf/renderer';
+import { Page, Text, View, Document, StyleSheet, Font, Image } from '@react-pdf/renderer';
 import type { Resume } from "@/types/resume.types";
 import { WebIcon, CalendarIcon, MailIcon, PhoneIcon, MapPinIcon, GithubIcon } from "@/assets/PdfIcons";
 import { getSkillName } from "@/constants/skills";
@@ -216,6 +216,7 @@ const styles = StyleSheet.create({
 
 interface ResumeDocumentProps {
   data: Partial<Resume>;
+  avatarBase64?: string | null;
 }
 const formatDate = (isoStr: string | null | undefined): string => {
   if (!isoStr) return "Настоящее время";
@@ -238,7 +239,7 @@ const formatDate = (isoStr: string | null | undefined): string => {
   }
 };
 
-const ResumeDocument: React.FC<ResumeDocumentProps> = ({ data }) => {
+const ResumeDocument: React.FC<ResumeDocumentProps> = ({ data, avatarBase64 }) => {
   const { personalInfo, education, experience, skills, custom } = data;
   return (
     <Document>
@@ -295,7 +296,14 @@ const ResumeDocument: React.FC<ResumeDocumentProps> = ({ data }) => {
           {/* HEADER */}
           <View style={styles.headerBox}>
             <View style={styles.avatarContainer}>
-              <View style={{ width: 100, height: 100, backgroundColor: '#ccc' }}></View>
+              {avatarBase64 ? (
+                <Image 
+                  src={avatarBase64} 
+                  style={styles.avatarImage}
+                />
+              ) : (
+                <View style={{ width: 80, height: 80, backgroundColor: '#ccc' }} />
+              )}
             </View>
             <View style={styles.headerTextContainer}>
               <Text style={[styles.name, 
