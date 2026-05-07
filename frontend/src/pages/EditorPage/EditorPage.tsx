@@ -3,7 +3,7 @@ import EditorHeader from "./components/EditorHeader";
 import { EditorInputs } from "./components/EditorInputs";
 import { ResumeProvider, useResumeContext } from "@/contexts/ResumeContext"; 
 import { usePDF } from "@react-pdf/renderer";
-import ResumeDocument from "@/components/pdf/ResumeDocument";
+import ResumeDocumentRenderer from "@/components/pdf/ResumeDocumentRenderer";
 import { useDebounce } from "@uidotdev/usehooks";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { AIChat } from "./components/chat/AIChat";
@@ -32,12 +32,12 @@ const ResumePreview = () => {
   }, [debouncedData]);
 
   const [instance, updateInstance] = usePDF({
-    document: <ResumeDocument data={debouncedData} avatarBase64={avatarBase64} />,
+    document: <ResumeDocumentRenderer data={debouncedData} avatarBase64={avatarBase64} />,
   });
 
   useEffect(() => {
     if (debouncedData) {
-      updateInstance(<ResumeDocument data={debouncedData} avatarBase64={avatarBase64} />);
+      updateInstance(<ResumeDocumentRenderer data={debouncedData} avatarBase64={avatarBase64} />);
     }
   }, [debouncedData, avatarBase64]);
 

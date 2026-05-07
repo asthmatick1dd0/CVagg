@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react';
 import { pdf } from '@react-pdf/renderer';
 import { saveAs } from 'file-saver';
 import type { Resume } from '@/types/resume.types';
-import ResumeDocument from '@/components/pdf/ResumeDocument';
+import ResumeDocumentRenderer from '@/components/pdf/ResumeDocumentRenderer';
 
 interface ExportOptions {
   filename?: string;
@@ -79,7 +79,7 @@ export function useExportResume(): UseExportResumeReturn {
     resumeData: Partial<Resume>, 
     avatarBase64?: string | null
   ): Promise<Blob> => {
-    const doc = <ResumeDocument data={resumeData} avatarBase64={avatarBase64} />;
+    const doc = <ResumeDocumentRenderer data={resumeData} avatarBase64={avatarBase64} />;
     return await pdf(doc).toBlob();
   };
 
