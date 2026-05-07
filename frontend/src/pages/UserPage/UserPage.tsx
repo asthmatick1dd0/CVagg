@@ -54,7 +54,7 @@ function UserPage({ currentUser, onLogout, onSettings }: UserPageProps) {
 
           <div className="flex items-start justify-between">
             <div>
-              <h2 className="text-2xl font-bold text-foreground">{currentUser.name}</h2>
+              <h2 className="text-2xl font-bold text-foreground">{currentUser.name} {currentUser.username}</h2>
               <div className="flex items-center gap-1.5 mt-1 text-muted-foreground text-sm">
                 <Mail size={14} />
                 <span>{currentUser.email}</span>

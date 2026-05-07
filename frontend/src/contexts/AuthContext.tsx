@@ -72,11 +72,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const register = async (username: string, name: string, surname: string, email: string, password: string) => {
       await api.post(
-        `/auth/signup?Username=${encodeURIComponent(username)}&Email=${encodeURIComponent(email)}&Password=${encodeURIComponent(password)}`,
-        {
-          name,
-          surname
-        },
+        `/auth/signup?Username=${encodeURIComponent(username)}&Name=${encodeURIComponent(name)}&Surname=${encodeURIComponent(surname)}&Email=${encodeURIComponent(email)}&Password=${encodeURIComponent(password)}`,
+        {},
         { withCredentials: true }
       );
       navigate("/login");
