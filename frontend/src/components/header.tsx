@@ -46,7 +46,6 @@ const Header = () => {
               resumeCount: count ?? 0,
             }}
             onLogout={logout}
-            onSettings={() => {}}
           />
         </div>
       )}
