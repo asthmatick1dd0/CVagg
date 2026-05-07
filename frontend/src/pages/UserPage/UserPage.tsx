@@ -43,14 +43,14 @@ function UserPage({ currentUser, onLogout, onSettings }: UserPageProps) {
         <div className="bg-muted/60 flex flex-col items-center justify-center pt-8 pb-10 px-6 relative">
           <button
             onClick={onLogout}
-            className="absolute top-4 right-4 w-10 h-10 flex items-center justify-center rounded-xl text-black hover:bg-black/10 transition-colors"
+            className="absolute top-4 right-4 w-10 h-10 flex items-center justify-center rounded-xl text-white hover:bg-black/10 transition-colors"
             aria-label="Выйти"
           >
             <LogOut size={26} />
           </button>
           <UserAvatar avatar={currentUser.avatar} name={currentUser.name} size="lg" />
         </div>
-        <div className="bg-card rounded-3xl flex flex-col gap-4 px-6 pt-6 pb-8 -mt-6 relative z-10">
+        <div className="bg-background rounded-3xl flex flex-col gap-4 px-6 pt-6 pb-8 -mt-6 relative z-10">
 
           <div className="flex items-start justify-between">
             <div>
