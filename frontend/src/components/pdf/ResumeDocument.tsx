@@ -3,6 +3,7 @@ import { Page, Text, View, Document, StyleSheet, Font } from '@react-pdf/rendere
 import type { Resume } from "@/types/resume.types";
 import { WebIcon, CalendarIcon, MailIcon, PhoneIcon, MapPinIcon, GithubIcon } from "@/assets/PdfIcons";
 import { getSkillName } from "@/constants/skills";
+import { PREDEFINED_SKILLS } from '@/constants/skills';
 
 Font.register({
   family: 'Open Sans',
@@ -21,6 +22,26 @@ Font.register({
     },
   ],
 });
+
+const categoryOrder = [
+                "Frontend",
+                "Backend", 
+                "Базы данных",
+                "DevOps",
+                "Облако",
+                "Мобильная разработка",
+                "ИИ/ML",
+                "Дата-инженерия",
+                "Безопасность",
+                "Тестирование",
+                "Инструменты",
+                "Архитектура",
+                "Дизайн",
+                "Софт-скиллы",
+                "Сети",
+                "Системное программирование",
+                "Другое"
+              ];
 
 const getAdaptiveNameFontSize = (fullName: string | null | undefined) => {
   const len = fullName?.length || 0;
@@ -63,19 +84,18 @@ const styles = StyleSheet.create({
   skillContainer: {
     marginBottom: 10,
   },
+  categoryBox: {
+    marginBottom: 10,
+  },
+  categoryTitle: {
+    fontSize: 12,
+    fontWeight: '500',
+    fontStyle: 'italic',
+    marginBottom: 5,
+  },
   skillText: {
     fontSize: 10,
     marginBottom: 3,
-  },
-  progressBarBg: {
-    height: 4,
-    backgroundColor: '#FFF',
-    borderRadius: 2,
-  },
-  progressBarFill: {
-    height: '100%',
-    backgroundColor: '#7B7EB7',
-    borderRadius: 2,
   },
   listItem: {
     flexDirection: 'row',
@@ -97,6 +117,7 @@ const styles = StyleSheet.create({
   headerBox: {
     backgroundColor: '#5D6083',
     padding: 20,
+    gap: 5,
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 30,
@@ -224,22 +245,48 @@ const ResumeDocument: React.FC<ResumeDocumentProps> = ({ data }) => {
       <Page size="A4" style={styles.page}>
         
         {/* === ЛЕВАЯ КОЛОНКА === */}
+        {/* SKILLS / LANGUAGES */}
         <View style={styles.leftColumn}>
-          
-          {/* SKILLS / LANGUAGES */}
-          {skills && skills.length > 0 && (
-             <>
-               <Text style={styles.sidebarTitle}>НАВЫКИ</Text>
-               {skills.map((skill, index) => (
-                 <View key={index} style={styles.listItem}>
-                  <View style={styles.bulletPoint} />
-                   <Text style={styles.skillText}>
-                     {getSkillName(skill.SkillId)}
-                   </Text>
-                 </View>
-               ))}
-             </>
-          )}
+        {skills && skills.length > 0 && (
+          <>
+            <Text style={styles.sidebarTitle}>НАВЫКИ</Text>
+            {(() => {
+              const skillsByCategory = skills.reduce((acc, skill) => {
+                const skillInfo = PREDEFINED_SKILLS.find(s => s.id === skill.SkillId);
+                const category = skillInfo?.category || "Другое";
+                
+                if (!acc[category]) {
+                  acc[category] = [];
+                }
+                acc[category].push(skill);
+                return acc;
+              }, {} as Record<string, typeof skills>);
+              
+              const sortedCategories = Object.keys(skillsByCategory).sort((a, b) => {
+                const indexA = categoryOrder.indexOf(a);
+                const indexB = categoryOrder.indexOf(b);
+                if (indexA === -1 && indexB === -1) return a.localeCompare(b);
+                if (indexA === -1) return 1;
+                if (indexB === -1) return -1;
+                return indexA - indexB;
+              });
+              
+              return sortedCategories.map(category => (
+                <View key={category} style={styles.categoryBox}>
+                  <Text style={styles.categoryTitle}>{category.toUpperCase()}</Text>
+                  {skillsByCategory[category].map((skill, index) => (
+                    <View key={index} style={styles.listItem}>
+                      <View style={styles.bulletPoint} />
+                      <Text style={styles.skillText}>
+                        {getSkillName(skill.SkillId)}
+                      </Text>
+                    </View>
+                  ))}
+                </View>
+              ));
+            })()}
+          </>
+        )}
         </View>
 
         {/* === ПРАВАЯ КОЛОНКА === */}
@@ -356,21 +403,16 @@ const ResumeDocument: React.FC<ResumeDocumentProps> = ({ data }) => {
           )}
 
           {/* CUSTOM FIELDS (Разное) */}
-          {custom && custom.length > 0 && (
+          {custom && custom.map((item, index) => (
             <>
-                <View style={styles.sectionTitleBox}>
-                  <Text style={styles.sectionTitleText}>ДОПОЛНИТЕЛЬНАЯ ИНФОРМАЦИЯ</Text>
-                </View>
-            {custom && custom.map((item, index) => (
-              <View key={index} style={styles.entryContainer}>
-                <Text style={styles.entryTitle}>• {item.title}</Text>
+              <View key={index} style={styles.sectionTitleBox}>
+                <Text style={styles.sectionTitleText}>{item.title}</Text>
+              </View>
                 <View style={styles.entrySubtitle}>
                   <Text style={styles.entrySubtitle}>{item.content}</Text>
                 </View>
-              </View>
-            ))}
             </>
-          )}
+            ))}
 
         </View>
       </Page>
