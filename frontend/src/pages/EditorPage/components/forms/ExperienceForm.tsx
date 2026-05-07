@@ -142,7 +142,7 @@ export default function ExperienceManager() {
   };
 
   return (
-    <div className="w-full max-w-3xl space-y-6 text-white">
+    <div className="w-full max-w-3xl space-y-6 text-foreground">
       {items.map((item, index) => (
         <ExperienceCard
           key={item.localId}
@@ -281,14 +281,14 @@ function ExperienceCard({
 
   if (!isEditing) {
     return (
-      <div className="border border-gray-200 rounded-xl p-4 flex items-center justify-between bg-white/5 animate-in fade-in duration-300">
+      <div className="border border-gray-300 rounded-xl p-4 flex items-center justify-between bg-white/5 animate-in fade-in duration-300">
         <div className="flex flex-col gap-1">
-          <span className="text-white font-medium text-lg flex items-center gap-2">
-            <Briefcase size={18} className="text-white/70" />
+          <span className="text-foreground font-medium text-lg flex items-center gap-2">
+            <Briefcase size={18} className="text-foreground/70" />
             {draft.position || "Должность не указана"}
           </span>
           {draft.company && (
-            <span className="text-white/60 text-sm ml-6">
+            <span className="text-foreground/60 text-sm ml-6">
               {draft.company}
             </span>
           )}
@@ -301,7 +301,7 @@ function ExperienceCard({
             e.preventDefault();
             onEdit();
           }}
-          className="rounded-full text-white/70 hover:text-white hover:bg-white/10"
+          className="rounded-full text-foreground/70 hover:text-foreground hover:bg-foreground/10"
           type="button"
         >
           <Pencil size={18} />
@@ -311,36 +311,36 @@ function ExperienceCard({
   }
 
   return (
-    <div className="border border-gray-200 rounded-xl p-6 shadow-sm space-y-5 animate-in fade-in zoom-in-95 duration-200 bg-white/10">
+    <div className="border border-gray-300 rounded-xl p-6 shadow-sm space-y-5 animate-in fade-in zoom-in-95 duration-200 bg-white/10">
       <div className="space-y-1.5">
-        <Label className="text-white font-medium">Название компании</Label>
+        <Label className="text-foreground font-medium">Название компании</Label>
         <Input
           value={draft.company}
           onChange={(e) => updateDraft("company", e.target.value)}
           placeholder="Яндекс"
-          className="bg-gray-50/50 border-gray-200 text-white placeholder:text-white/50"
+          className="bg-gray-50/50 border-gray-300 text-foreground placeholder:text-foreground/50"
         />
       </div>
 
       {/* Position */}
       <div className="space-y-1.5">
-        <Label className="text-white font-medium">Должность</Label>
+        <Label className="text-foreground font-medium">Должность</Label>
         <Input
           value={draft.position}
           onChange={(e) => updateDraft("position", e.target.value)}
           placeholder="Frontend Developer"
-          className="bg-gray-50/50 border-gray-200 text-white placeholder:text-white/50"
+          className="bg-gray-50/50 border-gray-300 text-foreground placeholder:text-foreground/50"
         />
       </div>
 
       {/* Description */}
       <div className="space-y-1.5">
-        <Label className="text-white font-medium">Дополнительная информация</Label>
+        <Label className="text-foreground font-medium">Дополнительная информация</Label>
         <Textarea
           value={draft.description}
           onChange={(e) => updateDraft("description", e.target.value)}
           placeholder=""
-          className="bg-gray-50/50 border-gray-200"
+          className="bg-gray-50/50 border-gray-300"
         />
       </div>
 
@@ -350,8 +350,8 @@ function ExperienceCard({
       <div className="grid grid-cols-2 gap-6 max-sm:grid-cols-1 py-2">
         {/* Start Date */}
         <div className="space-y-2">
-          <Label className="text-white font-medium">Дата начала</Label>
-          <div className="flex flex-row items-center gap-2 w-full text-white">
+          <Label className="text-foreground font-medium">Дата начала</Label>
+          <div className="flex flex-row items-center gap-2 w-full text-foreground">
             <DateSelect
               placeholder="Месяц"
               options={months.map((m, i) => ({
@@ -372,8 +372,8 @@ function ExperienceCard({
 
         {/* End Date */}
         <div className="space-y-2">
-          <Label className="text-white font-medium">Дата окончания</Label>
-          <div className="flex flex-row items-center gap-2 w-full text-white">
+          <Label className="text-foreground font-medium">Дата окончания</Label>
+          <div className="flex flex-row items-center gap-2 w-full text-foreground">
             <DateSelect
               placeholder="Месяц"
               options={months.map((m, i) => ({
@@ -408,7 +408,7 @@ function ExperienceCard({
             e.preventDefault();
             onDelete();
           }}
-          className="h-10 w-10 rounded-full text-white-400 hover:text-red-500 hover:bg-red-500/10 transition-colors hover:cursor-pointer"
+          className="h-10 w-10 rounded-full text-foreground-400 hover:text-red-500 hover:bg-red-500/10 transition-colors hover:cursor-pointer"
           type="button"
         >
           <Trash2 size={18} />
@@ -446,7 +446,7 @@ function DateSelect({
 }) {
   return (
     <Select value={value} onValueChange={onChange}>
-      <SelectTrigger className="bg-gray-50/50 border-gray-200 focus:bg-primary/50 text-black-600 h-10 text-sm flex-1">
+      <SelectTrigger className="bg-gray-50/50 border-gray-300 focus:bg-primary/50 text-black-600 h-10 text-sm flex-1">
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent className="max-h-[200px]">

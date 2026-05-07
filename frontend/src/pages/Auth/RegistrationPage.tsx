@@ -106,7 +106,7 @@ function RegistrationPage(){
             <CardHeader className="flex flex-col items-center"> 
                 <CardTitle className="text-4xl">Регистрация</CardTitle>
             </CardHeader>
-            <CardContent className="flex flex-col justify-center items-center w-full">
+            <CardContent className="flex flex-col justify-center items-center">
                 <form onSubmit={formik.handleSubmit} className="w-[300px]">
                     <div className="gap-2">
                         <div className="flex flex-col gap-2 items-center">
