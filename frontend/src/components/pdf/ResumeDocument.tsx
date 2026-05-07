@@ -45,4 +45,4 @@ export interface ResumeDocumentProps {
   avatarBase64?: string | null;
 }
 
-export type TemplateId = 'minimal';
+export type TemplateId = 'minimal' | 'tui';

@@ -1,8 +1,7 @@
 import React from 'react';
 import type { ResumeDocumentProps, TemplateId } from '@/components/pdf/ResumeDocument';
 import MinimalTemplate from '@/components/pdf/templates/MinimalTemplate';
-// import ModernTemplate from '@/components/pdf/templates/ModernTemplate';
-// import MinimalTemplate from '@/components/pdf/templates/MinimalTemplate';
+import TUITemplate from './templates/TUITemplate';
 
 interface ResumeDocumentRendererProps extends ResumeDocumentProps {
   templateId?: TemplateId;
@@ -10,6 +9,7 @@ interface ResumeDocumentRendererProps extends ResumeDocumentProps {
 
 const templateMap: Record<TemplateId, React.FC<ResumeDocumentProps>> = {
   minimal: MinimalTemplate,
+  tui: TUITemplate
 };
 
 const ResumeDocumentRenderer: React.FC<ResumeDocumentRendererProps> = ({
