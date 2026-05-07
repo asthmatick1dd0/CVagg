@@ -231,14 +231,11 @@ const ResumeDocument: React.FC<ResumeDocumentProps> = ({ data }) => {
              <>
                <Text style={styles.sidebarTitle}>НАВЫКИ</Text>
                {skills.map((skill, index) => (
-                 <View key={index} style={styles.skillContainer}>
+                 <View key={index} style={styles.listItem}>
+                  <View style={styles.bulletPoint} />
                    <Text style={styles.skillText}>
                      {getSkillName(skill.SkillId)}
                    </Text>
-                   <View style={styles.progressBarBg}>
-                    {/* TODO: Implement progress bar logic */}
-                     <View style={{ ...styles.progressBarFill, width: '100%' }} />
-                   </View>
                  </View>
                ))}
              </>
