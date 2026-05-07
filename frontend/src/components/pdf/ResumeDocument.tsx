@@ -229,7 +229,7 @@ const ResumeDocument: React.FC<ResumeDocumentProps> = ({ data }) => {
           {/* SKILLS / LANGUAGES */}
           {skills && skills.length > 0 && (
              <>
-               <Text style={styles.sidebarTitle}>SKILLS</Text>
+               <Text style={styles.sidebarTitle}>НАВЫКИ</Text>
                {skills.map((skill, index) => (
                  <View key={index} style={styles.skillContainer}>
                    <Text style={styles.skillText}>
@@ -243,17 +243,6 @@ const ResumeDocument: React.FC<ResumeDocumentProps> = ({ data }) => {
                ))}
              </>
           )}
-
-          {/* CUSTOM FIELDS (Разное) */}
-          {custom && custom.map((item, index) => (
-            <View key={index}>
-              <Text style={styles.sidebarTitle}>{item.title}</Text>
-              <View style={styles.listItem}>
-                 <View style={styles.bulletPoint} />
-                 <Text style={styles.listText}>{item.content}</Text>
-              </View>
-            </View>
-          ))}
         </View>
 
         {/* === ПРАВАЯ КОЛОНКА === */}
@@ -320,7 +309,7 @@ const ResumeDocument: React.FC<ResumeDocumentProps> = ({ data }) => {
           {education && education.length > 0 && (
           <>
             <View style={styles.sectionTitleBox}>
-              <Text style={styles.sectionTitleText}>EDUCATION</Text>
+              <Text style={styles.sectionTitleText}>ОБРАЗОВАНИЕ</Text>
             </View>
             {education.map((edu, index) => (
               <View key={index} style={styles.entryContainer}>
@@ -349,7 +338,7 @@ const ResumeDocument: React.FC<ResumeDocumentProps> = ({ data }) => {
           {experience && experience.length > 0 && (
             <>
                 <View style={styles.sectionTitleBox}>
-                  <Text style={styles.sectionTitleText}>EMPLOYMENT</Text>
+                  <Text style={styles.sectionTitleText}>ОПЫТ РАБОТЫ</Text>
                 </View>
               {experience.map((exp, index) => (
                 <View key={index} style={styles.entryContainer}>
@@ -366,6 +355,23 @@ const ResumeDocument: React.FC<ResumeDocumentProps> = ({ data }) => {
                   <Text style={styles.entryDescription}>{exp.description}</Text>
                 </View>
               ))}
+            </>
+          )}
+
+          {/* CUSTOM FIELDS (Разное) */}
+          {custom && custom.length > 0 && (
+            <>
+                <View style={styles.sectionTitleBox}>
+                  <Text style={styles.sectionTitleText}>ДОПОЛНИТЕЛЬНАЯ ИНФОРМАЦИЯ</Text>
+                </View>
+            {custom && custom.map((item, index) => (
+              <View key={index} style={styles.entryContainer}>
+                <Text style={styles.entryTitle}>• {item.title}</Text>
+                <View style={styles.entrySubtitle}>
+                  <Text style={styles.entrySubtitle}>{item.content}</Text>
+                </View>
+              </View>
+            ))}
             </>
           )}
 
