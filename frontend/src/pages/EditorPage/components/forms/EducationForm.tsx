@@ -118,7 +118,7 @@ export default function EducationManager() {
   }
 
   return (
-    <div className="w-full max-w-3xl space-y-6 text-white">
+    <div className="w-full max-w-3xl space-y-6 text-foreground">
       {items.map((item, index) => (
         <EducationCard 
           key={item.localId} 
@@ -239,7 +239,7 @@ function EducationCard({ initialData, isEditing, onDelete, onSave, onEdit }: Car
             {draft.university || "Учебное заведение не указано"}
           </span>
           {(draft.degree || draft.major) && (
-             <span className="text-white/60 text-sm">
+             <span className="text-foreground/60 text-sm">
                 {[draft.degree, draft.major].filter(Boolean).join(", ")}
              </span>
           )}
@@ -259,7 +259,7 @@ function EducationCard({ initialData, isEditing, onDelete, onSave, onEdit }: Car
   }
 
   return (
-    <div className="border border-gray-200 rounded-xl p-6 shadow-sm space-y-5 animate-in fade-in zoom-in-95 duration-200 bg-white/10">
+    <div className="border border-gray-300 rounded-xl p-6 shadow-sm space-y-5 animate-in fade-in zoom-in-95 duration-200 bg-white/10">
       
       {/* HEADER: University */}
       <div className="space-y-1.5">
@@ -275,33 +275,33 @@ function EducationCard({ initialData, isEditing, onDelete, onSave, onEdit }: Car
       {/* ROW 1: Faculty & Degree */}
       <div className="grid grid-cols-2 gap-4 max-sm:grid-cols-1">
         <div className="space-y-1.5">
-          <Label className="text-white font-medium">Факультет</Label>
+          <Label className="text-foreground font-medium">Факультет</Label>
           <Input 
              value={draft.faculty}
              onChange={(e) => updateDraft("faculty", e.target.value)}
              placeholder="Институт математики..."
-             className="bg-gray-50/50 border-gray-200 text-white placeholder:text-white/50" 
+             className="bg-gray-50/50 border-gray-300 text-foreground placeholder:text-foreground/50" 
           />
         </div>
         <div className="space-y-1.5">
-          <Label className="text-white font-medium">Степень</Label>
+          <Label className="text-foreground font-medium">Степень</Label>
           <Input 
              value={draft.degree}
              onChange={(e) => updateDraft("degree", e.target.value)}
              placeholder="Бакалавр"
-             className="bg-gray-50/50 border-gray-200 text-white placeholder:text-white/50" 
+             className="bg-gray-50/50 border-gray-300 text-foreground placeholder:text-foreground/50" 
           />
         </div>
       </div>
 
       {/* ROW 2: Major */}
       <div className="space-y-1.5">
-          <Label className="text-white font-medium">Специальность</Label>
+          <Label className="text-foreground font-medium">Специальность</Label>
           <Input 
              value={draft.major}
              onChange={(e) => updateDraft("major", e.target.value)}
              placeholder="Программная инженерия"
-             className="bg-gray-50/50 border-gray-200 text-white placeholder:text-white/50" 
+             className="bg-gray-50/50 border-gray-300 text-foreground placeholder:text-foreground/50" 
           />
       </div>
 
@@ -312,8 +312,8 @@ function EducationCard({ initialData, isEditing, onDelete, onSave, onEdit }: Car
         
         {/* Start Date */}
         <div className="space-y-2">
-          <Label className="text-white font-medium">Дата начала</Label>
-            <div className="flex flex-row items-center gap-2 w-full text-white">
+          <Label className="text-foreground font-medium">Дата начала</Label>
+            <div className="flex flex-row items-center gap-2 w-full text-foreground">
              <DateSelect 
               placeholder="Месяц" 
               options={months.map((m, i) => ({ val: i.toString(), label: m }))}
@@ -332,7 +332,7 @@ function EducationCard({ initialData, isEditing, onDelete, onSave, onEdit }: Car
         {/* End Date */}
         <div className="space-y-2">
           <div className="flex justify-between items-center h-[16px] mb-1">
-             <Label className="text-white font-medium">Дата окончания</Label>
+             <Label className="text-foreground font-medium">Дата окончания</Label>
              <div className="flex items-center gap-2">
                 <Switch
                   id={`finished-${draft.field_id || Math.random()}`}
@@ -343,7 +343,7 @@ function EducationCard({ initialData, isEditing, onDelete, onSave, onEdit }: Car
                       if (checked) updateDraft("end_date", null);
                   }}
                 />
-                <Label htmlFor={`finished-${draft.field_id}`} className="text-white text-xs font-light cursor-pointer select-none">
+                <Label htmlFor={`finished-${draft.field_id}`} className="text-foreground text-xs font-light cursor-pointer select-none">
                     Сейчас
                 </Label>
              </div>
@@ -376,7 +376,7 @@ function EducationCard({ initialData, isEditing, onDelete, onSave, onEdit }: Car
             variant="ghost" 
             size="icon" 
             onClick={(e) => { e.preventDefault(); onDelete(); }}
-            className="h-10 w-10 rounded-full text-white-400 hover:text-red-500 hover:bg-red-500/10 transition-colors hover:cursor-pointer"
+            className="h-10 w-10 rounded-full text-foreground-400 hover:text-red-500 hover:bg-red-500/10 transition-colors hover:cursor-pointer"
             type="button"
         >
             <Trash2 size={18} />
@@ -399,7 +399,7 @@ function EducationCard({ initialData, isEditing, onDelete, onSave, onEdit }: Car
 function DateSelect({ placeholder, options, value, onChange }: { placeholder: string, options: { val: string, label: string }[], value: string, onChange: (val: string) => void }) {
     return (
         <Select value={value} onValueChange={onChange}>
-            <SelectTrigger className="bg-gray-50/50 border-gray-200 focus:bg-primary/50 text-black-600 h-10 text-sm flex-1">
+            <SelectTrigger className="bg-gray-50/50 border-gray-300 focus:bg-primary/50 text-black-600 h-10 text-sm flex-1">
                 <SelectValue placeholder={placeholder} />
             </SelectTrigger>
             <SelectContent className="max-h-[200px]">

@@ -17,28 +17,28 @@ function App() {
 
   return (
     <>
-    <ResumeProvider>
-      <Routes>
-        <Route path="/" element={<LandingPage/>} />
-        <Route
-        path="/login"
-        element={user ? <Navigate to="/dashboard" replace /> : <LoginPage />}
-        />
-        <Route
-          path="/registration"
-          element={user ? <Navigate to="/login" replace /> : <RegistrationPage />}
-        />
-        <Route
-          path="/dashboard"
-          element={user ? <DashboardPage /> : <Navigate to="/login" replace />}
-        />
-        <Route 
-        path="/editor/:id" 
-        element={user ? <EditorPage /> : <Navigate to="/login" replace />} 
-        /> 
-      </Routes>
-    </ResumeProvider>
-    <ThemeToggle/>
+      <ResumeProvider>
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route
+            path="/login"
+            element={user ? <Navigate to="/dashboard" replace /> : <LoginPage />}
+          />
+          <Route
+            path="/registration"
+            element={user ? <Navigate to="/login" replace /> : <RegistrationPage />}
+          />
+          <Route
+            path="/dashboard"
+            element={user ? <DashboardPage /> : <Navigate to="/login" replace />}
+          />
+          <Route
+            path="/editor/:id"
+            element={user ? <EditorPage /> : <Navigate to="/login" replace />}
+          />
+        </Routes>
+      </ResumeProvider>
+      <ThemeToggle />
     </>
   );
 };

@@ -106,60 +106,26 @@ function RegistrationPage(){
             <CardHeader className="flex flex-col items-center"> 
                 <CardTitle className="text-4xl">Регистрация</CardTitle>
             </CardHeader>
-            <CardContent className="flex flex-col justify-center items-center w-full">
+            <CardContent className="flex flex-col justify-center items-center">
                 <form onSubmit={formik.handleSubmit} className="w-[300px]">
                     <div className="gap-2">
                         <div className="flex flex-col gap-2 items-center">
                             <div className="pt-2 w-[280px]">
-                                <label className="text-foreground" htmlFor="username">Логин</label>
-                                <Input 
-                                    id="username" 
-                                    type="text" 
-                                    placeholder="username" 
-                                    value={formik.values.username}
-                                    onChange={formik.handleChange}
-                                    onBlur={formik.handleBlur}
-                                    required
-                                    className={formik.touched.username && formik.errors.username ? "border-destructive focus-visible:ring-destructive" : ""}
-                                />
-                                {formik.touched.username && formik.errors.username && (
-                                    <div className="text-destructive text-sm mt-1">{formik.errors.username}</div>
-                                )}
+                        <label className="text-foreground" htmlFor="username">Логин</label>
+                        <Input 
+                            id="username" 
+                            type="text" 
+                            placeholder="username" 
+                            value={formik.values.username}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            required
+                            className={formik.touched.username && formik.errors.username ? "border-destructive focus-visible:ring-destructive" : ""}
+                        />
+                        {formik.touched.username && formik.errors.username && (
+                            <div className="text-destructive text-sm mt-1">{formik.errors.username}</div>
+                        )}
                             </div>
-
-                            <div className="w-[280px]">
-                                <label className="text-foreground" htmlFor="fname">Имя</label>
-                                <Input
-                                    id="name"
-                                    type="fname"
-                                    placeholder="Иван"
-                                    value={formik.values.name}
-                                    onChange={formik.handleChange}
-                                    onBlur={formik.handleBlur}
-                                    required
-                                    className={formik.touched.name && formik.errors.name ? "border-destructive focus-visible:ring-destructive" : ""}
-                                />
-                                {formik.touched.name && formik.errors.name && (
-                                    <div className="text-destructive text-sm mt-1">{formik.errors.name}</div>
-                                )}
-                            </div>
-
-                            <div className="w-[280px]">
-                                <label className="text-foreground" htmlFor="lname">Фамилия</label>
-                                <Input
-                                    id="surname"
-                                    type="lname"
-                                    placeholder="Иванов"
-                                    value={formik.values.surname}
-                                    onChange={formik.handleChange}
-                                    onBlur={formik.handleBlur}
-                                    required
-                                    className={formik.touched.surname && formik.errors.surname ? "border-destructive focus-visible:ring-destructive" : ""}
-                                />
-                                {formik.touched.surname && formik.errors.surname && (
-                                    <div className="text-destructive text-sm mt-1">{formik.errors.surname}</div>
-                                )}
-                            </div>  
 
                             <div className="w-[280px]">
                                 <label className="text-foreground" htmlFor="email">Электронная почта</label>
@@ -200,9 +166,9 @@ function RegistrationPage(){
                                         </button>
                                 </div>
 
-                                {formik.touched.password && formik.errors.password && (
-                                        <div className="text-destructive text-sm mt-1">{formik.errors.password}</div>
-                                    )}
+                            {formik.touched.password && formik.errors.password && (
+                                <div className="text-destructive text-sm mt-1">{formik.errors.password}</div>
+                            )}
                             </div>
 
                             <div className="pb-2 w-[280px]">
