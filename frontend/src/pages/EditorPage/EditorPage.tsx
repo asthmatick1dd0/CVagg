@@ -14,10 +14,10 @@ import { CSSTransition } from 'react-transition-group';
 import { Button } from "@/components/ui/button";
 import { FileQuestionMark, XIcon } from "lucide-react";
 
-const getAvatarFromStorage = (resumeId?: string | number | null, userId?: string | number | null) => {
-  if (!resumeId || !userId) return null;
+const getAvatarFromStorage = (resumeId?: string | number | null) => {
+  if (!resumeId) return null;
   try {
-    return localStorage.getItem(`avatar_${resumeId}_${userId}`);
+    return localStorage.getItem(`avatar_${resumeId}`);
   } catch {
     return null;
   }
@@ -32,7 +32,7 @@ const ResumePreview: React.FC<ResumePreviewProps> = ({ templateId }) => {
   const debouncedData = useDebounce(resumeData, 1000);
 
   const avatarBase64 = useMemo(() => {
-    const stored = getAvatarFromStorage(debouncedData?.id, resumeData.user_id);
+    const stored = getAvatarFromStorage(debouncedData?.id);
     if (stored) return stored;
     const avatar = debouncedData?.personalInfo?.avatar;
     return avatar?.startsWith?.('data:') ? avatar : null;
