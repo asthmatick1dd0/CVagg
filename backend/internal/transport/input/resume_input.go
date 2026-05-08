@@ -30,6 +30,7 @@ type PersonalDataInput struct {
 	Github     string    `json:"github"`
 	Website    string    `json:"website"`
 	Birthdate  time.Time `json:"birthdate"`
+	Avatar     string    `json:"avatar"`
 }
 
 type EducationInput struct {
