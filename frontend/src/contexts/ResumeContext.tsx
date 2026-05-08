@@ -315,7 +315,7 @@ export const ResumeProvider = ({ children }: { children: ReactNode }) => {
                 phone: current.personalInfo?.phone || "",
                 address: current.personalInfo?.address || "",
                 avatar: current.personalInfo?.avatar || "",
-                birthdate: current.personalInfo?.birthDate || "",
+                birthdate: current.personalInfo?.birthDate || null,
                 website: current.personalInfo?.website || "",
                 github: current.personalInfo?.github || "",
               },
