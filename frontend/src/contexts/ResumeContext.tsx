@@ -16,6 +16,11 @@ import type {
 } from "@/types/resume.types";
 import { resumeApi } from "@/services/resumeService";
 import { useAuth } from "@/contexts/AuthContext";
+import {
+  clearStoredDraftTemplateId,
+  getStoredDraftTemplateId,
+  setStoredResumeTemplateId,
+} from "@/utils/resumeTemplateStorage";
 
 const INITIAL_RESUME: Resume = {
   title: "Резюме",
@@ -41,6 +46,7 @@ const INITIAL_RESUME: Resume = {
 interface ResumeContextType {
   resumeData: Partial<Resume>;
   loading: boolean;
+  updateTitle: (value: string) => void;
   setResumeData: React.Dispatch<React.SetStateAction<Partial<Resume>>>;
   saveResume: () => Promise<void>;
 
@@ -125,6 +131,24 @@ export const ResumeProvider = ({ children }: { children: ReactNode }) => {
                 personalSource.DesiredJob ||
                 personalSource.JobTitle ||
                 "",
+              avatar:
+                personalSource.avatar ||
+                personalSource.Avatar ||
+                personalSource.image ||
+                personalSource.Image ||
+                "",
+              birthDate:
+                personalSource.birthdate ||
+                personalSource.birth_date ||
+                "",
+              website:
+                personalSource.website ||
+                personalSource.Website ||
+                "",
+              github:
+                personalSource.github ||
+                personalSource.GitHub ||
+                "",
             },
 
             education: (data.items?.education || []).map(
@@ -166,6 +190,10 @@ export const ResumeProvider = ({ children }: { children: ReactNode }) => {
                   exp.job_experience?.position ||
                   exp.Position ||
                   "",
+                description:
+                  exp.job_experience?.description ||
+                  exp.Description ||
+                  "",
                 start_date:
                   exp.job_experience?.start_date ||
                   exp.StartDate ||
@@ -204,9 +232,24 @@ export const ResumeProvider = ({ children }: { children: ReactNode }) => {
         })
         .finally(() => setLoading(false));
     } else if (isNew) {
-      setResumeData({ ...INITIAL_RESUME });
-    }
+      setResumeData({
+        ...INITIAL_RESUME,
+        personalInfo: {
+        ...INITIAL_RESUME.personalInfo,
+        name: user?.name ?? "",
+        surname: user?.surname ?? "",
+        email: user?.email ?? "",
+        },
+      });
+      }
   }, [id, isNew, user?.id, navigate]);
+
+  const updateTitle = (value: string) => {
+  setResumeData((prev) => ({
+    ...prev,
+    title: value,
+  }));
+  };
 
   const updatePersonalInfo = useCallback(
   (field: string, value: string) => {
@@ -276,6 +319,10 @@ export const ResumeProvider = ({ children }: { children: ReactNode }) => {
                 email: current.personalInfo?.email || "",
                 phone: current.personalInfo?.phone || "",
                 address: current.personalInfo?.address || "",
+                avatar: current.personalInfo?.avatar || "",
+                birthdate: current.personalInfo?.birthDate || null,
+                website: current.personalInfo?.website || "",
+                github: current.personalInfo?.github || "",
               },
             },
           ],
@@ -302,6 +349,7 @@ export const ResumeProvider = ({ children }: { children: ReactNode }) => {
             job_experience: {
               company: exp.company || "",
               position: exp.position || "",
+              description: exp.description || "",
               start_date: exp.start_date || "",
               end_date: exp.end_date || null,
             },
@@ -328,6 +376,10 @@ export const ResumeProvider = ({ children }: { children: ReactNode }) => {
         },
       };
 
+      if (isEditing) {
+        payload.id = currentResumeId;
+      }
+
       console.log("Payload:", JSON.stringify(payload, null, 2));
 
       if (isEditing) {
@@ -342,10 +394,17 @@ export const ResumeProvider = ({ children }: { children: ReactNode }) => {
           payload,
           Number(user.id)
         );
-        if (created?.id || created?.ID) {
+        const newResumeId = created?.id ?? created?.ID;
+        if (newResumeId) {
+          const draftTemplate = getStoredDraftTemplateId();
+          if (draftTemplate) {
+            setStoredResumeTemplateId(newResumeId, draftTemplate);
+            clearStoredDraftTemplateId();
+          }
+
           setResumeData((prev) => ({
             ...prev,
-            id: created.id ?? created.ID,
+            id: newResumeId,
           }));
         }
         alert("Резюме успешно создано!");
@@ -366,7 +425,8 @@ export const ResumeProvider = ({ children }: { children: ReactNode }) => {
         resumeData,
         setResumeData,
         loading,
-        saveResume,
+        saveResume, 
+        updateTitle,
         updatePersonalInfo,
         updateEducation,
         updateExperience,

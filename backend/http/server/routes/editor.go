@@ -8,6 +8,7 @@ import (
 func EditorGroup(r fiber.Router, editorHandler editor.Handler) {
 	editorRoutes := r.Group("/editor")
 	editorRoutes.Post("/resume", editorHandler.CreateResume)
+	editorRoutes.Post("/upload-avatar", editorHandler.UploadAvatar)
 	editorRoutes.Get("/resume/:id", editorHandler.GetResumeByID)
 	editorRoutes.Get("/resume/:id/export", editorHandler.ExportResumePDF)
 	editorRoutes.Post("/resume/:id/analyze", editorHandler.Analyze)

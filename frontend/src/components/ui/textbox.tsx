@@ -15,15 +15,15 @@ export default function TextBox({
 
   const variantStyles = {
     landingPrimary:
-      "bg-card text-card-foreground text-left max-w-sm border border-white/10 hover:border-primary/50",
+      "bg-card/70 text-card-foreground text-left max-w-sm border border/10 hover:border-primary/50",
     landingSecondary:
       "bg-card text-card-foreground text-center max-w-2xs gap-5",
   };
 
   const headerStyles = {
-    landingPrimary: "text-lg text-primary font-semibold mb-2",
+    landingPrimary: "text-lg text-accent font-semibold mb-2",
     landingSecondary:
-      "flex items-center justify-center bg-primary w-12 h-12 rounded-full font-semibold text-2xl text-white hover:shadow-[0_0_16px_1px_theme(colors.primary/5)]",
+      "flex items-center justify-center bg-accent w-12 h-12 rounded-full font-semibold text-2xl text-foreground hover:shadow-[0_0_16px_1px_theme(colors.accent/5)]",
   };
 
   return (

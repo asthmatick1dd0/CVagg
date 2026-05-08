@@ -12,7 +12,7 @@ export function DashboardPagination({
 
   return (
     <div className="flex justify-center mt-8">
-      <div className="flex gap-4 items-center bg-black/40 px-6 py-3 rounded-xl text-white">
+      <div className="flex gap-4 items-center bg-background px-6 py-3 rounded-xl text-foreground">
 
         <button
           disabled={page === 1}
@@ -30,7 +30,7 @@ export function DashboardPagination({
                 key={num}
                 onClick={() => onPageChange(num)}
                 className={`px-3 py-1 rounded-xl ${
-                  num === page ? "bg-red-600 text-white" : "text-white/70"
+                  num === page ? "bg-primary text-white" : "text-foreground/70"
                 }`}
               >
                 {num}

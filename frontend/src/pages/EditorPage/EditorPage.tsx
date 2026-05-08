@@ -1,26 +1,111 @@
 import Footer from "@/components/footer";
 import EditorHeader from "./components/EditorHeader";
 import { EditorInputs } from "./components/EditorInputs";
-import { ResumeProvider, useResumeContext } from "@/contexts/ResumeContext"; 
-import { PDFViewer } from "@react-pdf/renderer";
-import ResumeDocument from "@/components/pdf/ResumeDocument";
+import { ResumeProvider, useResumeContext } from "@/contexts/ResumeContext";
+import { usePDF } from "@react-pdf/renderer";
+import ResumeDocumentRenderer from "@/components/pdf/ResumeDocumentRenderer";
+import { type TemplateId } from "@/components/pdf/ResumeDocument";
 import { useDebounce } from "@uidotdev/usehooks";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { AIChat } from "./components/chat/AIChat";
+import { TemplateSelect } from "@/components/TemplateSelect";
+import { useState, useRef, useMemo, useEffect } from "react";
+import { CSSTransition } from "react-transition-group";
+import { Button } from "@/components/ui/button";
+import { FileQuestionMark, XIcon } from "lucide-react";
+import {
+  getStoredResumeTemplateId,
+  setStoredResumeTemplateId,
+  getStoredDraftTemplateId,
+  setStoredDraftTemplateId,
+} from "@/utils/resumeTemplateStorage";
 
-const ResumePreview = () => {
+interface ResumePreviewProps {
+  templateId: TemplateId;
+}
+
+const ResumePreview = ({ templateId }: ResumePreviewProps) => {
   const { resumeData, loading } = useResumeContext();
-  const debouncedData = useDebounce(resumeData, 500);
+  const debouncedData = useDebounce(resumeData, 1000);
 
-  if (loading) {
-    return <div>Загрузка данных...</div>;
-  }
+  const [avatarBase64, setAvatarBase64] = useState<string | null>(null);
+
+  useEffect(() => {
+    const avatar = debouncedData?.personalInfo?.avatar;
+    if (!avatar) {
+      setAvatarBase64(null);
+      return;
+    }
+    if (avatar.startsWith("data:")) {
+      setAvatarBase64(avatar);
+      return;
+    }
+
+    let cancelled = false;
+    const convertImageToBase64 = async () => {
+      try {
+        const response = await fetch(avatar);
+        if (!response.ok) {
+          setAvatarBase64(null);
+          return;
+        }
+
+        const blob = await response.blob();
+        const dataUrl = await new Promise<string | null>((resolve) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result as string);
+          reader.onerror = () => resolve(null);
+          reader.readAsDataURL(blob);
+        });
+
+        if (!cancelled) {
+          setAvatarBase64(dataUrl);
+        }
+      } catch {
+        if (!cancelled) {
+          setAvatarBase64(null);
+        }
+      }
+    };
+
+    convertImageToBase64();
+    return () => {
+      cancelled = true;
+    };
+  }, [debouncedData?.personalInfo?.avatar]);
+
+  const document = useMemo(
+    () => (
+      <ResumeDocumentRenderer
+        data={debouncedData}
+        avatarBase64={avatarBase64}
+        templateId={templateId}
+      />
+    ),
+    [debouncedData, avatarBase64, templateId]
+  );
+
+  const [instance, updateInstance] = usePDF({ document });
+
+  useEffect(() => {
+    if (debouncedData) {
+      updateInstance(document);
+    }
+  }, [debouncedData, document, updateInstance]);
+
+  if (loading) return <div>Загрузка данных...</div>;
+  if (instance.loading) return <div>Генерация PDF...</div>;
+  if (instance.error) return <div>Ошибка генерации PDF</div>;
+  if (!instance.url) return <div>Генерация PDF...</div>;
 
   return (
-    <div style={{ width: '100%', height: '100vh' }}>
-      <PDFViewer width="100%" height="100%" showToolbar={false}>
-        <ResumeDocument data={debouncedData} />
-      </PDFViewer>
+    <div className="w-full h-screen">
+      <iframe
+        src={`${instance.url}#toolbar=0`}
+        width="100%"
+        height="100%"
+        style={{ border: "none" }}
+      />
     </div>
   );
 };
@@ -28,29 +113,169 @@ const ResumePreview = () => {
 const EditorContent = () => {
   const { resumeData } = useResumeContext();
 
+  const resumeId = resumeData?.id ?? resumeData?.ID ?? null;
+
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [templateId, setTemplateId] = useState<TemplateId>(() => {
+    return getStoredResumeTemplateId(resumeId) ?? getStoredDraftTemplateId() ?? "minimal";
+  });
+
+  const backdropRef = useRef(null);
+  const modalRef = useRef(null);
+
+  useEffect(() => {
+    const storedTemplate = getStoredResumeTemplateId(resumeId);
+    if (storedTemplate) {
+      setTemplateId(storedTemplate);
+      return;
+    }
+
+    if (!resumeId || resumeId === "0") {
+      const draftTemplate = getStoredDraftTemplateId();
+      setTemplateId(draftTemplate ?? "minimal");
+      return;
+    }
+
+    setTemplateId("minimal");
+  }, [resumeId]);
+
+  const handleTemplateChange = (nextTemplateId: TemplateId) => {
+    setTemplateId(nextTemplateId);
+    if (!resumeId || resumeId === "0") {
+      setStoredDraftTemplateId(nextTemplateId);
+      return;
+    }
+    setStoredResumeTemplateId(resumeId, nextTemplateId);
+  };
+
+  const handleOpen = () => setIsPreviewOpen(true);
+  const handleClose = () => setIsPreviewOpen(false);
+
+  const isMobile =
+    typeof window !== "undefined" ? window.innerWidth <= 768 : false;
+
   return (
     <>
-      <EditorHeader resumeData={resumeData} />
-      <div className="grid grid-cols-2 max-md:grid-cols-1 dashboard-gradient px-50 py-6 max-xl:px-4 max-lg:py-4 gap-4">
-        <EditorInputs />
-        <div className="bg-primary/60 rounded-xl p-6 min-h-[400px] max-md:hidden">
+      <EditorHeader />
+
+      {isMobile ? (
+        <div className="px-4 py-6 dashboard-gradient rounded-xl">
           <div className="w-full h-full object-cover rounded-lg">
-            <Tabs defaultValue="preview">
-            <TabsList>
-              <TabsTrigger value="preview">Превью</TabsTrigger>
-              <TabsTrigger value="chat">Чат</TabsTrigger>
-            </TabsList>
-            <TabsContent value="preview">
-              <ResumePreview />
-            </TabsContent>
-            <TabsContent value="chat">
-              <AIChat />
-            </TabsContent>
-          </Tabs>
+            <EditorInputs />
+
+            <div
+              className="
+                fixed bottom-18 right-6 max-sm:bottom-18 max-sm:right-4 z-50
+                p-3 rounded-full
+                bg-accent border border-border
+                shadow-lg hover:shadow-xl
+                hover:scale-110 active:scale-95
+                transition-all duration-200 ease-out
+                cursor-pointer
+                group
+              "
+              onClick={handleOpen}
+            >
+              <FileQuestionMark className="w-5 h-5 text-foreground transition-colors" />
+            </div>
           </div>
         </div>
-      </div>
+      ) : (
+        <div className="grid grid-cols-2 max-md:grid-cols-1 dashboard-gradient px-50 py-6 max-xl:px-4 max-lg:py-4 gap-4">
+          <EditorInputs />
+
+          <div className="bg-accent rounded-xl p-6 min-h-[400px] max-md:hidden">
+            <div className="w-full h-full object-cover rounded-lg">
+              <Tabs defaultValue="preview">
+                <div className="flex items-center justify-between gap-3 mb-3">
+                  <TabsList>
+                    <TabsTrigger value="preview">Превью</TabsTrigger>
+                    <TabsTrigger value="chat">Чат</TabsTrigger>
+                  </TabsList>
+
+                  <div className="w-56">
+                    <TemplateSelect
+                      value={templateId}
+                      onChange={handleTemplateChange}
+                      label=""
+                    />
+                  </div>
+                </div>
+
+                <TabsContent value="preview">
+                  <ResumePreview templateId={templateId} />
+                </TabsContent>
+
+                <TabsContent value="chat">
+                  <AIChat />
+                </TabsContent>
+              </Tabs>
+            </div>
+          </div>
+        </div>
+      )}
+
       <Footer />
+
+      <CSSTransition
+        in={isPreviewOpen}
+        timeout={300}
+        classNames="modal-backdrop"
+        unmountOnExit
+        nodeRef={backdropRef}
+      >
+        <div
+          ref={backdropRef}
+          className="fixed inset-0 bg-black/60 z-40 backdrop-blur-sm"
+          onClick={handleClose}
+        />
+      </CSSTransition>
+
+      <CSSTransition
+        in={isPreviewOpen}
+        timeout={300}
+        classNames="modal-content"
+        unmountOnExit
+        nodeRef={modalRef}
+      >
+        <div
+          ref={modalRef}
+          className="fixed inset-0 flex items-end sm:items-center justify-center z-50 p-4"
+        >
+          <div className="bg-white rounded-t-2xl sm:rounded-2xl w-full h-[95vh] sm:h-full max-w-3xl max-h-screen flex flex-col shadow-2xl overflow-hidden">
+            <Tabs defaultValue="preview">
+              <div className="flex flex-1 items-center justify-between px-4 py-3 border-b shrink-0 gap-3">
+                <Button variant="default" size="icon" onClick={handleClose}>
+                  <XIcon size={8} />
+                </Button>
+
+                <TabsList>
+                  <TabsTrigger value="preview">Превью</TabsTrigger>
+                  <TabsTrigger value="chat">Чат</TabsTrigger>
+                </TabsList>
+
+                <div className="w-30">
+                  <TemplateSelect
+                    value={templateId}
+                    onChange={handleTemplateChange}
+                    label=""
+                  />
+                </div>
+              </div>
+
+              <TabsContent value="preview">
+                <div className="flex-1 overflow-auto">
+                  <ResumePreview templateId={templateId} />
+                </div>
+              </TabsContent>
+
+              <TabsContent value="chat">
+                <AIChat />
+              </TabsContent>
+            </Tabs>
+          </div>
+        </div>
+      </CSSTransition>
     </>
   );
 };

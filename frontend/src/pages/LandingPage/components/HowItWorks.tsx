@@ -2,9 +2,9 @@ import TextBox from "@/components/ui/textbox";
 
 const HowItWorks = () => {
   return (
-    <section className="bg-card flex items-center justify-center border border-white/10">
+    <section className="bg-card flex items-center justify-center border border-secondary/10">
       <div className="flex flex-col justify-center items-center w-full p-5 pb-12 gap-6">
-        <h3 className="text-primary-foreground text-2xl font-bold pt-8 pb-3">Как это работает:</h3>
+        <h3 className="text-white text-2xl font-bold pt-8 pb-3">Как это работает:</h3>
         <div className="grid grid-cols-4 max-md:grid-cols-2 max-md:grid-rows-2 font-inter gap-5">
           <TextBox 
           header="1"

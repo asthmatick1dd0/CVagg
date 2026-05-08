@@ -5,6 +5,7 @@ import type { ChatMessage, Analysis } from '@/types/ai.types';
 import { Button } from '@/components/ui/button';
 import { Send } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
+import { Textarea } from '@/components/ui/textarea';
 
 const genId = () => Math.random().toString(36).slice(2, 10);
 
@@ -64,15 +65,7 @@ const AnalysisBlock = ({ analysis }: { analysis: Analysis }) => {
 };
 
 const TypingIndicator = () => (
-  <div className="flex items-end gap-3">
-    {/* Маскот думает */}
-    <div className="flex-shrink-0 self-end">
-      <img
-        src="/mascot.svg"
-        alt="mascot"
-        className="w-10 h-10 animate-pulse"
-      />
-    </div>
+  <div className="flex items-center">
     <div className="relative bg-white border border-gray-200 shadow-sm rounded-2xl rounded-bl-sm px-4 py-3">
       {/* Хвостик облачка */}
       <div className="absolute -left-2 bottom-2 w-3 h-3 bg-white border-l border-b border-gray-200 rotate-45" />
@@ -89,19 +82,10 @@ const TypingIndicator = () => (
   </div>
 );
 
-const MascotBubble = ({ children }: { children: React.ReactNode }) => (
-  <div className="flex items-end gap-1 max-w-[90%]">
-    <div className="flex-shrink-0 self-end">
-      <img
-        src="/mascot.svg"
-        alt="mascot"
-        className="-mb-8 w-40 h-40 drop-shadow-sm"
-      />
-    </div>
-    <div className="relative bg-white border border-gray-200 shadow-sm rounded-2xl rounded-bl-xs px-4 py-3 min-w-0">
-      <div className="relative z-10">
-        {children}
-      </div>
+const AssistantBubble = ({ children }: { children: React.ReactNode }) => (
+  <div className="max-w-[80%]">
+    <div className="bg-white border border-gray-200 shadow-sm rounded-2xl rounded-bl-xs px-4 py-3">
+      {children}
     </div>
   </div>
 );
@@ -128,13 +112,17 @@ export const AIChat = () => {
   const [loading, setLoading] = useState(false);
   const [input, setInput] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   const userId = resumeData?.user_id || 0;
-  const resumeId = resumeData?.id;
+  const resumeId = resumeData?.id ?? resumeData?.ID ?? 0;
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    const container = messagesContainerRef.current;
+  if (!container) return;
+  
+  container.scrollTop = container.scrollHeight;
   }, [messages, loading]);
 
   const addMessage = (msg: Omit<ChatMessage, 'id' | 'timestamp'>) => {
@@ -145,7 +133,7 @@ export const AIChat = () => {
   };
 
   const runFullAnalysis = async () => {
-    if (loading || !resumeId) return;
+    if (loading) return;
 
     addMessage({ role: 'user', text: 'Проведи полный анализ моего резюме' });
     setLoading(true);
@@ -169,7 +157,7 @@ export const AIChat = () => {
   };
 
   const sendMessage = async (text: string) => {
-    if (!text.trim() || loading || !resumeId) return;
+    if (!text.trim() || loading) return;
 
     const trimmed = text.trim();
     addMessage({ role: 'user', text: trimmed });
@@ -202,7 +190,7 @@ export const AIChat = () => {
       });
     } finally {
       setLoading(false);
-      inputRef.current?.focus();
+      inputRef.current?.focus({ preventScroll: true });
     }
   };
 
@@ -216,19 +204,19 @@ export const AIChat = () => {
   const clearChat = () => setMessages([]);
 
   return (
-    <div className="flex flex-col h-[calc(100vh-6rem)] bg-white rounded-lg overflow-hidden border border-gray-200">
+    <div className="flex flex-col h-[calc(100vh-6rem)] bg-white rounded-lg overflow-hidden border border-gray-300 border-[3px]">
       {/* Шапка */}
-      <div className="px-4 py-3 bg-gray-50 border-b flex justify-between items-center">
+      <div className="px-4 py-3 bg-gray-50 border-b border-gray-300 flex justify-between items-center">
         <div className="flex items-center gap-2">
           <img src="/mascot.svg" alt="mascot" className="w-6 h-6" />
-          <h3 className="font-semibold text-sm">AI-ассистент</h3>
+          <h3 className="font-semibold text-black text-sm">AI-ассистент</h3>
         </div>
         <div className="flex gap-2">
           <Button
             variant="default"
             size="sm"
             onClick={runFullAnalysis}
-            disabled={loading || !resumeId}
+            disabled={loading}
           >
             Анализ
           </Button>
@@ -244,8 +232,7 @@ export const AIChat = () => {
       </div>
 
       {/* Область сообщений */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
-
+      <div className="flex-1 overflow-y-auto p-4 bg-gray-50" ref={messagesContainerRef}>
         {messages.length === 0 && (
           <div className="min-h-[85%] flex flex-col items-center justify-center text-center gap-5">
             <img
@@ -266,7 +253,7 @@ export const AIChat = () => {
 
             <div className="flex flex-col justify-center gap-2 max-w-sm">
               {QUICK_PROMPTS.map((prompt) => (
-                <button
+                <Button
                   key={prompt}
                   onClick={() => sendMessage(prompt)}
                   disabled={loading}
@@ -275,46 +262,57 @@ export const AIChat = () => {
                              hover:text-primary transition-all disabled:opacity-50"
                 >
                   {prompt}
-                </button>
+                </Button>
               ))}
             </div>
           </div>
         )}
 
         {/* Сообщения */}
-        {messages.map((msg) => (
-          <div key={msg.id}>
-            {msg.role === 'user' ? (
-              <div className="flex justify-end">
-                <div className="max-w-[80%] px-4 py-3 rounded-2xl rounded-br-xs bg-primary text-foreground">
-                  {msg.text && (
-                    <div className="text-sm whitespace-pre-wrap">
-                      <ReactMarkdown>{msg.text}</ReactMarkdown>
+        {messages.length > 0 && (
+          <div className="relative pl-20">
+            <div className="absolute left-0 bottom-0">
+              <img
+                src="/mascot.svg"
+                alt="mascot"
+                className="w-16 h-16 drop-shadow-sm"
+              />
+            </div>
+            <div className="space-y-4">
+              {messages.map((msg) => (
+                <div key={msg.id}>
+                  {msg.role === 'user' ? (
+                    <div className="flex justify-end">
+                      <div className="max-w-[80%] px-4 py-3 rounded-2xl rounded-br-xs bg-primary text-white">
+                        {msg.text && (
+                          <div className="text-sm whitespace-pre-wrap">
+                            <ReactMarkdown>{msg.text}</ReactMarkdown>
+                          </div>
+                        )}
+                      </div>
                     </div>
+                  ) : (
+                    <AssistantBubble>
+                      {msg.text && (
+                        <div className={`text-sm text-black whitespace-pre-wrap ${msg.analysis ? 'mb-3' : ''}`}>
+                          <ReactMarkdown>{msg.text}</ReactMarkdown>
+                        </div>
+                      )}
+                      {msg.analysis && <AnalysisBlock analysis={msg.analysis} />}
+                    </AssistantBubble>
                   )}
                 </div>
-              </div>
-            ) : (
-              <MascotBubble>
-                {msg.text && (
-                  <div className={`text-sm text-secondary-foreground whitespace-pre-wrap ${msg.analysis ? 'mb-3' : ''}`}>
-                    <ReactMarkdown>{msg.text}</ReactMarkdown>
-                  </div>
-                )}
-                {msg.analysis && <AnalysisBlock analysis={msg.analysis} />}
-              </MascotBubble>
-            )}
+              ))}
+              {loading && <TypingIndicator />}
+              <div ref={messagesEndRef} />
+            </div>
           </div>
-        ))}
-
-        {loading && <TypingIndicator />}
-
-        <div ref={messagesEndRef} />
+        )}
       </div>
 
-      <div className="p-3 border-t bg-white">
+      <div className="p-3 border-t border-gray-300 bg-white">
         <div className="flex items-end gap-2">
-          <textarea
+          <Textarea
             ref={inputRef}
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -322,11 +320,7 @@ export const AIChat = () => {
             placeholder="Напишите сообщение..."
             disabled={loading}
             rows={1}
-            className="flex-1 resize-none rounded-xl border border-gray-300
-                       px-4 py-2.5 text-sm outline-none text-secondary-foreground
-                       focus:border-primary focus:ring-1 focus:ring-primary
-                       disabled:bg-gray-50 disabled:text-primary/10
-                       max-h-24 transition-colors"
+            className="flex-1 text-black"
             style={{
               height: 'auto',
               minHeight: '42px',
@@ -339,7 +333,7 @@ export const AIChat = () => {
           />
           <Button
             onClick={() => sendMessage(input)}
-            disabled={loading || !input.trim() || !resumeId}
+            disabled={loading || !input.trim()}
             size="icon"
             className="rounded-xl h-[42px] w-[42px] flex-shrink-0"
           >

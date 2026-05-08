@@ -3,10 +3,9 @@ import type { Resume } from "@/types/resume.types";
 import { ResumeCard } from "./ResumeCard";
 import { NewResumeCard } from "./NewResumeCard";
 import { Button } from "@/components/ui/button";
-import trashIcon from "@/assets/icons/trash.svg";
-// import exportIcon from "@/assets/icons/export.svg";
 import { resumeApi } from "@/services/resumeService";
 import { useAuth } from "@/contexts/AuthContext";
+import { Trash } from "lucide-react";
 
 interface ResumeGridProps {
   resumes: Resume[];
@@ -61,7 +60,11 @@ export function ResumeGrid({ resumes, onCreate, onRefresh }: ResumeGridProps) {
 
   // Удаление
   const handleDelete = async () => {
-    if (selectedIds.size === 0 || !user?.id) return;
+    if (!isSelectionMode || selectedIds.size === 0) {
+      alert("Сначала нажмите «Выделить» и выберите резюме");
+      return;
+    }
+    if (!user?.id) return;
     
     const count = selectedIds.size;
     const message = count === 1 
@@ -98,14 +101,14 @@ export function ResumeGrid({ resumes, onCreate, onRefresh }: ResumeGridProps) {
   }; */
 
   return (
-    <section className="flex flex-col justify-center items-center rounded-4xl bg-primary/60 pt-10 pb-18 px-3 gap-12 min-w-sm">
+    <section className="resume-grid flex flex-col justify-center items-center rounded-4xl pt-10 pb-18 px-3 max-sm:px-0 gap-12 min-w-sm">
       
       {/* Панель инструментов */}
       <section className="flex flex-row w-full items-center justify-between px-6">
         
         {/* Кнопка удаления */}
         <Button 
-          variant="secondary" 
+          variant="dashboard" 
           className={`
             flex items-center justify-center h-12 w-12 rounded-full relative
             transition-all duration-200
@@ -115,15 +118,15 @@ export function ResumeGrid({ resumes, onCreate, onRefresh }: ResumeGridProps) {
             }
           `}
           onClick={handleDelete}
-          disabled={selectedIds.size === 0 || isDeleting}
+          disabled={isDeleting}
         >
           {isDeleting ? (
             <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
           ) : (
             <>
-              <img src={trashIcon} alt="Delete" className="absolute scale-85" />
+              <Trash className="absolute scale-200" />
               {selectedIds.size > 0 && (
-                <span className="absolute -top-1 -right-1 bg-accent-foreground text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-semibold">
+                <span className="absolute -top-1 -right-1 bg-secondary-foreground text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-semibold">
                   {selectedIds.size}
                 </span>
               )}
@@ -137,20 +140,20 @@ export function ResumeGrid({ resumes, onCreate, onRefresh }: ResumeGridProps) {
           {isSelectionMode && (
             <div className="flex items-center gap-3 mr-2">
               {selectedIds.size > 0 && (
-                <span className="text-white/80 text-sm hidden sm:block px-6">
+                <span className="text-foreground/80 text-sm hidden sm:block px-6">
                   <i>Выбрано: {selectedIds.size}</i>
                 </span>
               )}
               <button 
                 onClick={selectAll}
-                className="text-xs text-white/50 hover:text-white transition-colors"
+                className="text-xs text-foreground/50 hover:text-white transition-colors"
               >
                 Все
               </button>
-              <span className="text-white/20">|</span>
+              <span className="text-foreground/20">|</span>
               <button 
                 onClick={deselectAll}
-                className="text-xs text-white/50 hover:text-white transition-colors"
+                className="text-xs text-foreground/50 hover:text-white transition-colors"
               >
                 Сбросить
               </button>
@@ -177,7 +180,7 @@ export function ResumeGrid({ resumes, onCreate, onRefresh }: ResumeGridProps) {
 
           {/* Кнопка режима выделения */}
           <Button 
-            variant={isSelectionMode ? "outline" : "secondary"}
+            variant={isSelectionMode ? "outline" : "dashboard"}
             className={`
               font-inter text-md font-semibold px-16 max-md:px-6 h-12 
               hover:cursor-pointer transition-all duration-200
@@ -193,17 +196,17 @@ export function ResumeGrid({ resumes, onCreate, onRefresh }: ResumeGridProps) {
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8 gap-y-16 px-5">
         <NewResumeCard onClick={onCreate} />
         
-        {resumes.map((r, index) => {
-          const resumeId = r.id || r.ID;
-          const numId = typeof resumeId === 'string' ? parseInt(resumeId, 10) : resumeId;
+        {resumes.map((r) => {
+          const resumeId = r.id ?? r.ID;
+          const numId = Number(resumeId);
           
           return (
             <ResumeCard 
-              key={resumeId || index} 
+              key={`resume-${numId}`} 
               resume={r}
               isSelectionMode={isSelectionMode}
-              isSelected={numId !== undefined && !isNaN(numId) && selectedIds.has(numId)}
-              onSelect={() => resumeId !== undefined && toggleSelect(resumeId)}
+              isSelected={!isNaN(numId) && selectedIds.has(numId)}
+              onSelect={() => !isNaN(numId) && toggleSelect(numId)}
             />
           );
         })}

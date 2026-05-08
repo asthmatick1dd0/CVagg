@@ -98,17 +98,17 @@ export default function SkillsManager() {
       
       {/* Выбранные навыки */}
       <div>
-        <p className="text-white/60 text-sm mb-2">
+        <p className="text-foreground/60 text-sm mb-2">
           Выбранные навыки ({selectedSkills.length}):
         </p>
-        <div className="flex flex-wrap gap-2 min-h-[40px] p-3 bg-white/5 rounded-lg border border-white/10">
+        <div className="flex flex-wrap gap-2 min-h-[40px] p-3 bg-white/5 rounded-lg border border-gray-300">
           {selectedSkills.length === 0 ? (
-            <p className="text-white/30 text-sm">Нажмите на навык, чтобы добавить</p>
+            <p className="text-foreground/30 text-sm">Нажмите на навык, чтобы добавить</p>
           ) : (
             selectedSkills.map(skillId => (
               <Badge 
                 key={skillId} 
-                className="flex items-center gap-1 px-3 py-1.5 bg-blue-500/20 text-blue-300 border border-blue-500/30"
+                className="flex items-center gap-1 px-3 py-1.5 bg-primary text-red-200 border border-red-200/30"
               >
                 {getSkillName(skillId)}
                 <button
@@ -126,12 +126,12 @@ export default function SkillsManager() {
 
       {/* Поиск */}
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40" size={18} />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground/40" size={18} />
         <Input
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Поиск навыков..."
-          className="pl-10"
+          className="pl-10 text-foreground placeholder:text-foreground/40"
         />
       </div>
 
@@ -139,7 +139,7 @@ export default function SkillsManager() {
       {searchQuery && (
         <div className="flex flex-wrap gap-2 p-3 bg-white/5 rounded-lg">
           {filteredSkills.length === 0 ? (
-            <p className="text-white/30 text-sm">Ничего не найдено</p>
+            <p className="text-foreground/30 text-sm">Ничего не найдено</p>
           ) : (
             filteredSkills.map(skill => (
               <Button
@@ -167,7 +167,7 @@ export default function SkillsManager() {
               variant="ghost"
               size="sm"
               onClick={expandAll}
-              className="text-xs text-white/60 hover:text-white"
+              className="text-xs text-foreground/60 hover:text-foreground border"
             >
               Развернуть все
             </Button>
@@ -176,7 +176,7 @@ export default function SkillsManager() {
               variant="ghost"
               size="sm"
               onClick={collapseAll}
-              className="text-xs text-white/60 hover:text-white"
+              className="text-xs text-foreground/60 hover:text-foreground border"
             >
               Свернуть все
             </Button>
@@ -189,7 +189,7 @@ export default function SkillsManager() {
             return (
               <div 
                 key={category} 
-                className="border border-white/10 rounded-lg overflow-hidden"
+                className="bg-foreground/5 border border-gray-300 rounded-lg overflow-hidden"
               >
                 <button
                   type="button"
@@ -198,23 +198,23 @@ export default function SkillsManager() {
                 >
                   <div className="flex items-center gap-2">
                     {isCollapsed ? (
-                      <ChevronRight size={16} className="text-white/60" />
+                      <ChevronRight size={16} className="text-foreground/60" />
                     ) : (
-                      <ChevronDown size={16} className="text-white/60" />
+                      <ChevronDown size={16} className="text-foreground/60" />
                     )}
-                    <span className="text-white/80 text-sm font-medium">
+                    <span className="text-foreground/80 text-sm font-medium">
                       {category}
                     </span>
                     {selectedCount > 0 && (
                       <Badge 
                         variant="secondary" 
-                        className="ml-2 bg-blue-500/20 text-blue-300 text-xs"
+                        className="ml-2 bg-primary border border-dashed border-gray/20 text-red-200 text-xs"
                       >
                         {selectedCount}
                       </Badge>
                     )}
                   </div>
-                  <span className="text-white/40 text-xs">
+                  <span className="text-foreground/40 text-xs">
                     {skills.length} навыков
                   </span>
                 </button>
@@ -235,10 +235,10 @@ export default function SkillsManager() {
                               ? removeSkill(skill.id) 
                               : addSkill(skill.id)
                           }
-                          className={`rounded-full text-xs transition-all ${
+                          className={`rounded-full text-xs transition-all text-foreground dark:bg-background/30  ${
                             isSelected 
-                              ? 'bg-blue-500 hover:bg-blue-600 text-white' 
-                              : 'hover:border-blue-400'
+                              ? 'dark:bg-black/30 hover:bg-red-600 text-white' 
+                              : 'hover:border-red-100 hover:text-red-100 dark:border'
                           }`}
                         >
                           {isSelected ? "✓ " : "+ "}

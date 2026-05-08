@@ -3,7 +3,7 @@ services:
     container_name: cvagg-backend
     build: ./backend
     ports:
-      - "8080:8080"
+      - "127.0.0.1:8080:8080"
     env_file:
       - .env
     depends_on:
@@ -12,18 +12,19 @@ services:
     volumes:
       - ./backend:/app
       - ./assets:/app/assets
+      - images_data:/app/images
 
   nginx:
     container_name: cvagg-nginx
     build: ./frontend
     ports:
-      - "3000:80"
+      - "127.0.0.1:3000:80"
     depends_on:
       - backend
 
   database:
     container_name: cvagg-postgres
-    image: postgres:alpine
+    image: postgres:17-alpine
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
@@ -47,3 +48,4 @@ services:
 volumes:
   postgres_data:
   redis_data:
+  images_data:

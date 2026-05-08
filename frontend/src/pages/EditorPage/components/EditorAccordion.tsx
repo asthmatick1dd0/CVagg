@@ -8,6 +8,7 @@ import EducationForm from "./forms/EducationForm"
 import ExperienceForm from "./forms/ExperienceForm"
 import CustomForm from "./forms/CustomForm"
 import HardskillForm from "./forms/HardskillForm"
+import { PlusCircle } from "lucide-react"
 
 
 export function AccordionDemo() {
@@ -16,9 +17,9 @@ export function AccordionDemo() {
        <AccordionItem value="education">
         <AccordionTrigger className="group [&>svg]:hidden hover:cursor-pointer">
           <div className="flex items-center justify-between w-full pr-4">
-            <span className="font-bold text-white text-lg">Образование</span>
-            <div className="w-6 h-6 flex items-center justify-center rounded-full border-2 border-white transition-all duration-200 group-data-[state=open]:bg-primary/50 group-data-[state=open]:rotate-45">
-              <span className="text-lg font-bold  duration-200">+</span>
+            <span className="font-bold text-foreground text-lg">Образование</span>
+            <div className="w-6 h-6 flex items-center justify-center transition-all duration-200 group-data-[state=open]:rotate-45">
+              <PlusCircle className="text-foreground text-lg font-bold duration-200"/>
             </div>
           </div>
         </AccordionTrigger>
@@ -32,9 +33,9 @@ export function AccordionDemo() {
       <AccordionItem value="experience">
         <AccordionTrigger className="group [&>svg]:hidden hover:cursor-pointer">
           <div className="flex items-center justify-between w-full pr-4">
-            <span className="font-bold text-white text-lg">Опыт работы</span>
-            <div className="w-6 h-6 flex items-center justify-center rounded-full border-2 border-white transition-all duration-200 group-data-[state=open]:bg-primary/50 group-data-[state=open]:rotate-45">
-              <span className="text-lg font-bold  duration-200">+</span>
+            <span className="font-bold text-foreground text-lg">Опыт работы</span>
+            <div className="w-6 h-6 flex items-center justify-center transition-all duration-200 group-data-[state=open]:rotate-45">
+              <PlusCircle className="text-foreground text-lg font-bold duration-200"/>
             </div>
           </div>
         </AccordionTrigger>
@@ -45,9 +46,9 @@ export function AccordionDemo() {
       <AccordionItem value="hardskills">
         <AccordionTrigger className="group [&>svg]:hidden hover:cursor-pointer">
           <div className="flex items-center justify-between w-full pr-4">
-            <span className="font-bold text-white text-lg">Навыки</span>
-            <div className="w-6 h-6 flex items-center justify-center rounded-full border-2 border-white transition-all duration-200 group-data-[state=open]:bg-primary/50 group-data-[state=open]:rotate-45">
-              <span className="text-lg font-bold  duration-200">+</span>
+            <span className="font-bold text-foreground text-lg">Навыки</span>
+            <div className="w-6 h-6 flex items-center justify-center transition-all duration-200 group-data-[state=open]:rotate-45">
+              <PlusCircle className="text-foreground text-lg font-bold duration-200"/>
             </div>
           </div>
         </AccordionTrigger>
@@ -58,9 +59,9 @@ export function AccordionDemo() {
       <AccordionItem value="custom">
         <AccordionTrigger className="group [&>svg]:hidden hover:cursor-pointer">
           <div className="flex items-center justify-between w-full pr-4">
-            <span className="font-bold text-white text-lg">Дополнительная информация</span>
-            <div className="w-6 h-6 flex items-center justify-center rounded-full border-2 border-white transition-all duration-200 group-data-[state=open]:bg-primary/50 group-data-[state=open]:rotate-45">
-              <span className="text-lg font-bold  duration-200">+</span>
+            <span className="font-bold text-foreground text-lg">Дополнительная информация</span>
+            <div className="w-6 h-6 flex items-center justify-center transition-all duration-200 group-data-[state=open]:rotate-45">
+              <PlusCircle className="text-foreground text-lg font-bold duration-200"/>
             </div>
           </div>
         </AccordionTrigger>

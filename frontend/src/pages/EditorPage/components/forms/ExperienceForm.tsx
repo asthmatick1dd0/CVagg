@@ -14,11 +14,13 @@ import {
 import { Trash2, Check, Plus, Pencil, Briefcase } from "lucide-react"
 import { useResumeContext } from "@/contexts/ResumeContext"
 import type { ExperienceItem } from "@/types/resume.types"
+import { Textarea } from "@/components/ui/textarea"
 
 interface ExperienceDraft {
   field_id: number;
   company: string;
   position: string;
+  description: string;
   start_date: string;
   end_date: string;
 }
@@ -40,6 +42,7 @@ const contextToLocal = (exp: ExperienceItem): ExperienceDraft => ({
   field_id: exp.field_id || 0,
   company: exp.company || "",
   position: exp.position || "",
+  description: exp.description || "",
   start_date: exp.start_date || new Date().toISOString(),
   end_date: exp.end_date || new Date().toISOString(),
 });
@@ -48,6 +51,7 @@ const localToContext = (draft: ExperienceDraft): ExperienceItem => ({
   field_id: draft.field_id,
   company: draft.company,
   position: draft.position,
+  description: draft.description,
   start_date: draft.start_date,
   end_date: draft.end_date,
 });
@@ -56,6 +60,7 @@ const createEmptyDraft = (): ExperienceDraft => ({
   field_id: 0,
   company: "",
   position: "",
+  description: "",
   start_date: new Date().toISOString(),
   end_date: new Date().toISOString(),
 });
@@ -89,7 +94,6 @@ export default function ExperienceManager() {
     }
   }, [resumeData.experience]);
 
-  // ─── FIX 2: Sync TO context — convert local drafts to context type ─
   const syncToGlobal = (currentItems: ExperienceItemState[]) => {
     const cleanData: ExperienceItem[] = currentItems.map((item) =>
       localToContext(item.data)
@@ -138,7 +142,7 @@ export default function ExperienceManager() {
   };
 
   return (
-    <div className="w-full max-w-3xl space-y-6">
+    <div className="w-full max-w-3xl space-y-6 text-foreground">
       {items.map((item, index) => (
         <ExperienceCard
           key={item.localId}
@@ -156,7 +160,7 @@ export default function ExperienceManager() {
           e.preventDefault();
           addNewItem();
         }}
-        className="w-full rounded-xl border-dashed py-6"
+        className="w-full rounded-xl dark:border-white dark:hover:bg-muted/50 border-dashed py-6"
         type="button"
       >
         <Plus className="w-5 h-5 mr-2" /> Добавить место работы
@@ -165,7 +169,6 @@ export default function ExperienceManager() {
   );
 }
 
-// ─── Card Props ─────────────────────────────────────────────────────
 interface CardProps {
   initialData: ExperienceDraft;
   isEditing: boolean;
@@ -184,8 +187,6 @@ function ExperienceCard({
   const [draft, setDraft] = useState<ExperienceDraft>(initialData);
   const [dateError, setDateError] = useState<string | null>(null);
 
-  // ─── FIX 3: Re-sync draft when initialData changes
-  //     (e.g., after context reloads) ────────────────────────────────
   useEffect(() => {
     setDraft(initialData);
   }, [initialData]);
@@ -280,14 +281,14 @@ function ExperienceCard({
 
   if (!isEditing) {
     return (
-      <div className="border border-gray-200 rounded-xl p-4 flex items-center justify-between bg-white/5 animate-in fade-in duration-300">
+      <div className="border border-gray-300 rounded-xl p-4 flex items-center justify-between bg-white/5 animate-in fade-in duration-300">
         <div className="flex flex-col gap-1">
-          <span className="text-white font-medium text-lg flex items-center gap-2">
-            <Briefcase size={18} className="text-white/70" />
+          <span className="text-foreground font-medium text-lg flex items-center gap-2">
+            <Briefcase size={18} className="text-foreground/70" />
             {draft.position || "Должность не указана"}
           </span>
           {draft.company && (
-            <span className="text-white/60 text-sm ml-6">
+            <span className="text-foreground/60 text-sm ml-6">
               {draft.company}
             </span>
           )}
@@ -300,7 +301,7 @@ function ExperienceCard({
             e.preventDefault();
             onEdit();
           }}
-          className="rounded-full text-white/70 hover:text-white hover:bg-white/10"
+          className="rounded-full text-foreground/70 hover:text-foreground hover:bg-foreground/10"
           type="button"
         >
           <Pencil size={18} />
@@ -310,25 +311,36 @@ function ExperienceCard({
   }
 
   return (
-    <div className="border border-gray-200 rounded-xl p-6 shadow-sm space-y-5 animate-in fade-in zoom-in-95 duration-200 bg-white/5">
+    <div className="border border-gray-300 rounded-xl p-6 shadow-sm space-y-5 animate-in fade-in zoom-in-95 duration-200 bg-white/10">
       <div className="space-y-1.5">
-        <Label className="text-white font-medium">Название компании</Label>
+        <Label className="text-foreground font-medium">Название компании</Label>
         <Input
           value={draft.company}
           onChange={(e) => updateDraft("company", e.target.value)}
           placeholder="Яндекс"
-          className="bg-gray-50/50 border-gray-200"
+          className="bg-gray-50/50 border-gray-300 text-foreground placeholder:text-foreground/50"
         />
       </div>
 
       {/* Position */}
       <div className="space-y-1.5">
-        <Label className="text-white font-medium">Должность</Label>
+        <Label className="text-foreground font-medium">Должность</Label>
         <Input
           value={draft.position}
           onChange={(e) => updateDraft("position", e.target.value)}
           placeholder="Frontend Developer"
-          className="bg-gray-50/50 border-gray-200"
+          className="bg-gray-50/50 border-gray-300 text-foreground placeholder:text-foreground/50"
+        />
+      </div>
+
+      {/* Description */}
+      <div className="space-y-1.5">
+        <Label className="text-foreground font-medium">Дополнительная информация</Label>
+        <Textarea
+          value={draft.description}
+          onChange={(e) => updateDraft("description", e.target.value)}
+          placeholder="Пил кофе с печенько"
+          className="bg-gray-50/50 border-gray-300 text-foreground placeholder:text-foreground/50"
         />
       </div>
 
@@ -338,8 +350,8 @@ function ExperienceCard({
       <div className="grid grid-cols-2 gap-6 max-sm:grid-cols-1 py-2">
         {/* Start Date */}
         <div className="space-y-2">
-          <Label className="text-white font-medium">Дата начала</Label>
-          <div className="flex flex-row items-center gap-2 w-full">
+          <Label className="text-foreground font-medium">Дата начала</Label>
+          <div className="flex flex-row items-center gap-2 w-full text-foreground">
             <DateSelect
               placeholder="Месяц"
               options={months.map((m, i) => ({
@@ -360,21 +372,21 @@ function ExperienceCard({
 
         {/* End Date */}
         <div className="space-y-2">
-          <Label className="text-white font-medium">Дата окончания</Label>
-          <div className="flex flex-row items-center gap-2 w-full">
+          <Label className="text-foreground font-medium">Дата окончания</Label>
+          <div className="flex flex-row items-center gap-2 w-full text-foreground">
             <DateSelect
               placeholder="Месяц"
               options={months.map((m, i) => ({
                 val: i.toString(),
                 label: m,
               }))}
-              value={start.month}
+              value={end.month}
               onChange={(v) => updateDateState("end", "month", v)}
             />
             <DateSelect
               placeholder="Год"
               options={years.map((y) => ({ val: y, label: y }))}
-              value={start.year}
+              value={end.year}
               onChange={(v) => updateDateState("end", "year", v)}
             />
           </div>
@@ -396,7 +408,7 @@ function ExperienceCard({
             e.preventDefault();
             onDelete();
           }}
-          className="h-10 w-10 rounded-full text-gray-400 hover:text-red-500 hover:bg-red-500/10 transition-colors hover:cursor-pointer"
+          className="h-10 w-10 rounded-full text-foreground-400 hover:text-red-500 hover:bg-red-500/10 transition-colors hover:cursor-pointer"
           type="button"
         >
           <Trash2 size={18} />
@@ -434,7 +446,7 @@ function DateSelect({
 }) {
   return (
     <Select value={value} onValueChange={onChange}>
-      <SelectTrigger className="bg-gray-50/50 border-gray-200 focus:bg-primary/50 text-black-600 h-10 text-sm flex-1">
+      <SelectTrigger className="bg-gray-50/50 border-gray-300 focus:bg-primary/50 text-black-600 h-10 text-sm flex-1">
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent className="max-h-[200px]">

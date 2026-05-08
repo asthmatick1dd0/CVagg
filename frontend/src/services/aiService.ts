@@ -35,10 +35,11 @@ const extractSkills = (skills: any): string[] => {
 
 export const aiApi = {
   analyzeResume: async (
-    resumeId: string | number, 
+    resumeId: string | number | null | undefined, 
     userId: number, 
     resumeData: Partial<Resume>
   ): Promise<AIResponse> => {
+    const normalizedResumeId = resumeId ?? 0;
     
     const summary = extractText(resumeData?.personalInfo);
 
@@ -70,7 +71,7 @@ export const aiApi = {
     console.log("Payload:", payload);
 
     const response = await api.post<AIResponse>(
-      `/editor/resume/${resumeId}/analyze?user_id=${userId}${getTokenQuery()}`,
+      `/editor/resume/${normalizedResumeId}/analyze?user_id=${userId}${getTokenQuery()}`,
       payload
     );
 
@@ -78,11 +79,12 @@ export const aiApi = {
   },
 
   sendMessage: async (
-    resumeId: string | number, 
+    resumeId: string | number | null | undefined, 
     userId: number, 
     resumeData: Partial<Resume>,
     text: string
   ): Promise<AIResponse> => {
+    const normalizedResumeId = resumeId ?? 0;
     
     const summary = extractText(resumeData?.personalInfo);
 
@@ -93,9 +95,10 @@ export const aiApi = {
         .map((exp: any) => {
           const position = exp.position || '';
           const company = exp.company || '';
+          const description = exp.description || '';
           const startDate = exp.start_date || '';
           const endDate = exp.end_date || '';
-          return `${position} at ${company}\n from ${startDate} to ${endDate}`.trim();
+          return `${position} at ${company}\n from ${startDate} to ${endDate}. Description: ${description}`.trim();
         })
         .join('\n\n');
     } else {
@@ -115,7 +118,7 @@ export const aiApi = {
     console.log("Payload:", payload);
 
     const response = await api.post<AIResponse>(
-      `/editor/resume/${resumeId}/analyze?user_id=${userId}${getTokenQuery()}`,
+      `/editor/resume/${normalizedResumeId}/analyze?user_id=${userId}${getTokenQuery()}`,
       payload
     );
 

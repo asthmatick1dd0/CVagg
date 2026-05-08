@@ -7,6 +7,7 @@ export const useResumes = () => {
     const { user } = useAuth();
 
     const [resumes, setResumes] = useState<Resume[]>([]);
+    const [count, setCount] = useState<number>(0);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null); 
 
@@ -19,7 +20,47 @@ export const useResumes = () => {
         setError(null);
         try {
             const data = await resumeApi.fetchResumes(Number(user.id));
-            setResumes(Array.isArray(data) ? data : []);
+            const baseResumes = Array.isArray(data) ? data : [];
+
+            const enrichedResumes = await Promise.all(
+                baseResumes.map(async (resume) => {
+                    const resumeId = resume.ID || resume.id;
+                    if (!resumeId) {
+                        return resume;
+                    }
+
+                    try {
+                        const details: any = await resumeApi.fetchResumeById(
+                            String(resumeId),
+                            Number(user.id)
+                        );
+                        const personalItem = details?.items?.personal_data?.[0];
+                        const personalSource =
+                            personalItem?.personal_data || personalItem?.PersonalData || {};
+                        const avatar =
+                            personalSource.avatar ||
+                            personalSource.Avatar ||
+                            "";
+
+                        if (!avatar) {
+                            return resume;
+                        }
+
+                        return {
+                            ...resume,
+                            personalInfo: {
+                                ...(resume.personalInfo || { field_id: 0 }),
+                                avatar,
+                            },
+                        };
+                    } catch {
+                        return resume;
+                    }
+                })
+            );
+
+            setResumes(enrichedResumes);
+            setCount(Array.isArray(data) ? count + 1 : count);
         } catch (err: any) {
             console.error("Fetch error:", err);
             
@@ -79,5 +120,5 @@ export const useResumes = () => {
         }
     }, [fetchResumes, user]);
 
-    return { resumes, loading, error, refetch: fetchResumes, saveResume, updateResume};
+    return { resumes, loading, error, count, refetch: fetchResumes, saveResume, updateResume};
 };

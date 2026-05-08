@@ -22,11 +22,15 @@ type ItemInput struct {
 }
 
 type PersonalDataInput struct {
-	DesiredJob string `json:"desired_job"`
-	FullName   string `json:"full_name"`
-	Email      string `json:"email"`
-	Phone      string `json:"phone"`
-	Address    string `json:"address"`
+	DesiredJob string    `json:"desired_job"`
+	FullName   string    `json:"full_name"`
+	Email      string    `json:"email"`
+	Phone      string    `json:"phone"`
+	Address    string    `json:"address"`
+	Github     string    `json:"github"`
+	Website    string    `json:"website"`
+	Birthdate  *time.Time `json:"birthdate,omitempty"`
+	Avatar     *string   `json:"avatar,omitempty"`
 }
 
 type EducationInput struct {
@@ -49,10 +53,11 @@ type CustomInput struct {
 }
 
 type JobExperienceInput struct {
-	Company   string     `json:"company"`
-	Position  string     `json:"position"`
-	StartDate *time.Time `json:"start_date"`
-	EndDate   *time.Time `json:"end_date"`
+	Company     string     `json:"company"`
+	Position    string     `json:"position"`
+	StartDate   *time.Time `json:"start_date"`
+	EndDate     *time.Time `json:"end_date"`
+	Description string     `json:"description"`
 }
 
 type AboutInput struct {
