@@ -301,13 +301,13 @@ const MinimalTemplate: React.FC<ResumeDocumentProps> = ({ data, avatarBase64 }) 
               {personalInfo?.website && (
                 <View style={styles.contactRow}>
                   <WebIcon color="#FFF" size={10} />
-                  <Text style={styles.contactText}>{personalInfo.website}</Text>
+                  <Text style={styles.contactText}>{personalInfo.website.replace(/^https?:\/\//, '')}</Text>
                 </View>
               )}
               {personalInfo?.github && (
                 <View style={styles.contactRow}>
                   <GithubIcon color="#FFF" size={10} />
-                  <Text style={styles.contactText}>{personalInfo.github}</Text>
+                  <Text style={styles.contactText}>{personalInfo.github.replace(/^https?:\/\//, '')}</Text>
                 </View>
               )}
             </View>
