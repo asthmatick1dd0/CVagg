@@ -219,6 +219,8 @@ export const ResumeProvider = ({ children }: { children: ReactNode }) => {
         ...INITIAL_RESUME,
         personalInfo: {
         ...INITIAL_RESUME.personalInfo,
+        name: user?.name ?? "",
+        surname: user?.surname ?? "",
         email: user?.email ?? "",
         },
       });
