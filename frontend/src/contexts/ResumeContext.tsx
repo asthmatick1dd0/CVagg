@@ -16,6 +16,11 @@ import type {
 } from "@/types/resume.types";
 import { resumeApi } from "@/services/resumeService";
 import { useAuth } from "@/contexts/AuthContext";
+import {
+  clearStoredDraftTemplateId,
+  getStoredDraftTemplateId,
+  setStoredResumeTemplateId,
+} from "@/utils/resumeTemplateStorage";
 
 const INITIAL_RESUME: Resume = {
   title: "Резюме",
@@ -389,10 +394,17 @@ export const ResumeProvider = ({ children }: { children: ReactNode }) => {
           payload,
           Number(user.id)
         );
-        if (created?.id || created?.ID) {
+        const newResumeId = created?.id ?? created?.ID;
+        if (newResumeId) {
+          const draftTemplate = getStoredDraftTemplateId();
+          if (draftTemplate) {
+            setStoredResumeTemplateId(newResumeId, draftTemplate);
+            clearStoredDraftTemplateId();
+          }
+
           setResumeData((prev) => ({
             ...prev,
-            id: created.id ?? created.ID,
+            id: newResumeId,
           }));
         }
         alert("Резюме успешно создано!");

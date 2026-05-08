@@ -16,6 +16,8 @@ import { FileQuestionMark, XIcon } from "lucide-react";
 import {
   getStoredResumeTemplateId,
   setStoredResumeTemplateId,
+  getStoredDraftTemplateId,
+  setStoredDraftTemplateId,
 } from "@/utils/resumeTemplateStorage";
 
 interface ResumePreviewProps {
@@ -115,7 +117,7 @@ const EditorContent = () => {
 
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [templateId, setTemplateId] = useState<TemplateId>(() => {
-    return getStoredResumeTemplateId(resumeId) ?? "minimal";
+    return getStoredResumeTemplateId(resumeId) ?? getStoredDraftTemplateId() ?? "minimal";
   });
 
   const backdropRef = useRef(null);
@@ -123,11 +125,26 @@ const EditorContent = () => {
 
   useEffect(() => {
     const storedTemplate = getStoredResumeTemplateId(resumeId);
-    setTemplateId(storedTemplate ?? "minimal");
+    if (storedTemplate) {
+      setTemplateId(storedTemplate);
+      return;
+    }
+
+    if (!resumeId || resumeId === "0") {
+      const draftTemplate = getStoredDraftTemplateId();
+      setTemplateId(draftTemplate ?? "minimal");
+      return;
+    }
+
+    setTemplateId("minimal");
   }, [resumeId]);
 
   const handleTemplateChange = (nextTemplateId: TemplateId) => {
     setTemplateId(nextTemplateId);
+    if (!resumeId || resumeId === "0") {
+      setStoredDraftTemplateId(nextTemplateId);
+      return;
+    }
     setStoredResumeTemplateId(resumeId, nextTemplateId);
   };
 

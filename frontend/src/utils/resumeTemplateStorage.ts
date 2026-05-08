@@ -1,6 +1,7 @@
 import { TEMPLATE_IDS, type TemplateId } from "@/components/pdf/ResumeDocument";
 
 const TEMPLATE_STORAGE_PREFIX = "resume_template_";
+const TEMPLATE_DRAFT_KEY = "resume_template_draft";
 
 const isTemplateId = (value: string | null): value is TemplateId => {
   return value !== null && TEMPLATE_IDS.includes(value as TemplateId);
@@ -39,5 +40,32 @@ export const setStoredResumeTemplateId = (
 
   try {
     localStorage.setItem(`${TEMPLATE_STORAGE_PREFIX}${resumeId}`, templateId);
+  } catch {}
+};
+
+export const getStoredDraftTemplateId = (): TemplateId | null => {
+  if (typeof window === "undefined") return null;
+
+  try {
+    const value = localStorage.getItem(TEMPLATE_DRAFT_KEY);
+    return isTemplateId(value) ? value : null;
+  } catch {
+    return null;
+  }
+};
+
+export const setStoredDraftTemplateId = (templateId?: TemplateId) => {
+  if (!templateId || typeof window === "undefined") return;
+
+  try {
+    localStorage.setItem(TEMPLATE_DRAFT_KEY, templateId);
+  } catch {}
+};
+
+export const clearStoredDraftTemplateId = () => {
+  if (typeof window === "undefined") return;
+
+  try {
+    localStorage.removeItem(TEMPLATE_DRAFT_KEY);
   } catch {}
 };
