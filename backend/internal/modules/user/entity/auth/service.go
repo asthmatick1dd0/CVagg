@@ -127,6 +127,8 @@ func (as *authService) RetrieveUserFromToken(t *jwt.Token, c *fiber.Ctx) (dto.Us
 	resp := dto.UserResponse{
 		ID:        user.ID,
 		Username:  user.Username,
+		Name:      user.Name,
+		Surname:   user.Surname,
 		Email:     user.Email,
 		ExpiresAt: expiredTime,
 		UpdatedAt: updatedTime,

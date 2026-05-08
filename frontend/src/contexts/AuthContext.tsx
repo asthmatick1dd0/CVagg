@@ -13,7 +13,7 @@ interface User {
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  register: (username: string, email: string, password: string) => Promise<string | null>;
+  register: (username: string, name: string, surname: string, email: string, password: string) => Promise<string | null>;
   login: (email: string, password: string) => Promise<string | null>;
   logout: () => Promise<void>;
   refreshUser: (tokenOverride?: string) => Promise<User | null>;
@@ -43,7 +43,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       });
 
       // 3. DEBUG LOG: Check what the backend actually returns
-      console.log("DEBUG /auth/me Response:", res.data);
+      console.log("DEBUG /auth/me Response:", res);
 
       // 4. Robust check for user object (Handles slightly different backend structures)
       const fetchedUser = 
@@ -70,9 +70,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  const register = async (username: string, email: string, password: string) => {
+  const register = async (username: string, name: string, surname: string, email: string, password: string) => {
       await api.post(
-        `/auth/signup?Username=${encodeURIComponent(username)}&Email=${encodeURIComponent(email)}&Password=${encodeURIComponent(password)}`,
+        `/auth/signup?Username=${encodeURIComponent(username)}&Name=${encodeURIComponent(name)}&Surname=${encodeURIComponent(surname)}&Email=${encodeURIComponent(email)}&Password=${encodeURIComponent(password)}`,
         {},
         { withCredentials: true }
       );

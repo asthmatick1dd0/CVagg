@@ -38,14 +38,14 @@ const Header = () => {
         <div className="fixed top-20 right-15" onClick={handleUser}>
           <UserPage
             currentUser={{
-              id: user?.id ?? "1",
-              name: user?.name ?? "Имя",
-              surname: user?.surname ?? "Фамилия",
-              email: user?.email ?? "example@your.mail",
+              id: user?.id ?? "",
+              username: user?.username ?? "",
+              name: user?.name ?? "",
+              surname: user?.surname ?? "",
+              email: user?.email ?? "",
               resumeCount: count ?? 0,
             }}
             onLogout={logout}
-            onSettings={() => {}}
           />
         </div>
       )}
