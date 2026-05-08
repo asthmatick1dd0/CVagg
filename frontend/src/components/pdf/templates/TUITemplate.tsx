@@ -324,10 +324,10 @@ const TUITemplate: React.FC<ResumeDocumentProps> = ({ data, avatarBase64 }) => {
               <Text style={styles.contactValue}>{personalInfo.phone}</Text>
             )}
             {personalInfo?.website && (
-              <Text style={styles.contactValue}>{personalInfo.website}</Text>
+              <Text style={styles.contactValue}>{personalInfo.website.replace(/^https?:\/\//, '')}</Text>
             )}
             {personalInfo?.github && (
-              <Text style={styles.contactValue}>{personalInfo.github}</Text>
+              <Text style={styles.contactValue}>{personalInfo.github.replace(/^https?:\/\//, '')}</Text>
             )}
           </View>
 
