@@ -11,8 +11,8 @@ const EditorHeader = () => {
   const handleExport = async () => {
     try {
       console.log('=== EXPORT DEBUG ===');
-  console.log('Resume data:', resumeData);
-      await exportResume(resumeData);
+      console.log('Resume data:', resumeData);
+      await exportResume(resumeData, { resumeId: resumeData.id });
     } catch (err) {
       console.error('Export failed:', err);
     }

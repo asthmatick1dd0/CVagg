@@ -19,7 +19,7 @@ interface UseAvatarReturn {
 export const useAvatar = (options: UseAvatarOptions = {}): UseAvatarReturn => {
     const {
         maxSizeInMB = 5,
-        allowedTypes = ['image/jpeg', 'image/png', 'image/webp'],
+        allowedTypes = ['image/png', 'image/jpg', 'image/jpeg'],
     } = options;
 
     const [uploading, setUploading] = useState(false);

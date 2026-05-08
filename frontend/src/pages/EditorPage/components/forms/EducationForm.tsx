@@ -235,7 +235,7 @@ function EducationCard({ initialData, isEditing, onDelete, onSave, onEdit }: Car
     return (
       <div className="border border-gray-200 rounded-xl p-4 flex items-center justify-between bg-white/5 animate-in fade-in duration-300 gap-4">
         <div className="flex flex-col min-w-0 flex-1">
-          <span className="text-white font-medium text-lg break-words leading-tight">
+          <span className="text-foreground font-medium text-lg break-words leading-tight">
             {draft.university || "Учебное заведение не указано"}
           </span>
           {(draft.degree || draft.major) && (
@@ -249,7 +249,7 @@ function EducationCard({ initialData, isEditing, onDelete, onSave, onEdit }: Car
             variant="ghost" 
             size="icon" 
             onClick={(e) => { e.preventDefault(); onEdit(); }}
-            className="rounded-full text-white/70 hover:text-white hover:bg-white/10 shrink-0 ml-2"
+            className="rounded-full text-foreground/70 hover:text-foreground shrink-0 ml-2"
             type="button"
         >
             <Pencil size={18} />
@@ -263,7 +263,7 @@ function EducationCard({ initialData, isEditing, onDelete, onSave, onEdit }: Car
       
       {/* HEADER: University */}
       <div className="space-y-1.5">
-        <Label className="text-white font-medium">Учебное заведение</Label>
+        <Label className="text-foreground font-medium">Учебное заведение</Label>
         < Input
           value={draft.university}
           onChange={(e) => updateDraft("university", e.target.value)}

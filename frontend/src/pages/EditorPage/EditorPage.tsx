@@ -1,66 +1,132 @@
 import Footer from "@/components/footer";
 import EditorHeader from "./components/EditorHeader";
 import { EditorInputs } from "./components/EditorInputs";
-import { ResumeProvider, useResumeContext } from "@/contexts/ResumeContext"; 
+import { ResumeProvider, useResumeContext } from "@/contexts/ResumeContext";
 import { usePDF } from "@react-pdf/renderer";
-import ResumeDocument from "@/components/pdf/ResumeDocument";
+import ResumeDocumentRenderer from "@/components/pdf/ResumeDocumentRenderer";
+import { type TemplateId } from "@/components/pdf/ResumeDocument";
 import { useDebounce } from "@uidotdev/usehooks";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { AIChat } from "./components/chat/AIChat";
-import { useState, useRef } from "react";
-import { CSSTransition } from 'react-transition-group' 
+import { TemplateSelect } from "@/components/TemplateSelect";
+import { useState, useRef, useMemo, useEffect } from "react";
+import { CSSTransition } from "react-transition-group";
 import { Button } from "@/components/ui/button";
-import { FileQuestionMark, XIcon } from "lucide-react"; 
-import { useEffect } from "react";
+import { FileQuestionMark, XIcon } from "lucide-react";
+import {
+  getStoredResumeTemplateId,
+  setStoredResumeTemplateId,
+} from "@/utils/resumeTemplateStorage";
 
-const ResumePreview = () => {
+const getAvatarFromStorage = (resumeId?: string | number | null) => {
+  if (
+    resumeId === null ||
+    resumeId === undefined ||
+    resumeId === "" ||
+    typeof window === "undefined"
+  ) {
+    return null;
+  }
+
+  try {
+    return localStorage.getItem(`avatar_${resumeId}`);
+  } catch {
+    return null;
+  }
+};
+
+interface ResumePreviewProps {
+  templateId: TemplateId;
+}
+
+const ResumePreview = ({ templateId }: ResumePreviewProps) => {
   const { resumeData, loading } = useResumeContext();
   const debouncedData = useDebounce(resumeData, 1000);
-  const [instance, updateInstance] = usePDF({
-    document: <ResumeDocument data={debouncedData} />,
-  });
+
+  const avatarBase64 = useMemo(() => {
+    const currentResumeId = debouncedData?.id ?? debouncedData?.ID ?? null;
+    const stored = getAvatarFromStorage(currentResumeId);
+    if (stored) return stored;
+
+    const avatar = debouncedData?.personalInfo?.avatar;
+    return avatar?.startsWith?.("data:") ? avatar : null;
+  }, [debouncedData]);
+
+  const document = useMemo(
+    () => (
+      <ResumeDocumentRenderer
+        data={debouncedData}
+        avatarBase64={avatarBase64}
+        templateId={templateId}
+      />
+    ),
+    [debouncedData, avatarBase64, templateId]
+  );
+
+  const [instance, updateInstance] = usePDF({ document });
 
   useEffect(() => {
     if (debouncedData) {
-      updateInstance(<ResumeDocument data={debouncedData} />);
+      updateInstance(document);
     }
-  }, [debouncedData]);
+  }, [debouncedData, document, updateInstance]);
 
-  if (loading) {
-    return <div>Загрузка данных...</div>;
-  }
+  if (loading) return <div>Загрузка данных...</div>;
   if (instance.loading) return <div>Генерация PDF...</div>;
   if (instance.error) return <div>Ошибка генерации PDF</div>;
+  if (!instance.url) return <div>Генерация PDF...</div>;
 
   return (
     <div className="w-full h-screen">
       <iframe
-        src={instance.url!}
+        src={`${instance.url}#toolbar=0`}
         width="100%"
         height="100%"
-        style={{ border: 'none' }}
+        style={{ border: "none" }}
       />
     </div>
   );
 };
 
 const EditorContent = () => {
+  const { resumeData } = useResumeContext();
+
+  const resumeId = resumeData?.id ?? resumeData?.ID ?? null;
+
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [templateId, setTemplateId] = useState<TemplateId>(() => {
+    return getStoredResumeTemplateId(resumeId) ?? "minimal";
+  });
 
   const backdropRef = useRef(null);
   const modalRef = useRef(null);
 
+  useEffect(() => {
+    const storedTemplate = getStoredResumeTemplateId(resumeId);
+    setTemplateId(storedTemplate ?? "minimal");
+  }, [resumeId]);
+
+  const handleTemplateChange = (nextTemplateId: TemplateId) => {
+    setTemplateId(nextTemplateId);
+    setStoredResumeTemplateId(resumeId, nextTemplateId);
+  };
+
   const handleOpen = () => setIsPreviewOpen(true);
   const handleClose = () => setIsPreviewOpen(false);
 
+  const isMobile =
+    typeof window !== "undefined" ? window.innerWidth <= 768 : false;
+
   return (
     <>
-    <EditorHeader />
-    {window.innerWidth <= 768 ? (
-      <div className="px-4 py-6 dashboard-gradient rounded-xl">
-        <div className="w-full h-full object-cover rounded-lg">
-          <EditorInputs />
-              <div 
+      <EditorHeader />
+
+      {isMobile ? (
+        <div className="px-4 py-6 dashboard-gradient rounded-xl">
+          <div className="w-full h-full object-cover rounded-lg">
+            <EditorInputs />
+
+            <div
               className="
                 fixed bottom-18 right-6 max-sm:bottom-18 max-sm:right-4 z-50
                 p-3 rounded-full
@@ -71,32 +137,47 @@ const EditorContent = () => {
                 cursor-pointer
                 group
               "
-              onClick={handleOpen}>
-                <FileQuestionMark className="w-5 h-5 text-foreground transition-colors" />
-              </div>
-        </div>
-      </div>
-    ) : (
-      <div className="grid grid-cols-2 max-md:grid-cols-1 dashboard-gradient px-50 py-6 max-xl:px-4 max-lg:py-4 gap-4">
-        <EditorInputs />
-        <div className="bg-accent rounded-xl p-6 min-h-[400px] max-md:hidden">
-          <div className="w-full h-full object-cover rounded-lg">
-            <Tabs defaultValue="preview">
-            <TabsList>
-              <TabsTrigger value="preview">Превью</TabsTrigger>
-              <TabsTrigger value="chat">Чат</TabsTrigger>
-            </TabsList>
-            <TabsContent value="preview">
-              <ResumePreview/>
-            </TabsContent>
-            <TabsContent value="chat">
-              <AIChat />
-            </TabsContent>
-          </Tabs>
+              onClick={handleOpen}
+            >
+              <FileQuestionMark className="w-5 h-5 text-foreground transition-colors" />
+            </div>
           </div>
         </div>
-      </div>
-    )}
+      ) : (
+        <div className="grid grid-cols-2 max-md:grid-cols-1 dashboard-gradient px-50 py-6 max-xl:px-4 max-lg:py-4 gap-4">
+          <EditorInputs />
+
+          <div className="bg-accent rounded-xl p-6 min-h-[400px] max-md:hidden">
+            <div className="w-full h-full object-cover rounded-lg">
+              <Tabs defaultValue="preview">
+                <div className="flex items-center justify-between gap-3 mb-3">
+                  <TabsList>
+                    <TabsTrigger value="preview">Превью</TabsTrigger>
+                    <TabsTrigger value="chat">Чат</TabsTrigger>
+                  </TabsList>
+
+                  <div className="w-56">
+                    <TemplateSelect
+                      value={templateId}
+                      onChange={handleTemplateChange}
+                      label=""
+                    />
+                  </div>
+                </div>
+
+                <TabsContent value="preview">
+                  <ResumePreview templateId={templateId} />
+                </TabsContent>
+
+                <TabsContent value="chat">
+                  <AIChat />
+                </TabsContent>
+              </Tabs>
+            </div>
+          </div>
+        </div>
+      )}
+
       <Footer />
 
       <CSSTransition
@@ -126,25 +207,36 @@ const EditorContent = () => {
         >
           <div className="bg-white rounded-t-2xl sm:rounded-2xl w-full h-[95vh] sm:h-full max-w-3xl max-h-screen flex flex-col shadow-2xl overflow-hidden">
             <Tabs defaultValue="preview">
-              <div className="flex flex-1 items-center justify-between px-4 py-3 border-b shrink-0">
+              <div className="flex flex-1 items-center justify-between px-4 py-3 border-b shrink-0 gap-3">
                 <Button variant="default" size="icon" onClick={handleClose}>
                   <XIcon size={8} />
                 </Button>
-                <TabsList className="items-center justify-">
+
+                <TabsList>
                   <TabsTrigger value="preview">Превью</TabsTrigger>
                   <TabsTrigger value="chat">Чат</TabsTrigger>
                 </TabsList>
+
+                <div className="w-30">
+                  <TemplateSelect
+                    value={templateId}
+                    onChange={handleTemplateChange}
+                    label=""
+                  />
+                </div>
               </div>
+
               <TabsContent value="preview">
-            <div className="flex-1 overflow-auto">
-              <ResumePreview />
-              </div>
+                <div className="flex-1 overflow-auto">
+                  <ResumePreview templateId={templateId} />
+                </div>
               </TabsContent>
+
               <TabsContent value="chat">
                 <AIChat />
               </TabsContent>
-          </Tabs>
-            </div>
+            </Tabs>
+          </div>
         </div>
       </CSSTransition>
     </>

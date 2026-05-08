@@ -27,7 +27,7 @@ const Header = () => {
               />
           </a>
           <div className="flex flex-row items-center gap-2">
-            <Button variant="link" className="flex items-center justify-center h-10 w-10 hover:cursor-pointer  hover:bg-primary hover:text-foreground" onClick={handleUser}>
+            <Button variant="link" className="flex items-center justify-center h-10 w-10 hover:cursor-pointer  hover:bg-primary hover:text-white" onClick={handleUser}>
               <User className="scale-200"/> 
             </Button>
           </div>
@@ -35,7 +35,7 @@ const Header = () => {
       </section>
       
       {isUserPageOpen && (
-        <div className="fixed top-20 right-15" onClick={handleUser}>
+        <div className="fixed top-20 right-15 z-100" onClick={handleUser}>
           <UserPage
             currentUser={{
               id: user?.id ?? "",

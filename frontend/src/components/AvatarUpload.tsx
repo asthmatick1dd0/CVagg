@@ -123,7 +123,7 @@ export const AvatarUpload = ({
     };
 
     return (
-        <div className="relative w-[96px] h-[96px]">
+        <div className={(hasResumeId || uploading) ? "relative w-[96px] h-[96px]" : "relative w-[96px] h-[96px] mb-12"}>
         <div className="flex flex-col items-center gap-3">
             {/* Avatar with upload overlay */}
             <div className="relative group">

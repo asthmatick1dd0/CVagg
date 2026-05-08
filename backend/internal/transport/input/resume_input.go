@@ -29,7 +29,7 @@ type PersonalDataInput struct {
 	Address    string    `json:"address"`
 	Github     string    `json:"github"`
 	Website    string    `json:"website"`
-	Birthdate  time.Time `json:"birthdate"`
+	Birthdate  *time.Time `json:"birthdate,omitempty"`
 	Avatar     *string   `json:"avatar,omitempty"`
 }
 

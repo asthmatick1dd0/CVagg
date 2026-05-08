@@ -65,15 +65,7 @@ const AnalysisBlock = ({ analysis }: { analysis: Analysis }) => {
 };
 
 const TypingIndicator = () => (
-  <div className="flex items-end gap-3">
-    {/* Маскот думает */}
-    <div className="flex-shrink-0 self-end">
-      <img
-        src="/mascot.svg"
-        alt="mascot"
-        className="w-10 h-10 animate-pulse"
-      />
-    </div>
+  <div className="flex items-center">
     <div className="relative bg-white border border-gray-200 shadow-sm rounded-2xl rounded-bl-sm px-4 py-3">
       {/* Хвостик облачка */}
       <div className="absolute -left-2 bottom-2 w-3 h-3 bg-white border-l border-b border-gray-200 rotate-45" />
@@ -90,19 +82,10 @@ const TypingIndicator = () => (
   </div>
 );
 
-const MascotBubble = ({ children }: { children: React.ReactNode }) => (
-  <div className="flex items-end gap-1 max-w-[90%]">
-    <div className="flex-shrink-0 self-end">
-      <img
-        src="/mascot.svg"
-        alt="mascot"
-        className="-mb-8 w-40 h-40 drop-shadow-sm"
-      />
-    </div>
-    <div className="relative bg-white border border-gray-200 shadow-sm rounded-2xl rounded-bl-xs px-4 py-3 min-w-0">
-      <div className="relative z-10">
-        {children}
-      </div>
+const AssistantBubble = ({ children }: { children: React.ReactNode }) => (
+  <div className="max-w-[80%]">
+    <div className="bg-white border border-gray-200 shadow-sm rounded-2xl rounded-bl-xs px-4 py-3">
+      {children}
     </div>
   </div>
 );
@@ -249,8 +232,7 @@ export const AIChat = () => {
       </div>
 
       {/* Область сообщений */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
-
+      <div className="flex-1 overflow-y-auto p-4 bg-gray-50" ref={messagesContainerRef}>
         {messages.length === 0 && (
           <div className="min-h-[85%] flex flex-col items-center justify-center text-center gap-5">
             <img
@@ -287,34 +269,45 @@ export const AIChat = () => {
         )}
 
         {/* Сообщения */}
-        {messages.map((msg) => (
-          <div key={msg.id}>
-            {msg.role === 'user' ? (
-              <div className="flex justify-end">
-                <div className="max-w-[80%] px-4 py-3 rounded-2xl rounded-br-xs bg-primary text-white">
-                  {msg.text && (
-                    <div className="text-sm whitespace-pre-wrap">
-                      <ReactMarkdown>{msg.text}</ReactMarkdown>
+        {messages.length > 0 && (
+          <div className="relative pl-20">
+            <div className="absolute left-0 bottom-0">
+              <img
+                src="/mascot.svg"
+                alt="mascot"
+                className="w-16 h-16 drop-shadow-sm"
+              />
+            </div>
+            <div className="space-y-4">
+              {messages.map((msg) => (
+                <div key={msg.id}>
+                  {msg.role === 'user' ? (
+                    <div className="flex justify-end">
+                      <div className="max-w-[80%] px-4 py-3 rounded-2xl rounded-br-xs bg-primary text-white">
+                        {msg.text && (
+                          <div className="text-sm whitespace-pre-wrap">
+                            <ReactMarkdown>{msg.text}</ReactMarkdown>
+                          </div>
+                        )}
+                      </div>
                     </div>
+                  ) : (
+                    <AssistantBubble>
+                      {msg.text && (
+                        <div className={`text-sm text-black whitespace-pre-wrap ${msg.analysis ? 'mb-3' : ''}`}>
+                          <ReactMarkdown>{msg.text}</ReactMarkdown>
+                        </div>
+                      )}
+                      {msg.analysis && <AnalysisBlock analysis={msg.analysis} />}
+                    </AssistantBubble>
                   )}
                 </div>
-              </div>
-            ) : (
-              <MascotBubble>
-                {msg.text && (
-                  <div className={`text-sm text-black whitespace-pre-wrap ${msg.analysis ? 'mb-3' : ''}`}>
-                    <ReactMarkdown>{msg.text}</ReactMarkdown>
-                  </div>
-                )}
-                {msg.analysis && <AnalysisBlock analysis={msg.analysis} />}
-              </MascotBubble>
-            )}
+              ))}
+              {loading && <TypingIndicator />}
+              <div ref={messagesEndRef} />
+            </div>
           </div>
-        ))}
-
-        {loading && <TypingIndicator />}
-
-        <div ref={messagesEndRef} />
+        )}
       </div>
 
       <div className="p-3 border-t border-gray-300 bg-white">
