@@ -3,6 +3,7 @@ package editor
 import (
 	"bytes"
 	"fmt"
+	"mime/multipart"
 	"time"
 
 	"github.com/asthmatick1dd0/CVagg/internal/models"
@@ -14,6 +15,7 @@ import (
 	jobExpRepo "github.com/asthmatick1dd0/CVagg/internal/modules/editor/entity/job_experience"
 	personalDataRepo "github.com/asthmatick1dd0/CVagg/internal/modules/editor/entity/personal_data"
 	resumeItemRepo "github.com/asthmatick1dd0/CVagg/internal/modules/editor/entity/resume_item"
+	"github.com/asthmatick1dd0/CVagg/internal/modules/editor/storage"
 	"github.com/asthmatick1dd0/CVagg/internal/modules/redis"
 	"github.com/asthmatick1dd0/CVagg/internal/transport/input"
 	"github.com/asthmatick1dd0/CVagg/pkg/helpers/cvaggerr"
@@ -27,7 +29,8 @@ type Service interface {
 	GetResumeByID(tx *gorm.DB, id uint) (*input.ResumeInput, cvaggerr.Error)
 	ExportResumePDF(tx *gorm.DB, id uint) ([]byte, cvaggerr.Error)
 	UpdateResume(tx *gorm.DB, resume *input.ResumeInput) cvaggerr.Error
-	CheckCooldown(ctx *fiber.Ctx, userID string) (bool, cvaggerr.Error)
+	UploadAvatar(ctx *fiber.Ctx, resumeID uint, fh *multipart.FileHeader) (string, cvaggerr.Error)
+	CheckCooldown(ctx *fiber.Ctx, userID string) (bool, time.Duration, cvaggerr.Error)
 	SetCooldown(ctx *fiber.Ctx, userID string, duration time.Duration) cvaggerr.Error
 }
 
@@ -40,6 +43,7 @@ type service struct {
 	aboutRepo        aboutRepo.Repository
 	customRepo       customRepo.Repository
 	personalDataRepo personalDataRepo.Repository
+	avatarStorage    storage.AvatarStorage
 	cooldownRepo     redis.Repository
 }
 
@@ -52,6 +56,7 @@ func NewService(
 	aboutRepo aboutRepo.Repository,
 	customRepo customRepo.Repository,
 	personalDataRepo personalDataRepo.Repository,
+	avatarStorage storage.AvatarStorage,
 	cooldownRepo redis.Repository,
 ) Service {
 	return &service{
@@ -63,6 +68,7 @@ func NewService(
 		aboutRepo:        aboutRepo,
 		customRepo:       customRepo,
 		personalDataRepo: personalDataRepo,
+		avatarStorage:    avatarStorage,
 		cooldownRepo:     cooldownRepo,
 	}
 }
@@ -666,6 +672,7 @@ func (s *service) GetResumeByID(tx *gorm.DB, id uint) (*input.ResumeInput, cvagg
 					Email:      model.Email,
 					Phone:      model.Phone,
 					Address:    model.Address,
+					Avatar:     model.Avatar,
 				},
 			}, nil
 		},
@@ -809,17 +816,17 @@ func (s *service) ExportResumePDF(tx *gorm.DB, id uint) ([]byte, cvaggerr.Error)
 	return buf.Bytes(), nil
 }
 
-func (s *service) CheckCooldown(ctx *fiber.Ctx, userID string) (bool, cvaggerr.Error) {
+func (s *service) CheckCooldown(ctx *fiber.Ctx, userID string) (bool, time.Duration, cvaggerr.Error) {
 	if userID == "" {
-		return false, cvaggerr.ErrorWrongID()
+		return false, 0, cvaggerr.ErrorWrongID()
 	}
 
-	cooldown, err := s.cooldownRepo.IsOnCooldown(ctx, userID)
+	cooldown, remaining, err := s.cooldownRepo.IsOnCooldown(ctx, userID)
 	if err != nil {
-		return false, err
+		return false, 0, err
 	}
 
-	return cooldown, nil
+	return cooldown, remaining, nil
 }
 
 func (s *service) SetCooldown(ctx *fiber.Ctx, userID string, duration time.Duration) cvaggerr.Error {
@@ -833,4 +840,68 @@ func (s *service) SetCooldown(ctx *fiber.Ctx, userID string, duration time.Durat
 	}
 
 	return nil
+}
+
+func (s *service) UploadAvatar(ctx *fiber.Ctx, resumeID uint, fh *multipart.FileHeader) (string, cvaggerr.Error) {
+	if fh == nil {
+		return "", cvaggerr.New("file required", "файл обязателен", 400)
+	}
+
+	url, err := s.avatarStorage.SaveAvatar(fh)
+	if err != nil {
+		return "", err
+	}
+
+	if resumeID != 0 {
+		// find personal_data resume_item
+		items, err := s.resumeItemRepo.GetAllByResumeID(nil, resumeID, "resume_item.item")
+		if err != nil {
+			return url, err
+		}
+
+		var pdItem *models.ResumeItem
+		for _, it := range items {
+			if it.ItemType == "personal_data" {
+				pdItem = it
+				break
+			}
+		}
+
+		if pdItem != nil {
+			var oldAvatar string
+			existing, err := s.personalDataRepo.GetByID(nil, pdItem.ItemId, "resume_item.personal_data")
+			if err != nil {
+				return url, err
+			}
+			if existing != nil && existing.Avatar != nil {
+				oldAvatar = *existing.Avatar
+			}
+
+			avatar := url
+			if err := s.personalDataRepo.Update(nil, &models.PersonalData{Avatar: &avatar}, "resume_item.personal_data", pdItem.ItemId); err != nil {
+				return url, err
+			}
+
+			if oldAvatar != "" && oldAvatar != url {
+				if err := s.avatarStorage.DeleteAvatar(oldAvatar); err != nil {
+					if oldAvatar != "" {
+						revertAvatar := oldAvatar
+						_ = s.personalDataRepo.Update(nil, &models.PersonalData{Avatar: &revertAvatar}, "resume_item.personal_data", pdItem.ItemId)
+					}
+					return url, err
+				}
+			}
+		} else {
+			avatar := url
+			pdModel := &models.PersonalData{Avatar: &avatar}
+			if err := s.personalDataRepo.Create(nil, pdModel, "resume_item.personal_data"); err != nil {
+				return url, err
+			}
+			resumeItemModel := &models.ResumeItem{ItemType: "personal_data", ItemId: pdModel.ID, ResumeId: resumeID}
+			if err := s.resumeItemRepo.Create(nil, resumeItemModel, "resume_item.item"); err != nil {
+				return url, err
+			}
+		}
+	}
+	return url, nil
 }

@@ -1,6 +1,11 @@
 package cvaggerr
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"fmt"
+	"time"
+
+	"github.com/gofiber/fiber/v2"
+)
 
 // General
 func ErrorValidation() Error {
@@ -93,10 +98,15 @@ func ErrorWrongID() Error {
 	}
 }
 
-func ErrorCooldown() Error {
+func ErrorCooldown(remaining time.Duration) Error {
+	if remaining < time.Second {
+		remaining = time.Second
+	}
+	seconds := int((remaining + time.Second - 1) / time.Second)
+
 	return &err{
-		English:   "AI on cooldown",
-		Russian:   "ИИ отдыхает",
+		English:   fmt.Sprintf("Try again in %d seconds", seconds),
+		Russian:   fmt.Sprintf("Следующий запрос можно отправить через %d сек.", seconds),
 		errorCode: fiber.StatusTooManyRequests,
 	}
 }
