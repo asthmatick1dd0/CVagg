@@ -9,7 +9,6 @@ import {
   formatBday
 } from "@/components/pdf/ResumeDocument";
 
-Font.registerHyphenationCallback(word => [word]);
 Font.register({
   family: 'JetBrains Mono',
   fonts: [
