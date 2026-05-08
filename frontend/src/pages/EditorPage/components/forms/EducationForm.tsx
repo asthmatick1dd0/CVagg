@@ -300,7 +300,7 @@ function EducationCard({ initialData, isEditing, onDelete, onSave, onEdit }: Car
           <Input 
              value={draft.major}
              onChange={(e) => updateDraft("major", e.target.value)}
-             placeholder="Программная инженерия"
+             placeholder="Фундаментальная информатика и информационные технологии"
              className="bg-gray-50/50 border-gray-300 text-foreground placeholder:text-foreground/50" 
           />
       </div>

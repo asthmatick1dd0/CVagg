@@ -339,8 +339,8 @@ function ExperienceCard({
         <Textarea
           value={draft.description}
           onChange={(e) => updateDraft("description", e.target.value)}
-          placeholder=""
-          className="bg-gray-50/50 border-gray-300"
+          placeholder="Пил кофе с печенько"
+          className="bg-gray-50/50 border-gray-300 text-foreground placeholder:text-foreground/50"
         />
       </div>
 
