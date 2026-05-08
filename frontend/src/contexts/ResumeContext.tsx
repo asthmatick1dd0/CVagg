@@ -131,7 +131,19 @@ export const ResumeProvider = ({ children }: { children: ReactNode }) => {
                 personalSource.Avatar ||
                 personalSource.image ||
                 personalSource.Image ||
-                ""
+                "",
+              birthDate:
+                personalSource.birthdate ||
+                personalSource.birth_date ||
+                "",
+              website:
+                personalSource.website ||
+                personalSource.Website ||
+                "",
+              github:
+                personalSource.github ||
+                personalSource.GitHub ||
+                "",
             },
 
             education: (data.items?.education || []).map(
@@ -303,6 +315,9 @@ export const ResumeProvider = ({ children }: { children: ReactNode }) => {
                 phone: current.personalInfo?.phone || "",
                 address: current.personalInfo?.address || "",
                 avatar: current.personalInfo?.avatar || "",
+                birthdate: current.personalInfo?.birthDate || "",
+                website: current.personalInfo?.website || "",
+                github: current.personalInfo?.github || "",
               },
             },
           ],
