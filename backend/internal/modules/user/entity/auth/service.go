@@ -70,7 +70,7 @@ func DeserealizeUser(c *fiber.Ctx) error {
 			return nil, fmt.Errorf("weird signing method: %s", t.Header["alg"])
 		}
 		return c.Locals("JWTSecret").([]byte), nil
-	}) // ОШИБКА вот здесь
+	})
 	if err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(err.Error())
 	}

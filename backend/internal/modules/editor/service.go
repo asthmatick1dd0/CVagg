@@ -30,7 +30,7 @@ type Service interface {
 	ExportResumePDF(tx *gorm.DB, id uint) ([]byte, cvaggerr.Error)
 	UpdateResume(tx *gorm.DB, resume *input.ResumeInput) cvaggerr.Error
 	UploadAvatar(ctx *fiber.Ctx, resumeID uint, fh *multipart.FileHeader) (string, cvaggerr.Error)
-	CheckCooldown(ctx *fiber.Ctx, userID string) (bool, cvaggerr.Error)
+	CheckCooldown(ctx *fiber.Ctx, userID string) (bool, time.Duration, cvaggerr.Error)
 	SetCooldown(ctx *fiber.Ctx, userID string, duration time.Duration) cvaggerr.Error
 }
 
@@ -287,6 +287,9 @@ func (s *service) UpdatePersonalData(tx *gorm.DB, it *input.ItemInput, ID uint) 
 		Email:      it.PersonalData.Email,
 		Phone:      it.PersonalData.Phone,
 		Address:    it.PersonalData.Address,
+		Website:    &it.PersonalData.Website,
+		Github:     &it.PersonalData.Github,
+		BirthDate:  &it.PersonalData.Birthdate,
 		Avatar:     it.PersonalData.Avatar,
 	}
 
@@ -425,6 +428,9 @@ func (s *service) SavePersonalData(tx *gorm.DB, it *input.ItemInput, ID uint) cv
 		Email:      it.PersonalData.Email,
 		Phone:      it.PersonalData.Phone,
 		Address:    it.PersonalData.Address,
+		Website:    &it.PersonalData.Website,
+		Github:     &it.PersonalData.Github,
+		BirthDate:  &it.PersonalData.Birthdate,
 		Avatar:     it.PersonalData.Avatar,
 	}
 
@@ -810,17 +816,17 @@ func (s *service) ExportResumePDF(tx *gorm.DB, id uint) ([]byte, cvaggerr.Error)
 	return buf.Bytes(), nil
 }
 
-func (s *service) CheckCooldown(ctx *fiber.Ctx, userID string) (bool, cvaggerr.Error) {
+func (s *service) CheckCooldown(ctx *fiber.Ctx, userID string) (bool, time.Duration, cvaggerr.Error) {
 	if userID == "" {
-		return false, cvaggerr.ErrorWrongID()
+		return false, 0, cvaggerr.ErrorWrongID()
 	}
 
-	cooldown, err := s.cooldownRepo.IsOnCooldown(ctx, userID)
+	cooldown, remaining, err := s.cooldownRepo.IsOnCooldown(ctx, userID)
 	if err != nil {
-		return false, err
+		return false, 0, err
 	}
 
-	return cooldown, nil
+	return cooldown, remaining, nil
 }
 
 func (s *service) SetCooldown(ctx *fiber.Ctx, userID string, duration time.Duration) cvaggerr.Error {
