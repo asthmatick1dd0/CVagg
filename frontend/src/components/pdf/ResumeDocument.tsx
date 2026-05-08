@@ -45,4 +45,5 @@ export interface ResumeDocumentProps {
   avatarBase64?: string | null;
 }
 
-export type TemplateId = 'minimal' | 'tui';
+export const TEMPLATE_IDS = ["minimal", "tui"] as const;
+export type TemplateId = (typeof TEMPLATE_IDS)[number];

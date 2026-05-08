@@ -1,7 +1,7 @@
 import Footer from "@/components/footer";
 import EditorHeader from "./components/EditorHeader";
 import { EditorInputs } from "./components/EditorInputs";
-import { ResumeProvider, useResumeContext } from "@/contexts/ResumeContext"; 
+import { ResumeProvider, useResumeContext } from "@/contexts/ResumeContext";
 import { usePDF } from "@react-pdf/renderer";
 import ResumeDocumentRenderer from "@/components/pdf/ResumeDocumentRenderer";
 import { type TemplateId } from "@/components/pdf/ResumeDocument";
@@ -10,12 +10,24 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { AIChat } from "./components/chat/AIChat";
 import { TemplateSelect } from "@/components/TemplateSelect";
 import { useState, useRef, useMemo, useEffect } from "react";
-import { CSSTransition } from 'react-transition-group';
+import { CSSTransition } from "react-transition-group";
 import { Button } from "@/components/ui/button";
 import { FileQuestionMark, XIcon } from "lucide-react";
+import {
+  getStoredResumeTemplateId,
+  setStoredResumeTemplateId,
+} from "@/utils/resumeTemplateStorage";
 
 const getAvatarFromStorage = (resumeId?: string | number | null) => {
-  if (!resumeId) return null;
+  if (
+    resumeId === null ||
+    resumeId === undefined ||
+    resumeId === "" ||
+    typeof window === "undefined"
+  ) {
+    return null;
+  }
+
   try {
     return localStorage.getItem(`avatar_${resumeId}`);
   } catch {
@@ -27,42 +39,42 @@ interface ResumePreviewProps {
   templateId: TemplateId;
 }
 
-const ResumePreview: React.FC<ResumePreviewProps> = ({ templateId }) => {
+const ResumePreview = ({ templateId }: ResumePreviewProps) => {
   const { resumeData, loading } = useResumeContext();
   const debouncedData = useDebounce(resumeData, 1000);
 
   const avatarBase64 = useMemo(() => {
-    const stored = getAvatarFromStorage(debouncedData?.id);
+    const currentResumeId = debouncedData?.id ?? debouncedData?.ID ?? null;
+    const stored = getAvatarFromStorage(currentResumeId);
     if (stored) return stored;
+
     const avatar = debouncedData?.personalInfo?.avatar;
-    return avatar?.startsWith?.('data:') ? avatar : null;
+    return avatar?.startsWith?.("data:") ? avatar : null;
   }, [debouncedData]);
 
-  const [instance, updateInstance] = usePDF({
-    document: (
+  const document = useMemo(
+    () => (
       <ResumeDocumentRenderer
         data={debouncedData}
         avatarBase64={avatarBase64}
         templateId={templateId}
       />
     ),
-  });
+    [debouncedData, avatarBase64, templateId]
+  );
+
+  const [instance, updateInstance] = usePDF({ document });
 
   useEffect(() => {
     if (debouncedData) {
-      updateInstance(
-        <ResumeDocumentRenderer
-          data={debouncedData}
-          avatarBase64={avatarBase64}
-          templateId={templateId}
-        />
-      );
+      updateInstance(document);
     }
-  }, [debouncedData, avatarBase64, templateId]);
+  }, [debouncedData, document, updateInstance]);
 
   if (loading) return <div>Загрузка данных...</div>;
   if (instance.loading) return <div>Генерация PDF...</div>;
   if (instance.error) return <div>Ошибка генерации PDF</div>;
+  if (!instance.url) return <div>Генерация PDF...</div>;
 
   return (
     <div className="w-full h-screen">
@@ -70,30 +82,51 @@ const ResumePreview: React.FC<ResumePreviewProps> = ({ templateId }) => {
         src={`${instance.url}#toolbar=0`}
         width="100%"
         height="100%"
-        style={{ border: 'none' }}
+        style={{ border: "none" }}
       />
     </div>
   );
 };
 
 const EditorContent = () => {
+  const { resumeData } = useResumeContext();
+
+  const resumeId = resumeData?.id ?? resumeData?.ID ?? null;
+
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
-  const [templateId, setTemplateId] = useState<TemplateId>("minimal");
+  const [templateId, setTemplateId] = useState<TemplateId>(() => {
+    return getStoredResumeTemplateId(resumeId) ?? "minimal";
+  });
 
   const backdropRef = useRef(null);
   const modalRef = useRef(null);
 
+  useEffect(() => {
+    const storedTemplate = getStoredResumeTemplateId(resumeId);
+    setTemplateId(storedTemplate ?? "minimal");
+  }, [resumeId]);
+
+  const handleTemplateChange = (nextTemplateId: TemplateId) => {
+    setTemplateId(nextTemplateId);
+    setStoredResumeTemplateId(resumeId, nextTemplateId);
+  };
+
   const handleOpen = () => setIsPreviewOpen(true);
   const handleClose = () => setIsPreviewOpen(false);
+
+  const isMobile =
+    typeof window !== "undefined" ? window.innerWidth <= 768 : false;
 
   return (
     <>
       <EditorHeader />
-      {window.innerWidth <= 768 ? (
+
+      {isMobile ? (
         <div className="px-4 py-6 dashboard-gradient rounded-xl">
           <div className="w-full h-full object-cover rounded-lg">
             <EditorInputs />
-            <div 
+
+            <div
               className="
                 fixed bottom-18 right-6 max-sm:bottom-18 max-sm:right-4 z-50
                 p-3 rounded-full
@@ -113,6 +146,7 @@ const EditorContent = () => {
       ) : (
         <div className="grid grid-cols-2 max-md:grid-cols-1 dashboard-gradient px-50 py-6 max-xl:px-4 max-lg:py-4 gap-4">
           <EditorInputs />
+
           <div className="bg-accent rounded-xl p-6 min-h-[400px] max-md:hidden">
             <div className="w-full h-full object-cover rounded-lg">
               <Tabs defaultValue="preview">
@@ -121,17 +155,20 @@ const EditorContent = () => {
                     <TabsTrigger value="preview">Превью</TabsTrigger>
                     <TabsTrigger value="chat">Чат</TabsTrigger>
                   </TabsList>
+
                   <div className="w-56">
                     <TemplateSelect
                       value={templateId}
-                      onChange={setTemplateId}
+                      onChange={handleTemplateChange}
                       label=""
                     />
                   </div>
                 </div>
+
                 <TabsContent value="preview">
                   <ResumePreview templateId={templateId} />
                 </TabsContent>
+
                 <TabsContent value="chat">
                   <AIChat />
                 </TabsContent>
@@ -140,6 +177,7 @@ const EditorContent = () => {
           </div>
         </div>
       )}
+
       <Footer />
 
       <CSSTransition
@@ -173,23 +211,27 @@ const EditorContent = () => {
                 <Button variant="default" size="icon" onClick={handleClose}>
                   <XIcon size={8} />
                 </Button>
+
                 <TabsList>
                   <TabsTrigger value="preview">Превью</TabsTrigger>
                   <TabsTrigger value="chat">Чат</TabsTrigger>
                 </TabsList>
+
                 <div className="w-30">
                   <TemplateSelect
                     value={templateId}
-                    onChange={setTemplateId}
+                    onChange={handleTemplateChange}
                     label=""
                   />
                 </div>
               </div>
+
               <TabsContent value="preview">
                 <div className="flex-1 overflow-auto">
                   <ResumePreview templateId={templateId} />
                 </div>
               </TabsContent>
+
               <TabsContent value="chat">
                 <AIChat />
               </TabsContent>

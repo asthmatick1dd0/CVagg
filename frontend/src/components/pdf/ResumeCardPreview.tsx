@@ -1,6 +1,6 @@
-// components/resume/ResumeCardPreview.tsx
 import type { Resume } from "@/types/resume.types";
 import type { TemplateId } from "@/components/pdf/ResumeDocument";
+import { getStoredResumeTemplateId } from "@/utils/resumeTemplateStorage";
 
 interface ResumeCardPreviewProps {
   resume: Resume;
@@ -8,7 +8,15 @@ interface ResumeCardPreviewProps {
 }
 
 const getAvatarFromStorage = (resumeId?: string | number | null) => {
-  if (!resumeId) return null;
+  if (
+    resumeId === null ||
+    resumeId === undefined ||
+    resumeId === "" ||
+    typeof window === "undefined"
+  ) {
+    return null;
+  }
+
   try {
     return localStorage.getItem(`avatar_${resumeId}`);
   } catch {
@@ -18,17 +26,22 @@ const getAvatarFromStorage = (resumeId?: string | number | null) => {
 
 export function ResumeCardPreview({
   resume,
-  templateId = "minimal",
+  templateId,
 }: ResumeCardPreviewProps) {
+  const resumeId = resume.id ?? resume.ID ?? null;
+
+  const effectiveTemplateId =
+    templateId ?? getStoredResumeTemplateId(resumeId) ?? "minimal";
+
   const avatar =
-    getAvatarFromStorage(resume.id) ||
+    getAvatarFromStorage(resumeId) ||
     (resume.personalInfo?.avatar?.startsWith?.("data:")
       ? resume.personalInfo.avatar
       : null);
 
   return (
     <div className="w-full h-full rounded-2xl overflow-hidden bg-white relative">
-      <TemplateMockup templateId={templateId} avatar={avatar} />
+      <TemplateMockup templateId={effectiveTemplateId} avatar={avatar} />
     </div>
   );
 }
@@ -41,6 +54,8 @@ function TemplateMockup({
   avatar: string | null;
 }) {
   switch (templateId) {
+    case "tui":
+      return <TUIMockup avatar={avatar} />;
     default:
       return <MinimalMockup avatar={avatar} />;
   }
@@ -65,8 +80,7 @@ function MinimalMockup({ avatar }: { avatar: string | null }) {
           <div key={`s1-${i}`} className="flex items-center gap-1 mb-1">
             <div className="w-1.5 h-1.5 bg-[#7B7EB7] shrink-0" />
             <div 
-              className="h-1 bg-[#D3D3D3]/60 rounded-sm" 
-              style={{ width: `${50 + Math.random() * 30}%` }} 
+              className="h-1 w-4 bg-[#D3D3D3]/60 rounded-sm" 
             />
           </div>
         ))}
@@ -77,8 +91,7 @@ function MinimalMockup({ avatar }: { avatar: string | null }) {
           <div key={`s2-${i}`} className="flex items-center gap-1 mb-1">
             <div className="w-1.5 h-1.5 bg-[#7B7EB7] shrink-0" />
             <div 
-              className="h-1 bg-[#D3D3D3]/60 rounded-sm" 
-              style={{ width: `${40 + Math.random() * 40}%` }} 
+              className="h-1 w-5 bg-[#D3D3D3]/60 rounded-sm" 
             />
           </div>
         ))}
@@ -112,8 +125,7 @@ function MinimalMockup({ avatar }: { avatar: string | null }) {
               <div key={`c-${i}`} className="flex items-center gap-1 mb-0.5">
                 <div className="w-1.5 h-1.5 rounded-full bg-white/50 shrink-0" />
                 <div 
-                  className="h-1 bg-white/40 rounded-sm" 
-                  style={{ width: `${40 + Math.random() * 30}%` }} 
+                  className="h-1 w-7 bg-white/40 rounded-sm" 
                 />
               </div>
             ))}
@@ -170,6 +182,133 @@ function MinimalMockup({ avatar }: { avatar: string | null }) {
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+function TUIMockup({ avatar }: { avatar: string | null }) {
+  return (
+    <div className="w-full h-full flex bg-[#1E1E1E] text-[#D4D4D4]">
+      {/* LEFT COLUMN */}
+      <div className="w-[32%] bg-[#292929] border-r-2 border-[#3A3A3A] ml-3 py-3 flex flex-col">
+        {/* Avatar */}
+        <div className="shrink-0 mb-3 flex">
+          {avatar ? (
+              <img
+                src={avatar}
+                alt="Avatar"
+                className="w-8 h-8 rounded-full object-cover"
+              />
+            ) : (
+              <div className="w-8 h-8 rounded-full bg-[#D3D3D3]" />
+            )}
+        </div>
+
+        {/* Name */}
+        <div className="mb-1">
+          <div className="h-2 w-8 bg-white rounded-sm mb-1" />
+          <div className="h-2 w-10 bg-white rounded-sm" />
+        </div>
+
+        {/* Job title */}
+        <div className="flex items-start gap-1.5 mt-2 mb-3">
+          <div className="w-1 h-1 rounded-full bg-white mt-1 shrink-0" />
+          <div className="h-2 w-8 bg-white rounded-sm" />
+        </div>
+
+        {/* Personal info */}
+        <div className="mb-3">
+          <div className="h-2 w-10 bg-[#B5D982] rounded-sm mb-2" />
+
+          <div className="ml-1 border-l-2 border-[#8A8A8A] pl-2 space-y-1.5">
+            <div>
+              <div className="h-1 w-4 bg-[#E94B6A] rounded-sm mb-1" />
+              <div className="h-1.5 w-5 bg-[#D4D4D4] rounded-sm" />
+            </div>
+            <div>
+              <div className="h-1 w-4 bg-[#E94B6A] rounded-sm mb-1" />
+              <div className="h-1.5 w-5 bg-[#D4D4D4] rounded-sm" />
+            </div>
+          </div>
+        </div>
+
+        {/* Contacts */}
+        <div>
+          <div className="h-2 w-10 bg-[#B5D982] rounded-sm mb-2" />
+
+          <div className="ml-2.5 border-l-2 border-[#8A8A8A] pl-2 space-y-1.5">
+            <div className="h-1.5 w-20 bg-[#D4D4D4] rounded-sm" />
+            <div className="h-1.5 w-16 bg-[#D4D4D4] rounded-sm" />
+            <div className="h-1.5 w-18 bg-[#D4D4D4] rounded-sm" />
+            <div className="h-1.5 w-14 bg-[#D4D4D4] rounded-sm" />
+          </div>
+        </div>
+      </div>
+
+      {/* RIGHT COLUMN */}
+      <div className="w-[60%] p-2.5 flex flex-col gap-2">
+        <TUISectionMockup titleWidth="w-8">
+
+          <div>
+            <div className="h-1.5 w-12 bg-[#E8D86E] rounded-sm mb-1" />
+            <div className="flex items-center gap-1 mb-1">
+              <div className="h-1.5 w-18 bg-[#B5D982] rounded-sm" />
+              <div className="h-1 w-12 bg-[#56B6C2] rounded-sm" />
+            </div>
+            <div className="ml-1 border-l-2 border-[#8A8A8A] pl-2">
+              <div className="h-1 w-7 bg-[#D4D4D4] rounded-sm" />
+            </div>
+          </div>
+        </TUISectionMockup>
+
+        <TUISectionMockup titleWidth="w-10">
+          <div className="mb-2">
+            <div className="h-1.5 w-9 bg-[#E8D86E] rounded-sm mb-1" />
+            <div className="flex items-center gap-1 mb-1">
+              <div className="h-1.5 w-10 bg-[#B5D982] rounded-sm" />
+              <div className="h-1 w-16 bg-[#56B6C2] rounded-sm" />
+            </div>
+            <div className="ml-1 border-l-2 border-[#8A8A8A] pl-2 space-y-1">
+              <div className="h-1 w-9 bg-[#D4D4D4] rounded-sm mb-1" />
+              <div className="h-1 w-7 bg-[#D4D4D4] rounded-sm" />
+            </div>
+          </div>
+        </TUISectionMockup>
+
+        <TUISectionMockup titleWidth="w-9">
+          <div className="space-y-1.5">
+            <div className="flex items-start gap-1">
+              <div className="h-1 w-4 bg-[#56B6C2] rounded-sm shrink-0" />
+              <div className="h-1 flex-1 bg-[#D4D4D4] rounded-sm" />
+            </div>
+            <div className="flex items-start gap-1">
+              <div className="h-1 w-2 bg-[#56B6C2] rounded-sm shrink-0" />
+              <div className="h-1 flex-1 bg-[#D4D4D4] rounded-sm" />
+            </div>
+            <div className="flex items-start gap-1">
+              <div className="h-1 w-3 bg-[#56B6C2] rounded-sm shrink-0" />
+              <div className="h-1 w-3/4 bg-[#D4D4D4] rounded-sm" />
+            </div>
+          </div>
+        </TUISectionMockup>
+      </div>
+    </div>
+  );
+}
+
+function TUISectionMockup({
+  children,
+  titleWidth,
+}: {
+  children: React.ReactNode;
+  titleWidth: string;
+}) {
+  return (
+    <div className="relative border-2 border-[#3A3A3A] rounded-lg px-2.5 pt-3 pb-2">
+      <div className="absolute -top-1.5 left-2 bg-[#1E1E1E] px-1">
+        <div className={`h-2 bg-[#61AFEE] rounded-sm ${titleWidth}`} />
+      </div>
+      {children}
     </div>
   );
 }
