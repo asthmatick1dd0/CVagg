@@ -40,6 +40,17 @@ export const formatDate = (isoStr: string | null | undefined): string => {
   }
 };
 
+export const formatBday = (isoStr: string | null | undefined): string => {
+  if (!isoStr) return "Настоящее время";
+  try {
+    const date = new Date(isoStr);
+    if (isNaN(date.getTime())) return isoStr;
+    return `${[date.getDate()]}/${[date.getMonth()+1]}/${date.getFullYear() != 1 ? date.getFullYear() : "2026"}`;
+  } catch {
+    return isoStr;
+  }
+};
+
 export interface ResumeDocumentProps {
   data: Partial<Resume>;
   avatarBase64?: string | null;

@@ -5,7 +5,8 @@ import {
   categoryOrder, 
   getAdaptiveNameFontSize, 
   formatDate,
-  type ResumeDocumentProps 
+  type ResumeDocumentProps, 
+  formatBday
 } from "@/components/pdf/ResumeDocument";
 
 Font.registerHyphenationCallback(word => [word]);
@@ -302,8 +303,8 @@ const TUITemplate: React.FC<ResumeDocumentProps> = ({ data, avatarBase64 }) => {
           <View style={styles.textSection}>
             {personalInfo?.birthDate && (
             <>
-              <Text style={styles.fieldLabel}>date of birth:</Text>
-              <Text style={styles.fieldValue}>{personalInfo.birthDate}</Text>
+              <Text style={styles.fieldLabel}>дата рождения:</Text>
+              <Text style={styles.fieldValue}>{formatBday(personalInfo.birthDate)}</Text>
             </>
           )}
           {personalInfo?.address && (

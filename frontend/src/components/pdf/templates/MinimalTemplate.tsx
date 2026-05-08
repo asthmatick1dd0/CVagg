@@ -7,6 +7,7 @@ import {
   categoryOrder, 
   getAdaptiveNameFontSize, 
   formatDate,
+  formatBday,
   type ResumeDocumentProps 
 } from "@/components/pdf/ResumeDocument";
 
@@ -294,7 +295,7 @@ const MinimalTemplate: React.FC<ResumeDocumentProps> = ({ data, avatarBase64 }) 
               {personalInfo?.birthDate && (
                 <View style={styles.contactRow}>
                   <CalendarIcon color="#FFF" size={10} />   
-                    <Text style={styles.contactText}>{personalInfo.birthDate}</Text>
+                    <Text style={styles.contactText}>{formatBday(personalInfo.birthDate)}</Text>
                 </View>
               )}
               {personalInfo?.website && (
