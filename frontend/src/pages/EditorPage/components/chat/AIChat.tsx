@@ -116,7 +116,7 @@ export const AIChat = () => {
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   const userId = resumeData?.user_id || 0;
-  const resumeId = resumeData?.id;
+  const resumeId = resumeData?.id ?? resumeData?.ID ?? 0;
 
   useEffect(() => {
     const container = messagesContainerRef.current;
@@ -133,7 +133,7 @@ export const AIChat = () => {
   };
 
   const runFullAnalysis = async () => {
-    if (loading || !resumeId) return;
+    if (loading) return;
 
     addMessage({ role: 'user', text: 'Проведи полный анализ моего резюме' });
     setLoading(true);
@@ -157,7 +157,7 @@ export const AIChat = () => {
   };
 
   const sendMessage = async (text: string) => {
-    if (!text.trim() || loading || !resumeId) return;
+    if (!text.trim() || loading) return;
 
     const trimmed = text.trim();
     addMessage({ role: 'user', text: trimmed });
@@ -216,7 +216,7 @@ export const AIChat = () => {
             variant="default"
             size="sm"
             onClick={runFullAnalysis}
-            disabled={loading || !resumeId}
+            disabled={loading}
           >
             Анализ
           </Button>
@@ -333,7 +333,7 @@ export const AIChat = () => {
           />
           <Button
             onClick={() => sendMessage(input)}
-            disabled={loading || !input.trim() || !resumeId}
+            disabled={loading || !input.trim()}
             size="icon"
             className="rounded-xl h-[42px] w-[42px] flex-shrink-0"
           >

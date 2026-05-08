@@ -35,10 +35,11 @@ const extractSkills = (skills: any): string[] => {
 
 export const aiApi = {
   analyzeResume: async (
-    resumeId: string | number, 
+    resumeId: string | number | null | undefined, 
     userId: number, 
     resumeData: Partial<Resume>
   ): Promise<AIResponse> => {
+    const normalizedResumeId = resumeId ?? 0;
     
     const summary = extractText(resumeData?.personalInfo);
 
@@ -70,7 +71,7 @@ export const aiApi = {
     console.log("Payload:", payload);
 
     const response = await api.post<AIResponse>(
-      `/editor/resume/${resumeId}/analyze?user_id=${userId}${getTokenQuery()}`,
+      `/editor/resume/${normalizedResumeId}/analyze?user_id=${userId}${getTokenQuery()}`,
       payload
     );
 
@@ -78,11 +79,12 @@ export const aiApi = {
   },
 
   sendMessage: async (
-    resumeId: string | number, 
+    resumeId: string | number | null | undefined, 
     userId: number, 
     resumeData: Partial<Resume>,
     text: string
   ): Promise<AIResponse> => {
+    const normalizedResumeId = resumeId ?? 0;
     
     const summary = extractText(resumeData?.personalInfo);
 
@@ -116,7 +118,7 @@ export const aiApi = {
     console.log("Payload:", payload);
 
     const response = await api.post<AIResponse>(
-      `/editor/resume/${resumeId}/analyze?user_id=${userId}${getTokenQuery()}`,
+      `/editor/resume/${normalizedResumeId}/analyze?user_id=${userId}${getTokenQuery()}`,
       payload
     );
 

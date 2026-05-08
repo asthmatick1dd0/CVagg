@@ -31,15 +31,6 @@ export function useExportResume(): UseExportResumeReturn {
     setError(null);
   }, []);
 
-  const loadAvatarFromStorage = useCallback((resumeId?: string | number): string | null => {
-    if (!resumeId) return null;
-    try {
-      return localStorage.getItem(`avatar_${resumeId}`);
-    } catch {
-      return null;
-    }
-  }, []);
-
   const convertImageToBase64 = useCallback(async (imageUrl: string): Promise<string | null> => {
     try {
       const response = await fetch(imageUrl);
@@ -131,17 +122,12 @@ export function useExportResume(): UseExportResumeReturn {
 
       let avatarBase64: string | null = options?.avatarBase64 ?? null;
 
-      // 1. localStorage avatar
-      if (!avatarBase64 && options?.resumeId) {
-        avatarBase64 = loadAvatarFromStorage(options.resumeId);
-      }
-
-      // 2. already base64 in resume data
+      // 1. already base64 in resume data
       if (!avatarBase64 && resumeData.personalInfo?.avatar?.startsWith?.("data:")) {
         avatarBase64 = resumeData.personalInfo.avatar;
       }
 
-      // 3. external URL → base64
+      // 2. external URL → base64
       if (!avatarBase64 && resumeData.personalInfo?.avatar) {
         avatarBase64 = await convertImageToBase64(resumeData.personalInfo.avatar);
       }
@@ -159,7 +145,7 @@ export function useExportResume(): UseExportResumeReturn {
       setIsExporting(false);
       setCurrentFile(null);
     }
-  }, [loadAvatarFromStorage, convertImageToBase64]);
+  }, [convertImageToBase64]);
 
   return {
     exportResume,

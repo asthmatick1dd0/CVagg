@@ -18,23 +18,6 @@ import {
   setStoredResumeTemplateId,
 } from "@/utils/resumeTemplateStorage";
 
-const getAvatarFromStorage = (resumeId?: string | number | null) => {
-  if (
-    resumeId === null ||
-    resumeId === undefined ||
-    resumeId === "" ||
-    typeof window === "undefined"
-  ) {
-    return null;
-  }
-
-  try {
-    return localStorage.getItem(`avatar_${resumeId}`);
-  } catch {
-    return null;
-  }
-};
-
 interface ResumePreviewProps {
   templateId: TemplateId;
 }
@@ -43,14 +26,51 @@ const ResumePreview = ({ templateId }: ResumePreviewProps) => {
   const { resumeData, loading } = useResumeContext();
   const debouncedData = useDebounce(resumeData, 1000);
 
-  const avatarBase64 = useMemo(() => {
-    const currentResumeId = debouncedData?.id ?? debouncedData?.ID ?? null;
-    const stored = getAvatarFromStorage(currentResumeId);
-    if (stored) return stored;
+  const [avatarBase64, setAvatarBase64] = useState<string | null>(null);
 
+  useEffect(() => {
     const avatar = debouncedData?.personalInfo?.avatar;
-    return avatar?.startsWith?.("data:") ? avatar : null;
-  }, [debouncedData]);
+    if (!avatar) {
+      setAvatarBase64(null);
+      return;
+    }
+    if (avatar.startsWith("data:")) {
+      setAvatarBase64(avatar);
+      return;
+    }
+
+    let cancelled = false;
+    const convertImageToBase64 = async () => {
+      try {
+        const response = await fetch(avatar);
+        if (!response.ok) {
+          setAvatarBase64(null);
+          return;
+        }
+
+        const blob = await response.blob();
+        const dataUrl = await new Promise<string | null>((resolve) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result as string);
+          reader.onerror = () => resolve(null);
+          reader.readAsDataURL(blob);
+        });
+
+        if (!cancelled) {
+          setAvatarBase64(dataUrl);
+        }
+      } catch {
+        if (!cancelled) {
+          setAvatarBase64(null);
+        }
+      }
+    };
+
+    convertImageToBase64();
+    return () => {
+      cancelled = true;
+    };
+  }, [debouncedData?.personalInfo?.avatar]);
 
   const document = useMemo(
     () => (

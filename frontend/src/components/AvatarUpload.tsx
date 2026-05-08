@@ -33,31 +33,7 @@ export const AvatarUpload = ({
         clearError,
     } = useAvatar({ maxSizeInMB: 5 });
 
-    // Load saved avatar from localStorage on mount
-    useEffect(() => {
-        if (resumeID) {
-            const savedAvatar = localStorage.getItem(`avatar_${resumeID}`);
-            if (savedAvatar) {
-                setLocalPreview(savedAvatar);
-            }
-        }
-    }, [resumeID]);
-
-    // Convert file to base64 and save to localStorage
-    const saveAvatarToStorage = async (file: File, resumeId: string | number) => {
-        return new Promise<string>((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => {
-                const base64 = reader.result as string;
-                localStorage.setItem(`avatar_${resumeId}`, base64);
-                resolve(base64);
-            };
-            reader.onerror = () => reject(new Error('Failed to read file'));
-            reader.readAsDataURL(file);
-        });
-    };
-
-    const displayUrl = localPreview || currentAvatarUrl;
+    const displayUrl = localPreview || currentAvatarUrl || null;
     const hasResumeId = Boolean(resumeID);
 
     // Clean up blob URLs when localPreview changes
@@ -89,13 +65,10 @@ export const AvatarUpload = ({
         const result = await uploadAvatar(String(resumeID), userID, file);
 
         if (result?.url) {
-            // Save the uploaded image as base64 to localStorage for persistence
-            try {
-                const base64Data = await saveAvatarToStorage(file, String(resumeID));
-                setLocalPreview(base64Data);
-            } catch (storageError) {
-                console.warn('Failed to save avatar to localStorage:', storageError);
+            if (newLocalPreview.startsWith('blob:')) {
+                URL.revokeObjectURL(newLocalPreview);
             }
+            setLocalPreview(result.url);
             onUploadSuccess?.(result.url);
         } else if (error) {
             // Clean up local preview URL on error
@@ -111,9 +84,6 @@ export const AvatarUpload = ({
     };
 
     const handleDeleteAvatar = () => {
-        if (resumeID) {
-            localStorage.removeItem(`avatar_${resumeID}`);
-        }
         setLocalPreview(null);
         onDelete?.();
     };
@@ -184,7 +154,7 @@ export const AvatarUpload = ({
                     : 'Сохраните резюме, чтобы загрузить фото'}
             </p>
 
-            {localPreview && !uploading && (
+            {displayUrl && !uploading && (
                     <Button
                     variant={"destructive"}
                     onClick={handleDeleteAvatar}

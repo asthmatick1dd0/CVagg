@@ -7,23 +7,6 @@ interface ResumeCardPreviewProps {
   templateId?: TemplateId;
 }
 
-const getAvatarFromStorage = (resumeId?: string | number | null) => {
-  if (
-    resumeId === null ||
-    resumeId === undefined ||
-    resumeId === "" ||
-    typeof window === "undefined"
-  ) {
-    return null;
-  }
-
-  try {
-    return localStorage.getItem(`avatar_${resumeId}`);
-  } catch {
-    return null;
-  }
-};
-
 export function ResumeCardPreview({
   resume,
   templateId,
@@ -33,11 +16,7 @@ export function ResumeCardPreview({
   const effectiveTemplateId =
     templateId ?? getStoredResumeTemplateId(resumeId) ?? "minimal";
 
-  const avatar =
-    getAvatarFromStorage(resumeId) ||
-    (resume.personalInfo?.avatar?.startsWith?.("data:")
-      ? resume.personalInfo.avatar
-      : null);
+  const avatar = resume.personalInfo?.avatar || null;
 
   return (
     <div className="w-full h-full rounded-2xl overflow-hidden bg-white relative">
