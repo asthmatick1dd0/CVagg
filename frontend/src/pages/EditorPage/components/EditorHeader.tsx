@@ -38,26 +38,29 @@ const EditorHeader = () => {
           />
         </div>
         
-        <div className="flex flex-row items-center gap-2">
-          <Button 
-            variant="default" 
-            className="flex items-center justify-center p-4 pr-2 rounded-full gap-3 hover:cursor-pointer"
-            onClick={handleExport}
-            disabled={isExporting}
-          >
-            {isExporting ? (
-              <>
-                <span>Экспорт...</span>
-                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin ml-1" />
-              </>
-            ) : (
-              <>
-                <p>Экспорт</p>
-                <DownloadIcon className="scale-110" />
-              </>
-            )}
-          </Button>
-        </div>
+          <div className="flex flex-row items-center gap-2">
+            {resumeData.id &&
+              <Button 
+                variant="default" 
+                className="flex items-center justify-center p-4 pr-2 rounded-full gap-3 hover:cursor-pointer"
+                onClick={handleExport}
+                disabled={isExporting}
+              >
+                {isExporting ? (
+                  <>
+                    <span>Экспорт...</span>
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin ml-1" />
+                  </>
+                ) : (
+                  <>
+                    <p>Экспорт</p>
+                    <DownloadIcon className="scale-110" />
+                  </>
+                )}
+              </Button>
+             }
+          </div>
+       
       </div>
     </section>
   );
