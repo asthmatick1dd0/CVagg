@@ -287,6 +287,9 @@ func (s *service) UpdatePersonalData(tx *gorm.DB, it *input.ItemInput, ID uint) 
 		Email:      it.PersonalData.Email,
 		Phone:      it.PersonalData.Phone,
 		Address:    it.PersonalData.Address,
+		Website:    &it.PersonalData.Website,
+		Github:     &it.PersonalData.Github,
+		BirthDate:  &it.PersonalData.Birthdate,
 		Avatar:     it.PersonalData.Avatar,
 	}
 
@@ -425,6 +428,9 @@ func (s *service) SavePersonalData(tx *gorm.DB, it *input.ItemInput, ID uint) cv
 		Email:      it.PersonalData.Email,
 		Phone:      it.PersonalData.Phone,
 		Address:    it.PersonalData.Address,
+		Website:    &it.PersonalData.Website,
+		Github:     &it.PersonalData.Github,
+		BirthDate:  &it.PersonalData.Birthdate,
 		Avatar:     it.PersonalData.Avatar,
 	}
 

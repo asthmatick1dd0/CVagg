@@ -13,8 +13,8 @@ type PersonalData struct {
 	Email      string     `json:"email"`
 	Phone      string     `json:"phone"`
 	Address    string     `json:"address"`
-	BirthDate  *time.Time `json:"birth_date"`
-	Website    *string    `json:"website"`
-	Github     *string    `json:"github"`
-	Avatar     *string    `json:"avatar"`
+	BirthDate  *time.Time `json:"birth_date", omitempty`
+	Website    *string    `json:"website", omitempty`
+	Github     *string    `json:"github", omitempty`
+	Avatar     *string    `json:"avatar", omitempty`
 }
