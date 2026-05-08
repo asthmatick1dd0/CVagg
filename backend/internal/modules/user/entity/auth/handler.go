@@ -45,6 +45,8 @@ func (h *handler) SignUp(c *fiber.Ctx) error {
 	var user models.User
 	user.Email = input.Email
 	user.Username = input.Username
+	user.Name = input.Name
+	user.Surname = input.Surname
 	passwordHash, err := bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(err)
