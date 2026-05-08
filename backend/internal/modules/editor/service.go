@@ -290,7 +290,7 @@ func (s *service) UpdatePersonalData(tx *gorm.DB, it *input.ItemInput, ID uint) 
 		Website:    &it.PersonalData.Website,
 		Github:     &it.PersonalData.Github,
 		BirthDate:  &it.PersonalData.Birthdate,
-		Avatar:     &it.PersonalData.Avatar,
+		Avatar:     it.PersonalData.Avatar,
 	}
 
 	if err := s.personalDataRepo.Update(tx, personalDataModel, "resume_item.personal_data", it.FieldID); err != nil {
@@ -431,7 +431,7 @@ func (s *service) SavePersonalData(tx *gorm.DB, it *input.ItemInput, ID uint) cv
 		Website:    &it.PersonalData.Website,
 		Github:     &it.PersonalData.Github,
 		BirthDate:  &it.PersonalData.Birthdate,
-		Avatar:     &it.PersonalData.Avatar,
+		Avatar:     it.PersonalData.Avatar,
 	}
 
 	if err := s.personalDataRepo.Create(tx, personalDataModel, "resume_item.personal_data"); err != nil {
