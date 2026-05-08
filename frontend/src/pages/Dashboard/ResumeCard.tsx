@@ -1,19 +1,23 @@
 import type { Resume } from "@/types/resume.types";
 import { useNavigate } from "react-router-dom";
 import { Check } from "lucide-react";
+import { ResumeCardPreview } from "@/components/pdf/ResumeCardPreview";
+import { type TemplateId } from "@/components/pdf/ResumeDocument";
 
 interface ResumeCardProps {
   resume: Resume;
   isSelectionMode?: boolean;
   isSelected?: boolean;
   onSelect?: () => void;
+  templateId?: TemplateId;
 }
 
 export function ResumeCard({ 
   resume, 
   isSelectionMode = false, 
   isSelected = false,
-  onSelect 
+  onSelect,
+  templateId = "minimal"
 }: ResumeCardProps) {
   const navigate = useNavigate();
 
@@ -22,7 +26,6 @@ export function ResumeCard({
       onSelect?.();
       return;
     }
-
     const validId = resume.id || resume.ID;
     if (validId && validId !== "0" && validId !== "undefined") {
       navigate(`/editor/${validId}`);
@@ -40,7 +43,6 @@ export function ResumeCard({
         ${isSelectionMode ? 'hover:scale-102' : 'hover:scale-105'}
       `}
     >
-      {/* Превью резюме */}
       <div 
         className={`
           w-38 h-46 rounded-2xl bg-white/50 shadow-md 
@@ -55,24 +57,27 @@ export function ResumeCard({
           }
         `}
       >
-        {/* Чекбокс выделения */}
+        <ResumeCardPreview resume={resume} templateId={templateId} />
+
         {isSelectionMode && (
           <div 
             className={`
               absolute top-2 right-2 w-6 h-6 rounded-full border-2 
               flex items-center justify-center transition-all duration-200
+              z-10
               ${isSelected 
                 ? 'bg-primary border-primary scale-110' 
                 : 'bg-white/90 border-gray-400 hover:border-primary'
               }
             `}
           >
-            {isSelected && <Check size={14} className="text-foreground" strokeWidth={3} />}
+            {isSelected && (
+              <Check size={14} className="text-foreground" strokeWidth={3} />
+            )}
           </div>
         )}
       </div>
 
-      {/* Название резюме */}
       <p 
         className={`
           font-inter mt-2 text-sm text-center max-w-38 truncate
