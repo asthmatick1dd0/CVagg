@@ -280,7 +280,7 @@ const TUITemplate: React.FC<ResumeDocumentProps> = ({ data, avatarBase64 }) => {
             {avatarBase64 ? (
               <Image src={avatarBase64} style={styles.avatarImage} />
             ) : (
-              <Text style={styles.avatarPlaceholder}>🖼</Text>
+              <Text style={styles.avatarPlaceholder}/>
             )}
           </View>
 
