@@ -118,6 +118,12 @@ const styles = StyleSheet.create({
     height: '100%',
     objectFit: 'cover',
   },
+  avatarInitials: {
+    color: '#5F5F5F',
+    fontSize: 28,
+    fontWeight: 'bold',
+    textTransform: 'uppercase',
+  },
   headerTextContainer: {
     flex: 1,
     flexWrap: 'nowrap',
@@ -197,6 +203,7 @@ const styles = StyleSheet.create({
 
 const MinimalTemplate: React.FC<ResumeDocumentProps> = ({ data, avatarBase64 }) => {
   const { personalInfo, education, experience, skills, custom } = data;
+  const avatarInitials = `${personalInfo?.name?.[0] || ''}${personalInfo?.surname?.[0] || ''}`.toUpperCase() || "??";
   return (
     <Document>
       <Page size="A4" style={styles.page}>
@@ -258,7 +265,7 @@ const MinimalTemplate: React.FC<ResumeDocumentProps> = ({ data, avatarBase64 }) 
                   style={styles.avatarImage}
                 />
               ) : (
-                <View style={{ width: 80, height: 80, backgroundColor: '#ccc' }} />
+                <Text style={styles.avatarInitials}>{avatarInitials}</Text>
               )}
             </View>
             <View style={styles.headerTextContainer}>

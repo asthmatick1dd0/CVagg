@@ -60,7 +60,11 @@ export function ResumeGrid({ resumes, onCreate, onRefresh }: ResumeGridProps) {
 
   // Удаление
   const handleDelete = async () => {
-    if (selectedIds.size === 0 || !user?.id) return;
+    if (!isSelectionMode || selectedIds.size === 0) {
+      alert("Сначала нажмите «Выделить» и выберите резюме");
+      return;
+    }
+    if (!user?.id) return;
     
     const count = selectedIds.size;
     const message = count === 1 
@@ -114,7 +118,7 @@ export function ResumeGrid({ resumes, onCreate, onRefresh }: ResumeGridProps) {
             }
           `}
           onClick={handleDelete}
-          disabled={selectedIds.size === 0 || isDeleting}
+          disabled={isDeleting}
         >
           {isDeleting ? (
             <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
