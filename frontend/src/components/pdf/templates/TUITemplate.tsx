@@ -1,36 +1,36 @@
 import React from 'react';
 import { Page, Text, View, Document, StyleSheet, Font, Image } from '@react-pdf/renderer';
 import { getSkillName, PREDEFINED_SKILLS } from "@/constants/skills";
-import { 
-  categoryOrder, 
-  getAdaptiveNameFontSize, 
+import {
+  categoryOrder,
+  getAdaptiveNameFontSize,
   formatDate,
-  type ResumeDocumentProps, 
+  type ResumeDocumentProps,
   formatBday
 } from "@/components/pdf/ResumeDocument";
-
+Font.registerHyphenationCallback(word => [word]);
 Font.register({
   family: 'JetBrains Mono',
   fonts: [
     { src: '/fonts/JetBrainsMono-ExtraLight.ttf', fontWeight: 200, fontStyle: 'normal' },
     { src: '/fonts/JetBrainsMono-ExtraLightItalic.ttf', fontWeight: 200, fontStyle: 'italic' },
-    
+
     // Light (300)
     { src: '/fonts/JetBrainsMono-Light.ttf', fontWeight: 300, fontStyle: 'normal' },
     { src: '/fonts/JetBrainsMono-LightItalic.ttf', fontWeight: 300, fontStyle: 'italic' },
-    
+
     // Regular (400)
     { src: '/fonts/JetBrainsMono-Regular.ttf', fontWeight: 400, fontStyle: 'normal' },
     { src: '/fonts/JetBrainsMono-Italic.ttf', fontWeight: 400, fontStyle: 'italic' },
-    
+
     // Medium (500)
     { src: '/fonts/JetBrainsMono-Medium.ttf', fontWeight: 500, fontStyle: 'normal' },
     { src: '/fonts/JetBrainsMono-MediumItalic.ttf', fontWeight: 500, fontStyle: 'italic' },
-    
+
     // Bold (700)
     { src: '/fonts/JetBrainsMono-Bold.ttf', fontWeight: 700, fontStyle: 'normal' },
     { src: '/fonts/JetBrainsMono-BoldItalic.ttf', fontWeight: 700, fontStyle: 'italic' },
-    
+
     // ExtraBold (800)
     { src: '/fonts/JetBrainsMono-ExtraBold.ttf', fontWeight: 800, fontStyle: 'normal' },
     { src: '/fonts/JetBrainsMono-ExtraBoldItalic.ttf', fontWeight: 800, fontStyle: 'italic' },
@@ -39,17 +39,17 @@ Font.register({
 
 // TUI color palette
 const c = {
-  bg:        '#1E1E1E',
-  text:      '#D4D4D4',
-  muted:     '#8A8A8A',
-  blue:      '#61AFEE',
-  teal:      '#56B6C2',
-  pink:      '#E94B6A',
-  green:     '#7FBF6A',
-  lightGreen:'#B5D982',
-  yellow:    '#E8D86E',
-  white:     '#FFFFFF',
-  border:    '#3A3A3A',
+  bg: '#1E1E1E',
+  text: '#D4D4D4',
+  muted: '#8A8A8A',
+  blue: '#61AFEE',
+  teal: '#56B6C2',
+  pink: '#E94B6A',
+  green: '#7FBF6A',
+  lightGreen: '#B5D982',
+  yellow: '#E8D86E',
+  white: '#FFFFFF',
+  border: '#3A3A3A',
 };
 
 const styles = StyleSheet.create({
@@ -92,9 +92,8 @@ const styles = StyleSheet.create({
     objectFit: 'cover',
   },
   avatarPlaceholder: {
-    color: '#CFCFCF',
-    fontSize: 34,
-    fontWeight: 700,
+    color: '#6A6A6A',
+    fontSize: 32,
   },
 
   name: {
@@ -243,7 +242,6 @@ const TUITemplate: React.FC<ResumeDocumentProps> = ({ data, avatarBase64 }) => {
   const { personalInfo, education, experience, skills, custom } = data;
 
   const fullName = `${personalInfo?.name || ''} ${personalInfo?.surname || ''}`.trim();
-  const avatarInitials = `${personalInfo?.name?.[0] || ''}${personalInfo?.surname?.[0] || ''}`.toUpperCase() || "??";
 
   const skillsByCategory = (skills || []).reduce((acc, skill) => {
     const skillInfo = PREDEFINED_SKILLS.find(s => s.id === skill.SkillId);
@@ -282,7 +280,7 @@ const TUITemplate: React.FC<ResumeDocumentProps> = ({ data, avatarBase64 }) => {
             {avatarBase64 ? (
               <Image src={avatarBase64} style={styles.avatarImage} />
             ) : (
-              <Text style={styles.avatarPlaceholder}>{avatarInitials}</Text>
+              <Text style={styles.avatarPlaceholder}>🖼</Text>
             )}
           </View>
 
@@ -303,17 +301,17 @@ const TUITemplate: React.FC<ResumeDocumentProps> = ({ data, avatarBase64 }) => {
           <Text style={styles.sidebarSectionTitle}>личная информация</Text>
           <View style={styles.textSection}>
             {personalInfo?.birthDate && (
-            <>
-              <Text style={styles.fieldLabel}>дата рождения:</Text>
-              <Text style={styles.fieldValue}>{formatBday(personalInfo.birthDate)}</Text>
-            </>
-          )}
-          {personalInfo?.address && (
-            <>
-              <Text style={styles.fieldLabel}>адрес:</Text>
-              <Text style={styles.fieldValue}>{personalInfo.address}</Text>
-            </>
-          )}
+              <>
+                <Text style={styles.fieldLabel}>дата рождения:</Text>
+                <Text style={styles.fieldValue}>{formatBday(personalInfo.birthDate)}</Text>
+              </>
+            )}
+            {personalInfo?.address && (
+              <>
+                <Text style={styles.fieldLabel}>адрес:</Text>
+                <Text style={styles.fieldValue}>{personalInfo.address}</Text>
+              </>
+            )}
           </View>
 
           <Text style={styles.sidebarSectionTitle}>контакты</Text>
@@ -351,11 +349,11 @@ const TUITemplate: React.FC<ResumeDocumentProps> = ({ data, avatarBase64 }) => {
                     </Text>
                   </View>
                   <View style={styles.textSection}>
-                  {edu.major && (
-                    <Text style={styles.entryDescription}>
-                      Специальность: {edu.major}
-                    </Text>
-                  )}
+                    {edu.major && (
+                      <Text style={styles.entryDescription}>
+                        Специальность: {edu.major}
+                      </Text>
+                    )}
                   </View>
                 </View>
               ))}
@@ -402,7 +400,7 @@ const TUITemplate: React.FC<ResumeDocumentProps> = ({ data, avatarBase64 }) => {
           {custom && custom.map((item, index) => (
             <Section key={index} title={item.title.toLowerCase()}>
               <View style={styles.textSection}>
-              <Text style={styles.entryDescription}>{item.content}</Text>
+                <Text style={styles.entryDescription}>{item.content}</Text>
               </View>
             </Section>
           ))}
