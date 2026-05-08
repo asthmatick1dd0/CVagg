@@ -177,7 +177,7 @@ const EditorContent = () => {
                   <TabsTrigger value="preview">Превью</TabsTrigger>
                   <TabsTrigger value="chat">Чат</TabsTrigger>
                 </TabsList>
-                <div className="w-44">
+                <div className="w-30">
                   <TemplateSelect
                     value={templateId}
                     onChange={setTemplateId}

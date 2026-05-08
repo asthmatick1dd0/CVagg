@@ -21,13 +21,13 @@ const TEMPLATES: TemplateOption[] = [
     id: "minimal",
     name: "Минималистичный",
     description: "Классический двухколоночный шаблон",
-    icon: <FileText className="w-4 h-4 text-foreground" />,
+    icon: <FileText className="w-4 h-4 text-foreground shrink-0" />,
   },
   {
     id: "tui",
     name: "TUI",
     description: "Тёмная тема в стиле текстового редактора",
-    icon: <Code2 className="w-4 h-4 text-foreground" />,
+    icon: <Code2 className="w-4 h-4 text-foreground shrink-0" />,
   },
 ];
 
@@ -47,28 +47,38 @@ export const TemplateSelect: React.FC<TemplateSelectProps> = ({
   const selected = TEMPLATES.find((t) => t.id === value);
 
   return (
-    <div className={`flex flex-col gap-2 ${className ?? ""}`}>
-      {label && <Label htmlFor="template-select">{label}</Label>}
+    <div className="bg-background rounded-md">
+      <div className={`flex flex-col gap-2 w-full min-w-0 ${className ?? ""}`}>
+      {label && (
+        <Label htmlFor="template-select" className="text-xs sm:text-sm">
+          {label}
+        </Label>
+      )}
       <Select value={value} onValueChange={(v) => onChange(v as TemplateId)}>
-        <SelectTrigger id="template-select" className="w-full">
-          {/* Кастомный контент триггера — только иконка + название */}
+        <SelectTrigger id="template-select" className="w-full min-w-0">
           <SelectValue placeholder="Выберите шаблон">
             {selected && (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 min-w-0">
                 {selected.icon}
-                <span className="font-medium">{selected.name}</span>
+                <span className="font-medium truncate">{selected.name}</span>
               </div>
             )}
           </SelectValue>
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent
+          className="max-w-[calc(100vw-2rem)] sm:max-w-md"
+          position="popper"
+          sideOffset={4}
+        >
           {TEMPLATES.map((tpl) => (
             <SelectItem key={tpl.id} value={tpl.id}>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 min-w-0">
                 {tpl.icon}
-                <div className="flex flex-col">
-                  <span className="font-medium">{tpl.name}</span>
-                  <span className="text-xs">
+                <div className="flex flex-col min-w-0">
+                  <span className="font-medium text-sm sm:text-base truncate">
+                    {tpl.name}
+                  </span>
+                  <span className="text-[11px] sm:text-xs line-clamp-2 sm:line-clamp-1">
                     {tpl.description}
                   </span>
                 </div>
@@ -78,5 +88,7 @@ export const TemplateSelect: React.FC<TemplateSelectProps> = ({
         </SelectContent>
       </Select>
     </div>
+    </div>
+    
   );
 };
