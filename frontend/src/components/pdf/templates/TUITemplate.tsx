@@ -242,8 +242,28 @@ const styles = StyleSheet.create({
 const TUITemplate: React.FC<ResumeDocumentProps> = ({ data, avatarBase64 }) => {
   const { personalInfo, education, experience, skills, custom } = data;
 
-  const fullName = `${personalInfo?.name || ''} ${personalInfo?.surname || ''}`.trim();
-  const avatarInitials = `${personalInfo?.name?.[0] || ''}${personalInfo?.surname?.[0] || ''}`.toUpperCase() || "??";
+  const normalizePdfText = (value?: string, maxLength = 160) => {
+    const cleaned = (value || "")
+      .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F-\u009F]/g, " ")
+      .replace(/[\uD800-\uDFFF]/g, "")
+      .replace(/\s+/g, " ")
+      .trim();
+
+    if (cleaned.length <= maxLength) return cleaned;
+    return `${cleaned.slice(0, Math.max(1, maxLength - 3))}...`;
+  };
+
+  const safeName = normalizePdfText(personalInfo?.name, 42);
+  const safeSurname = normalizePdfText(personalInfo?.surname, 42);
+  const safeJobTitle = normalizePdfText(personalInfo?.jobTitle, 64);
+  const safeAddress = normalizePdfText(personalInfo?.address, 120);
+  const safeEmail = normalizePdfText(personalInfo?.email, 64);
+  const safePhone = normalizePdfText(personalInfo?.phone, 36);
+  const safeWebsite = normalizePdfText(personalInfo?.website?.replace(/^https?:\/\//, ""), 64);
+  const safeGithub = normalizePdfText(personalInfo?.github?.replace(/^https?:\/\//, ""), 64);
+
+  const fullName = `${safeName} ${safeSurname}`.trim();
+  const avatarInitials = `${safeName[0] || ''}${safeSurname[0] || ''}`.toUpperCase() || "??";
 
   const skillsByCategory = (skills || []).reduce((acc, skill) => {
     const skillInfo = PREDEFINED_SKILLS.find(s => s.id === skill.SkillId);
@@ -287,16 +307,16 @@ const TUITemplate: React.FC<ResumeDocumentProps> = ({ data, avatarBase64 }) => {
           </View>
 
           <Text style={[styles.name, { fontSize: getAdaptiveNameFontSize(fullName) }]}>
-            {personalInfo?.name}
+            {safeName}
           </Text>
           <Text style={[styles.name, { fontSize: getAdaptiveNameFontSize(fullName) }]}>
-            {personalInfo?.surname}
+            {safeSurname}
           </Text>
 
           {personalInfo?.jobTitle && (
             <View style={styles.jobTitleRow}>
               <Text style={styles.bulletDot}>•</Text>
-              <Text style={styles.jobTitle}>{personalInfo.jobTitle}</Text>
+              <Text style={styles.jobTitle}>{safeJobTitle}</Text>
             </View>
           )}
 
@@ -311,7 +331,7 @@ const TUITemplate: React.FC<ResumeDocumentProps> = ({ data, avatarBase64 }) => {
           {personalInfo?.address && (
             <>
               <Text style={styles.fieldLabel}>адрес:</Text>
-              <Text style={styles.fieldValue}>{personalInfo.address}</Text>
+              <Text style={styles.fieldValue}>{safeAddress}</Text>
             </>
           )}
           </View>
@@ -319,16 +339,16 @@ const TUITemplate: React.FC<ResumeDocumentProps> = ({ data, avatarBase64 }) => {
           <Text style={styles.sidebarSectionTitle}>контакты</Text>
           <View style={styles.textSection}>
             {personalInfo?.email && (
-              <Text style={styles.contactValue}>{personalInfo.email}</Text>
+              <Text style={styles.contactValue}>{safeEmail}</Text>
             )}
             {personalInfo?.phone && (
-              <Text style={styles.contactValue}>{personalInfo.phone}</Text>
+              <Text style={styles.contactValue}>{safePhone}</Text>
             )}
             {personalInfo?.website && (
-              <Text style={styles.contactValue}>{personalInfo.website.replace(/^https?:\/\//, '')}</Text>
+              <Text style={styles.contactValue}>{safeWebsite}</Text>
             )}
             {personalInfo?.github && (
-              <Text style={styles.contactValue}>{personalInfo.github.replace(/^https?:\/\//, '')}</Text>
+              <Text style={styles.contactValue}>{safeGithub}</Text>
             )}
           </View>
 
