@@ -35,7 +35,7 @@ const Header = () => {
       </section>
       
       {isUserPageOpen && (
-        <div className="fixed top-20 right-15" onClick={handleUser}>
+        <div className="fixed top-20 right-15 z-100" onClick={handleUser}>
           <UserPage
             currentUser={{
               id: user?.id ?? "",

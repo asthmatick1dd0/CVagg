@@ -13,8 +13,8 @@ function UserPage({ currentUser, onLogout }: UserPageProps) {
 
   return (
     <div className="flex items-center justify-center rounded-3xl custom-bg">
-      <div className="w-[340px] rounded-3xl overflow-hidden shadow-2xl">
-        <div className="bg-muted/60 flex flex-col items-center justify-center pt-8 pb-10 px-6 relative mt-3 mb-6">
+      <div className="w-[340px] rounded-3xl overflow-hidden bg-muted/60 shadow-2xl">
+        <div className="flex flex-col items-center justify-center pt-8 pb-10 px-6 relative mt-3 mb-6">
           <button
             onClick={onLogout}
             className="absolute top-4 right-4 w-10 h-10 flex items-center justify-center rounded-xl text-white hover:bg-black/10 transition-colors"
