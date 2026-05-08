@@ -34,7 +34,7 @@ export const AvatarUpload = ({
     } = useAvatar({ maxSizeInMB: 5 });
 
     const displayUrl = localPreview || currentAvatarUrl || null;
-    const hasResumeId = Boolean(resumeID);
+    const hasResumeId = Boolean(resumeID && String(resumeID) !== "0");
 
     // Clean up blob URLs when localPreview changes
     useEffect(() => {
@@ -48,10 +48,6 @@ export const AvatarUpload = ({
     const handleFileSelect = async (e: ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
-        if (!hasResumeId) {
-            onUploadError?.('Сохраните резюме перед загрузкой фотографии');
-            return;
-        }
 
         // Clean up any existing blob URL (but keep base64 data)
         if (localPreview && localPreview.startsWith('blob:')) {
@@ -62,7 +58,7 @@ export const AvatarUpload = ({
         const newLocalPreview = URL.createObjectURL(file);
         setLocalPreview(newLocalPreview);
 
-        const result = await uploadAvatar(String(resumeID), userID, file);
+        const result = await uploadAvatar(resumeID ?? 0, userID, file);
 
         if (result?.url) {
             if (newLocalPreview.startsWith('blob:')) {
@@ -70,11 +66,11 @@ export const AvatarUpload = ({
             }
             setLocalPreview(result.url);
             onUploadSuccess?.(result.url);
-        } else if (error) {
+        } else {
             // Clean up local preview URL on error
             URL.revokeObjectURL(newLocalPreview);
             setLocalPreview(null);
-            onUploadError?.(error);
+            onUploadError?.('Не удалось загрузить изображение');
         }
 
         // Reset input
@@ -111,7 +107,7 @@ export const AvatarUpload = ({
                         e.preventDefault();
                         triggerFileSelect();
                     }}
-                    disabled={!hasResumeId || uploading}
+                    disabled={uploading}
                     className="
                         absolute inset-0
                         rounded-full
@@ -138,7 +134,7 @@ export const AvatarUpload = ({
                 <input
                     ref={fileInputRef}
                     type="file"
-                    accept="image/jpeg,image/png,image/webp,image/gif"
+                    accept="image/jpeg,image/png,image/jpg"
                     onChange={handleFileSelect}
                     className="hidden"
                     aria-hidden="true"
@@ -149,9 +145,7 @@ export const AvatarUpload = ({
             <p className="text-xs text-foreground text-center">
                 {uploading
                     ? 'Загрузка...'
-                    : hasResumeId
-                    ? ''
-                    : 'Сохраните резюме, чтобы загрузить фото'}
+                    : ''}
             </p>
 
             {displayUrl && !uploading && (

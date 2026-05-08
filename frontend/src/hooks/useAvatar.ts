@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import axios from 'axios';
 import { avatarApi, type AvatarResponse } from '@/services/avatarService.ts';
 
 interface UseAvatarOptions {
@@ -10,7 +11,7 @@ interface UseAvatarReturn {
     uploading: boolean;
     error: string | null;
     preview: string | null;
-    uploadAvatar: (resumeID: string, userID: number, file: File) => Promise<AvatarResponse | null>;
+    uploadAvatar: (resumeID: string | number | null | undefined, userID: number, file: File) => Promise<AvatarResponse | null>;
     setPreview: (url: string | null) => void;
     clearError: () => void;
     validateFile: (file: File) => boolean;
@@ -30,13 +31,13 @@ export const useAvatar = (options: UseAvatarOptions = {}): UseAvatarReturn => {
         setError(null);
 
         if (!allowedTypes.includes(file.type)) {
-            setError(`Невалидный формат. Поддерживаемые форматы: ${allowedTypes.join(', ')}`);
+            setError('Неподдерживаемый формат файла. Разрешены: JPG, JPEG, PNG.');
             return false;
         }
 
         const maxSizeInBytes = maxSizeInMB * 1024 * 1024;
         if (file.size > maxSizeInBytes) {
-            setError(`Файл слишком большой. Максимальный размер: ${maxSizeInMB}MB`);
+            setError(`Файл слишком большой. Максимальный размер: ${maxSizeInMB} МБ.`);
             return false;
         }
 
@@ -44,7 +45,7 @@ export const useAvatar = (options: UseAvatarOptions = {}): UseAvatarReturn => {
     }, [allowedTypes, maxSizeInMB]);
 
     const uploadAvatar = useCallback(async (
-        resumeID: string,
+        resumeID: string | number | null | undefined,
         userID: number,
         file: File
     ): Promise<AvatarResponse | null> => {
@@ -58,7 +59,26 @@ export const useAvatar = (options: UseAvatarOptions = {}): UseAvatarReturn => {
             setPreview(response.url);
             return response;
         } catch (err) {
-            const message = err instanceof Error ? err.message : 'Ошибка загрузки';
+            let message = 'Не удалось загрузить изображение. Попробуйте еще раз.';
+            if (axios.isAxiosError(err)) {
+                const backendMessage =
+                    (err.response?.data as { error?: string; message?: string } | undefined)?.error ||
+                    (err.response?.data as { error?: string; message?: string } | undefined)?.message;
+
+                if (err.response?.status === 413 || backendMessage === 'file too large') {
+                    message = 'Файл слишком большой. Максимальный размер: 5 МБ.';
+                } else if (backendMessage === 'unsupported file type') {
+                    message = 'Неподдерживаемый формат файла. Разрешены: JPG, JPEG, PNG.';
+                } else if (backendMessage === 'file is required') {
+                    message = 'Файл не найден. Выберите изображение и попробуйте снова.';
+                } else if (backendMessage) {
+                    message = backendMessage;
+                } else if (err.message) {
+                    message = err.message;
+                }
+            } else if (err instanceof Error) {
+                message = err.message;
+            }
             setError(message);
             return null;
         } finally {

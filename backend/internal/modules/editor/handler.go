@@ -165,16 +165,20 @@ func (h *handler) UpdateResume(ctx *fiber.Ctx) error {
 }
 
 func (h *handler) UploadAvatar(ctx *fiber.Ctx) error {
-	// require resume_id to attach photo to resume
+	// resume_id is optional: if provided, avatar is attached to personal_data
+	// if missing/zero, avatar is uploaded and URL is returned for later save
 	resumeIDStr := ctx.FormValue("resume_id")
 	if resumeIDStr == "" {
-		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "resume_id is required"})
+		resumeIDStr = ctx.Query("resume_id", "0")
 	}
-	id64, err := strconv.ParseUint(resumeIDStr, 10, 64)
-	if err != nil {
-		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "invalid resume_id"})
+	var resumeID uint
+	if resumeIDStr != "" {
+		id64, err := strconv.ParseUint(resumeIDStr, 10, 64)
+		if err != nil {
+			return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "invalid resume_id"})
+		}
+		resumeID = uint(id64)
 	}
-	resumeID := uint(id64)
 
 	fileHeader, err := ctx.FormFile("file")
 	if err != nil {
@@ -187,7 +191,7 @@ func (h *handler) UploadAvatar(ctx *fiber.Ctx) error {
 		".png":  true,
 		".webp": true,
 	}
-	maxSize := int64(20 * 1024 * 1024) // 20 MB
+	maxSize := int64(5 * 1024 * 1024) // 5 MB
 
 	ext := strings.ToLower(filepath.Ext(fileHeader.Filename))
 	if !allowedExts[ext] {

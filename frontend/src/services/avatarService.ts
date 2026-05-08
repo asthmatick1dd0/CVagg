@@ -12,12 +12,13 @@ export interface AvatarResponse {
 }
 
 export const avatarApi = {
-  uploadAvatar: async (resumeID: string, userID: number, file: File): Promise<AvatarResponse> => {
+  uploadAvatar: async (resumeID: string | number | null | undefined, userID: number, file: File): Promise<AvatarResponse> => {
         const formData = new FormData();
         formData.append('file', file);
+        const normalizedResumeId = resumeID ?? 0;
 
         const response = await api.post(
-            `editor/upload-avatar?resume_id=${resumeID}&user_id=${userID}${getTokenQuery()}`,
+            `editor/upload-avatar?resume_id=${normalizedResumeId}&user_id=${userID}${getTokenQuery()}`,
             formData,
             {
                 headers: {
