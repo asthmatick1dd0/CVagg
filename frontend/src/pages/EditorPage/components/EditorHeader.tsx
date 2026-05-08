@@ -39,7 +39,7 @@ const EditorHeader = () => {
         </div>
         
           <div className="flex flex-row items-center gap-2">
-            {resumeData.id &&
+            {resumeData.id ?
               <Button 
                 variant="default" 
                 className="flex items-center justify-center p-4 pr-2 rounded-full gap-3 hover:cursor-pointer"
@@ -54,6 +54,24 @@ const EditorHeader = () => {
                 ) : (
                   <>
                     <p>Экспорт</p>
+                    <DownloadIcon className="scale-110" />
+                  </>
+                )}
+              </Button>
+              :
+              <Button 
+                className="bg-primary/70 flex items-center justify-center p-4 pr-2 rounded-full gap-3 disabled hover:cursor-not-allowed"
+                onClick={(e) => e.preventDefault}
+                disabled={isExporting}
+              >
+                {isExporting ? (
+                  <>
+                    <span>Экспорт...</span>
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin ml-1" />
+                  </>
+                ) : (
+                  <>
+                    <p>Экспорт доступен после сохранения резюме</p>
                     <DownloadIcon className="scale-110" />
                   </>
                 )}
