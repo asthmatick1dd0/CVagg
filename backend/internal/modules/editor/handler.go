@@ -49,11 +49,11 @@ func (h *handler) CreateResume(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusForbidden).JSON(fiber.Map{"error": "trying to get another user's resume"})
 	}
 
-	err := h.s.SaveResume(nil, &input)
+	id, err := h.s.SaveResume(nil, &input)
 	if err != nil {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "internal server error"})
 	}
-	return nil
+	return ctx.JSON(fiber.Map{"id": id})
 }
 
 func (h *handler) GetResumeByID(ctx *fiber.Ctx) error {

@@ -25,7 +25,7 @@ import (
 )
 
 type Service interface {
-	SaveResume(tx *gorm.DB, resume *input.ResumeInput) cvaggerr.Error
+	SaveResume(tx *gorm.DB, resume *input.ResumeInput) (uint, cvaggerr.Error)
 	GetResumeByID(tx *gorm.DB, id uint) (*input.ResumeInput, cvaggerr.Error)
 	ExportResumePDF(tx *gorm.DB, id uint) ([]byte, cvaggerr.Error)
 	UpdateResume(tx *gorm.DB, resume *input.ResumeInput) cvaggerr.Error
@@ -73,13 +73,13 @@ func NewService(
 	}
 }
 
-func (s *service) SaveResume(tx *gorm.DB, resume *input.ResumeInput) cvaggerr.Error {
+func (s *service) SaveResume(tx *gorm.DB, resume *input.ResumeInput) (uint, cvaggerr.Error) {
 	resumeInput := &models.Resume{
 		Title:  resume.Title,
 		UserID: resume.UserID,
 	}
 	if err := s.resumeRepo.Create(tx, resumeInput); err != nil {
-		return err
+		return 0, err
 	}
 
 	// проходимся по мапе и обрабатываем []Items исходя из ключа
@@ -91,42 +91,42 @@ func (s *service) SaveResume(tx *gorm.DB, resume *input.ResumeInput) cvaggerr.Er
 			// поскольку в одном резюме может быть множество, допустим, опыта работы, то у нас в каждой секции лежит массив
 			for _, it := range items {
 				if err := s.SaveJobExperience(tx, &it, resumeInput.ID); err != nil {
-					return err
+					return 0, err
 				}
 			}
 		case "education":
 			for _, it := range items {
 				if err := s.SaveEducation(tx, &it, resumeInput.ID); err != nil {
-					return err
+					return 0, err
 				}
 			}
 		case "hardskill":
 			for _, it := range items {
 				if err := s.SaveHardSkill(tx, &it, resumeInput.ID); err != nil {
-					return err
+					return 0, err
 				}
 			}
 		case "about":
 			for _, it := range items {
 				if err := s.SaveAbout(tx, &it, resumeInput.ID); err != nil {
-					return err
+					return 0, err
 				}
 			}
 		case "custom":
 			for _, it := range items {
 				if err := s.SaveCustom(tx, &it, resumeInput.ID); err != nil {
-					return err
+					return 0, err
 				}
 			}
 		case "personal_data":
 			for _, it := range items {
 				if err := s.SavePersonalData(tx, &it, resumeInput.ID); err != nil {
-					return err
+					return 0, err
 				}
 			}
 		}
 	}
-	return nil
+	return resumeInput.ID, nil
 }
 
 func (s *service) UpdateResume(tx *gorm.DB, resume *input.ResumeInput) cvaggerr.Error {
