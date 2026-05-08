@@ -24,15 +24,21 @@ func NewAvatarStorage() AvatarStorage {
 	return &avatarStorage{}
 }
 
+func GetUploadDir() string {
+	uploadDir := os.Getenv("UPLOAD_DIR")
+	if uploadDir == "" {
+		uploadDir = "images/uploads"
+	}
+
+	return uploadDir
+}
+
 func (s *avatarStorage) SaveAvatar(fh *multipart.FileHeader) (string, cvaggerr.Error) {
 	if fh == nil {
 		return "", cvaggerr.New("file required", "файл обязателен", 400)
 	}
 
-	uploadDir := os.Getenv("UPLOAD_DIR")
-	if uploadDir == "" {
-		uploadDir = "images/uploads"
-	}
+	uploadDir := GetUploadDir()
 	if err := os.MkdirAll(uploadDir, 0755); err != nil {
 		return "", cvaggerr.NewD(err)
 	}
@@ -70,10 +76,7 @@ func (s *avatarStorage) DeleteAvatar(avatarURL string) cvaggerr.Error {
 		return nil
 	}
 
-	uploadDir := os.Getenv("UPLOAD_DIR")
-	if uploadDir == "" {
-		uploadDir = "images/uploads"
-	}
+	uploadDir := GetUploadDir()
 
 	filename := filepath.Base(avatarURL)
 	if filename == "." || filename == string(filepath.Separator) {

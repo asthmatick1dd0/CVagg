@@ -115,12 +115,12 @@ func (h *handler) Analyze(ctx *fiber.Ctx) error {
 	}
 	userID := fmt.Sprintf("%d", userIDUint)
 
-	cooldown, err := h.s.CheckCooldown(ctx, userID)
+	cooldown, remaining, err := h.s.CheckCooldown(ctx, userID)
 	if err != nil {
 		return resp.HandleError(ctx, err)
 	}
 	if cooldown {
-		return resp.HandleError(ctx, cvaggerr.ErrorCooldown())
+		return resp.HandleError(ctx, cvaggerr.ErrorCooldown(remaining))
 	}
 
 	if err := ctx.BodyParser(&req); err != nil {
@@ -138,7 +138,7 @@ func (h *handler) Analyze(ctx *fiber.Ctx) error {
 		return resp.HandleError(ctx, cvaggerr.ErrorInternalServer())
 	}
 
-	err = h.s.SetCooldown(ctx, userID, time.Minute)
+	err = h.s.SetCooldown(ctx, userID, 10*time.Second)
 	if err != nil {
 		return resp.HandleError(ctx, err)
 	}

@@ -24,6 +24,7 @@ func NewServerHTTP(
 	app.Use(recover.New())
 
 	config.ConfigJWT(app)
+	app.Static("/images", "images")
 
 	api := app.Group("/api")
 	v1 := api.Group("/v1")
