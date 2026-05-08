@@ -289,7 +289,7 @@ func (s *service) UpdatePersonalData(tx *gorm.DB, it *input.ItemInput, ID uint) 
 		Address:    it.PersonalData.Address,
 		Website:    &it.PersonalData.Website,
 		Github:     &it.PersonalData.Github,
-		BirthDate:  &it.PersonalData.Birthdate,
+		BirthDate:  it.PersonalData.Birthdate,
 		Avatar:     it.PersonalData.Avatar,
 	}
 
@@ -430,7 +430,7 @@ func (s *service) SavePersonalData(tx *gorm.DB, it *input.ItemInput, ID uint) cv
 		Address:    it.PersonalData.Address,
 		Website:    &it.PersonalData.Website,
 		Github:     &it.PersonalData.Github,
-		BirthDate:  &it.PersonalData.Birthdate,
+		BirthDate:  it.PersonalData.Birthdate,
 		Avatar:     it.PersonalData.Avatar,
 	}
 
@@ -672,6 +672,9 @@ func (s *service) GetResumeByID(tx *gorm.DB, id uint) (*input.ResumeInput, cvagg
 					Email:      model.Email,
 					Phone:      model.Phone,
 					Address:    model.Address,
+					Website:    valueOrEmpty(model.Website),
+					Github:     valueOrEmpty(model.Github),
+					Birthdate:  model.BirthDate,
 					Avatar:     model.Avatar,
 				},
 			}, nil
@@ -693,6 +696,13 @@ func (s *service) GetResumeByID(tx *gorm.DB, id uint) (*input.ResumeInput, cvagg
 	}
 
 	return resume, nil
+}
+
+func valueOrEmpty(v *string) string {
+	if v == nil {
+		return ""
+	}
+	return *v
 }
 
 func (s *service) ExportResumePDF(tx *gorm.DB, id uint) ([]byte, cvaggerr.Error) {
