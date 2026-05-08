@@ -11,7 +11,7 @@ import (
 )
 
 type Repository interface {
-	IsOnCooldown(ctx *fiber.Ctx, userID string) (bool, cvaggerr.Error)
+	IsOnCooldown(ctx *fiber.Ctx, userID string) (bool, time.Duration, cvaggerr.Error)
 	SetCooldown(ctx *fiber.Ctx, userID string, duration time.Duration) cvaggerr.Error
 }
 
@@ -27,14 +27,18 @@ func NewRepository(rdb *redis.Client, logger *cvagglog.Logger) Repository {
 	}
 }
 
-func (r *cooldownRepo) IsOnCooldown(ctx *fiber.Ctx, userID string) (bool, cvaggerr.Error) {
-	exists, err := r.rdb.Exists(ctx.Context(), r.key(userID)).Result()
+func (r *cooldownRepo) IsOnCooldown(ctx *fiber.Ctx, userID string) (bool, time.Duration, cvaggerr.Error) {
+	ttl, err := r.rdb.TTL(ctx.Context(), r.key(userID)).Result()
 	if err != nil {
 		r.logger.Error(fmt.Sprintf("Error in redis: %v", err))
-		return false, cvaggerr.ErrorDataBase()
+		return false, 0, cvaggerr.ErrorDataBase()
 	}
 
-	return exists > 0, nil
+	if ttl > 0 {
+		return true, ttl, nil
+	}
+
+	return false, 0, nil
 }
 
 func (r *cooldownRepo) SetCooldown(ctx *fiber.Ctx, userID string, duration time.Duration) cvaggerr.Error {
