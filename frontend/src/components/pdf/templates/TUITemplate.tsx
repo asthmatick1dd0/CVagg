@@ -91,6 +91,12 @@ const styles = StyleSheet.create({
     height: '100%',
     objectFit: 'cover',
   },
+  avatarInitials: {
+    color: '#5F5F5F',
+    fontSize: 28,
+    fontWeight: 'bold',
+    textTransform: 'uppercase',
+  },
   avatarPlaceholder: {
     color: '#6A6A6A',
     fontSize: 32,
@@ -240,6 +246,7 @@ const styles = StyleSheet.create({
 
 const TUITemplate: React.FC<ResumeDocumentProps> = ({ data, avatarBase64 }) => {
   const { personalInfo, education, experience, skills, custom } = data;
+  const avatarInitials = `${personalInfo?.name?.[0] || ''}${personalInfo?.surname?.[0] || ''}`.toUpperCase() || "??";
 
   const fullName = `${personalInfo?.name || ''} ${personalInfo?.surname || ''}`.trim();
 
@@ -280,7 +287,7 @@ const TUITemplate: React.FC<ResumeDocumentProps> = ({ data, avatarBase64 }) => {
             {avatarBase64 ? (
               <Image src={avatarBase64} style={styles.avatarImage} />
             ) : (
-              <Text style={styles.avatarPlaceholder}/>
+              <Text style={styles.avatarInitials}>{avatarInitials}</Text>
             )}
           </View>
 
